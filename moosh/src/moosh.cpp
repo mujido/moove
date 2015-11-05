@@ -18,22 +18,52 @@
 #include <cmath>
 
 using namespace Moove;
+namespace mpl = boost::mpl;
+
+template<typename Left, typename Right>
+struct operator_traits;
+
+template<>
+struct operator_traits<IntVar, IntVar> {
+    typedef DefaultIntVar math_result_type;
+    typedef DefaultIntVar comparison_result_type;
+};
+
+template<>
+struct operator_traits<IntVar, RealVar> {
+    typedef DefaultRealVar math_result_type;
+    typedef DefaultRealVar comparison_result_type;
+};
+
+template<>
+struct operator_traits<RealVar, IntVar> : operator_traits<IntVar, RealVar> {};
+
+template<>
+struct operator_traits<RealVar, RealVar> {
+    typedef DefaultRealVar math_result_type;
+    typedef DefaultRealVar comparison_result_type;
+};
+
+template<typename ResultVar>
+inline Reply makeReply(const typename ResultVar::value_type& value)
+{
+    return Reply(Reply::NORMAL, boost::shared_ptr<ResultVar>(ResultVar::classFactory().createValue(value)));
+}
 
 template<class X, class Y>
 DefaultRealVar::value_type mooshMod(X x, Y y)
 {
-    return std::fmod(static_cast<DefaultRealVar::value_type>(x), 
-                     static_cast<DefaultRealVar::value_type>(n));
+    return std::fmod(static_cast<DefaultRealVar::value_type>(x),
+                     static_cast<DefaultRealVar::value_type>(y));
 }
 
 template<class X, class N>
 DefaultRealVar::value_type mooshPow(X x, N n)
 {
-    return std::pow(static_cast<DefaultRealVar::value_type>(x), 
+    return std::pow(static_cast<DefaultRealVar::value_type>(x),
                     static_cast<DefaultRealVar::value_type>(n));
 }
 
-template<>
 DefaultIntVar::value_type mooshPow(DefaultIntVar::value_type x, DefaultIntVar::value_type n)
 {
     DefaultIntVar::value_type result = 1;
@@ -70,127 +100,83 @@ DefaultIntVar::value_type mooshPow(DefaultIntVar::value_type x, DefaultIntVar::v
     return result;
 }
 
-template<class ResultVariant, class LeftVariant, class RightVariant>
-Reply mooshBinaryMathDispatch(Opcode op, std::auto_ptr<Variant> leftVar, std::auto_ptr<Variant> rightVar)
-{
-    typename ResultVariant::value_type value;
-
-    typename LeftVariant::value_type leftVal = static_cast<const LeftVariant&>(*leftVar).value();
-    typename RightVariant::value_type rightVal = static_cast<const RightVariant&>(*rightVar).value();
-
-    switch(op) {
-        case OP_ADD:
-            value = leftVal + rightVal;
-            break;
-
-        case OP_SUB:
-            value = leftVal - rightVal;
-            break;
-
-        case OP_MUL:
-            value = leftVal * rightVal;
-            break;
-
-        case OP_DIV:
-            value = leftVal / rightVal;
-            break;
-
-        case OP_MOD:
-            value = mooshMod(leftVal, rightVal);
-            break;
-
-        case OP_EXP:
-            value = mooshPow(leftVal, rightVal);
-            break;
-
-        default:
-            MOOVE_THROW("Unrecognized opcode");
-    }
-
-    boost::shared_ptr<ResultVariant> resultVar(static_cast<ResultVariant*>(ResultVariant::classFactory().create()));
-    return Reply(Reply::NORMAL, resultVar);
-}
-            
 template<class LeftVariant, class RightVariant>
 Reply mooshBinaryComparisonDispatch(Opcode op, std::auto_ptr<Variant> leftVar, std::auto_ptr<Variant> rightVar)
 {
+}
+
+template<class LeftVariant, class RightVariant>
+Reply mooshBinaryOpDispatch(Opcode op, std::auto_ptr<Variant> leftVar, std::auto_ptr<Variant> rightVar)
+{
+    typedef typename operator_traits<LeftVariant, RightVariant>::math_result_type MathResultVar;
+    typedef typename operator_traits<LeftVariant, RightVariant>::comparison_result_type CmpResultVar;
+
+    typename LeftVariant::value_type leftVal = static_cast<const LeftVariant&>(*leftVar).value();
+    typename RightVariant::value_type rightVal = static_cast<const RightVariant&>(*rightVar).value();
+
+    Reply reply;
+
     switch(op) {
+        case OP_ADD:
+            reply = makeReply<MathResultVar>(leftVal + rightVal);
+            break;
+
+        case OP_SUB:
+            reply = makeReply<MathResultVar>(leftVal - rightVal);
+            break;
+
+        case OP_MUL:
+            reply = makeReply<MathResultVar>(leftVal * rightVal);
+            break;
+
+        case OP_DIV:
+            reply = makeReply<MathResultVar>(leftVal / rightVal);
+            break;
+
+        case OP_MOD:
+            reply = makeReply<MathResultVar>(mooshMod(leftVal, rightVal));
+            break;
+
+        case OP_EXP:
+            reply = makeReply<MathResultVar>(mooshPow(leftVal, rightVal));
+            break;
+
         case OP_EQ:
-            value = leftVal == rightVal;
+            reply = makeReply<CmpResultVar>(leftVal == rightVal);
             break;
 
         case OP_NE:
-            value = leftVal != rightVal;
+            reply = makeReply<CmpResultVar>(leftVal != rightVal);
             break;
 
         case OP_LT:
-            value = leftVal < rightVal;
+            reply = makeReply<CmpResultVar>(leftVal < rightVal);
             break;
 
         case OP_LE:
-            value = leftVal <= rightVal;
+            reply = makeReply<CmpResultVar>(leftVal <= rightVal);
             break;
 
         case OP_GE:
-            value = leftVal >= rightVal;
+            reply = makeReply<CmpResultVar>(leftVal >= rightVal);
             break;
 
         case OP_GT:
-            value = leftVal > rightVal;
+            reply = makeReply<CmpResultVar>(leftVal > rightVal);
             break;
 
         default:
             MOOVE_THROW("Unrecognized opcode");
     }
-    
-template<class ResultVariant, class LeftVariant, class RightVariant>
-Reply mooshBinaryOpDispatch(Opcode op, std::auto_ptr<Variant> leftVar, std::auto_ptr<Variant> rightVar)
-{
-    typename ResultVariant::value_type value;
 
-    typename LeftVariant::value_type leftVal = static_cast<const LeftVariant&>(*leftVar).value();
-    typename RightVariant::value_type rightVal = static_cast<const RightVariant&>(*rightVar).value();
-
-    switch(op) {
-        case OP_ADD:
-            value = leftVal + rightVal;
-            break;
-
-        case OP_SUB:
-            value = leftVal - rightVal;
-            break;
-
-        case OP_MUL:
-            value = leftVal * rightVal;
-            break;
-
-        case OP_DIV:
-            value = leftVal / rightVal;
-            break;
-
-        case OP_MOD:
-            value = std::fmod(static_cast<DefaultRealVar::value_type>(leftVal),
-                              static_cast<DefaultRealVar::value_type>(rightVal));
-            break;
-
-        case OP_EXP:
-            value = std::pow(static_cast<DefaultRealVar::value_type>(leftVal),
-                             static_cast<DefaultRealVar::value_type>(rightVal));
-            break;
-
-
-        default:
-    }
-
-    boost::shared_ptr<ResultVariant> resultVar(static_cast<ResultVariant*>(ResultVariant::classFactory().create()));
-    return Reply(Reply::NORMAL, resultVar);
+    return reply;
 }
 
 Reply mooshStringOpDispatch(Opcode op, std::auto_ptr<Variant> leftVar, std::auto_ptr<Variant> rightVar)
 {
     const StrVar::value_type& leftVal = static_cast<const StrVar&>(*leftVar).value();
     const StrVar::value_type& rightVal = static_cast<const StrVar&>(*rightVar).value();
-    
+
     if (op != OP_ADD)
         MOOVE_THROW("Unrecognized opcode");
 
@@ -198,7 +184,7 @@ Reply mooshStringOpDispatch(Opcode op, std::auto_ptr<Variant> leftVar, std::auto
     resultVar->setValue(leftVal + rightVal);
     return Reply(Reply::NORMAL, resultVar);
 }
-    
+
 
 void registerTypes(ExecutionState& execState)
 {
@@ -211,10 +197,10 @@ void registerTypes(ExecutionState& execState)
     //execState.operatorMap().registerUnary(realType, &mooshBinaryOpDispatch<DefaultRealVar, RealVar, RealVar>);
     //execState.operatorMap().registerUnary(strType, &mooshStringOpDispatch);
 
-    execState.operatorMap().registerBinary(intType, intType, &mooshBinaryOpDispatch<DefaultIntVar, IntVar, IntVar>);
-    execState.operatorMap().registerBinary(realType, realType, &mooshBinaryOpDispatch<DefaultRealVar, RealVar, RealVar>);
-    execState.operatorMap().registerBinary(intType, realType, &mooshBinaryOpDispatch<DefaultRealVar, IntVar, RealVar>);
-    execState.operatorMap().registerBinary(realType, intType, &mooshBinaryOpDispatch<DefaultRealVar, RealVar, IntVar>);
+    execState.operatorMap().registerBinary(intType, intType, &mooshBinaryOpDispatch<IntVar, IntVar>);
+    execState.operatorMap().registerBinary(realType, realType, &mooshBinaryOpDispatch<RealVar, RealVar>);
+    execState.operatorMap().registerBinary(intType, realType, &mooshBinaryOpDispatch<IntVar, RealVar>);
+    execState.operatorMap().registerBinary(realType, intType, &mooshBinaryOpDispatch<RealVar, IntVar>);
     execState.operatorMap().registerBinary(strType, strType, &mooshStringOpDispatch);
 }
 
@@ -227,9 +213,9 @@ void registerBuiltins(ExecutionState& execState)
     execState.builtinRegistry().registerFunction("chr", &builtin_chr);
 }
 
-std::auto_ptr<Variant> evalScript(ExecutionState& execState, 
-                                  const std::string& script, 
-                                  ListVar::Container& args, 
+std::auto_ptr<Variant> evalScript(ExecutionState& execState,
+                                  const std::string& script,
+                                  ListVar::Container& args,
                                   MessageHandler& msgs,
                                   bool traceFlag = false)
 {
@@ -240,9 +226,9 @@ std::auto_ptr<Variant> evalScript(ExecutionState& execState,
         std::auto_ptr<Program> program = parser.releaseProgram();
 
         Compiler compiler(execState.typeRegistry());
-        
+
         std::auto_ptr<DebugBytecodeProgram> bc = compiler.compileDebug(*program);
-        
+
         Interpreter::VariableDefMap varDefs;
         std::string key("args");
 
@@ -253,9 +239,9 @@ std::auto_ptr<Variant> evalScript(ExecutionState& execState,
     return returnValue;
 }
 
-std::auto_ptr<Variant> evalExpr(ExecutionState& execState, 
-                                const std::string& valueStr, 
-                                MessageHandler& msgs, 
+std::auto_ptr<Variant> evalExpr(ExecutionState& execState,
+                                const std::string& valueStr,
+                                MessageHandler& msgs,
                                 bool traceFlag = false)
 {
     ListVar::Container args;
@@ -263,9 +249,9 @@ std::auto_ptr<Variant> evalExpr(ExecutionState& execState,
     return evalScript(execState, "return " + valueStr + ";", args, msgs, traceFlag);
 }
 
-void parseScriptArgs(ExecutionState& execState, 
-                     char **args, 
-                     int argCount, 
+void parseScriptArgs(ExecutionState& execState,
+                     char **args,
+                     int argCount,
                      ListVar::Container& parsedList,
                      bool traceFlag = false)
 {
@@ -292,7 +278,7 @@ int main(int argc, char **argv)
         unsigned lineOffset = 0;
         int scriptArgsIndex = -1;
         bool traceStack = false;
-        
+
         for (int i = 1; i < argc; ++i) {
             if (strcmp(argv[i], "--") == 0) {
                 scriptArgsIndex = i + 1;
@@ -312,7 +298,7 @@ int main(int argc, char **argv)
                 break;
             }
         }
-                
+
         // create a new execution state object
         ExecutionState execState;
 
@@ -337,7 +323,7 @@ int main(int argc, char **argv)
         if(scriptArgsIndex != -1) {
             parseScriptArgs(execState, &argv[scriptArgsIndex], argc - scriptArgsIndex, argContents, traceStack);
         }
-        
+
         MessageHandler msgs(0);
         std::auto_ptr<Variant> result = evalScript(execState, source, argContents, msgs, traceStack);
         if(result.get()) {

@@ -21,7 +21,7 @@ void Interpreter::clearTemps()
     for(TemporaryValues::iterator temp = m_temps.begin(); temp != end; ++temp)
         m_temps.replace(temp, 0);
 }
-   
+
 void Interpreter::defineVariables(VariableDefMap& varDefs)
 {
     MOOVE_ASSERT(m_bcDebug, "cannot set variables in a non-debug compilation");
@@ -36,7 +36,7 @@ void Interpreter::defineVariables(VariableDefMap& varDefs)
     VariableDefMap::iterator endDef = varDefs.end();
     for(VariableDefMap::iterator def = varDefs.begin(); def != endDef; ++def) {
         // if this variable exists (has a defined symbol), set the value
-        Symbol varSym = m_bcDebug->varSymTable().findSymbol(def.key());
+        Symbol varSym = m_bcDebug->varSymTable().findSymbol(def->first);
         if(varSym) {
             CodeVector::Word tempID = m_bcDebug->varIDBySymbol(varSym);
             m_temps.replace(m_temps.begin() + tempID, varDefs.release(def).release());
@@ -77,7 +77,7 @@ void Interpreter::lengthList()
 {
     std::auto_ptr<ListVar> listVar = popStack<ListVar>();
     IntVar::value_type size = listVar->contents()->size();
-    
+
     pushStack(listVar);
     pushStack(std::auto_ptr<Variant>(m_execState->intFactory().createValue(size)));
 }
@@ -97,7 +97,7 @@ void Interpreter::indexList()
     std::auto_ptr<IntVar> indexVar(popStack<IntVar>());
     std::auto_ptr<ListVar> listVar(popStack<ListVar>());
 
-    
+
     MOOVE_ASSERT(indexVar->value() >= 1 && indexVar->value() <= listVar->contents()->size(), "index out of range");
 
     pushStack(std::auto_ptr<Variant>((*listVar->contents())[indexVar->value() - 1]->clone()));
@@ -108,12 +108,12 @@ void Interpreter::setIndexList()
     std::auto_ptr<Variant> valueVar = popStack<Variant>();
     std::auto_ptr<IntVar> indexVar = popStack<IntVar>();
     std::auto_ptr<ListVar> listVar = popStack<ListVar>();
-    
+
     MOOVE_ASSERT(indexVar->value() >= 1 && indexVar->value() <= listVar->contents()->size(), "index out of range");
 
     listVar->setIndex(indexVar->value() - 1, boost::shared_ptr<Variant>(valueVar));
     pushStack(listVar);
-}    
+}
 
 void Interpreter::rangeList()
 {
@@ -161,10 +161,10 @@ void Interpreter::stepInstruction()
             if(opInfo.isUnaryOp()) {
                 std::auto_ptr<Variant> operand(popStack<Variant>());
 
-                boost::shared_ptr<OperatorPackage> opPkg = m_execState->operatorMap().findUnary(operand->factory().regEntry());
-                MOOVE_ASSERT(opPkg, "unhandled unary operation");
+                OperatorMap::UnaryDispatch dispatch = m_execState->operatorMap().findUnary(operand->factory().regEntry());
+                MOOVE_ASSERT(dispatch != 0, "unhandled unary operation");
 
-                reply = opPkg->doUnaryOp(op, operand);
+                reply = dispatch(op, operand);
                 MOOVE_ASSERT(reply.normal(), "error occured in unary operation");
 
                 pushStack(std::auto_ptr<Variant>(reply.value()->clone()));
@@ -172,14 +172,13 @@ void Interpreter::stepInstruction()
                 std::auto_ptr<Variant> rightOperand(popStack<Variant>());
                 std::auto_ptr<Variant> leftOperand(popStack<Variant>());
 
-                boost::shared_ptr<OperatorPackage> opPkg;
-                opPkg = m_execState->operatorMap().findBinary(leftOperand->factory().regEntry(), 
-                                                              rightOperand->factory().regEntry());
-                MOOVE_ASSERT(opPkg != 0, "unhandled binary operation");
+                OperatorMap::BinaryDispatch dispatch = m_execState->operatorMap().findBinary(leftOperand->factory().regEntry(),
+                                                                                             rightOperand->factory().regEntry());
+                MOOVE_ASSERT(dispatch != 0, "unhandled binary operation");
 
-                reply = opPkg->doBinaryOp(op, leftOperand, rightOperand);
+                reply = dispatch(op, leftOperand, rightOperand);
                 MOOVE_ASSERT(reply.normal(), "error occured in binary operation");
-	    
+
                 pushStack(std::auto_ptr<Variant>(reply.value()->clone()));
             } else {
                 CodeVector::Word imm;
@@ -192,7 +191,7 @@ void Interpreter::stepInstruction()
                         imm = m_curVect->unpackWord(m_execPos, m_bc->immediateSize(opInfo.immediateType()));
                         m_execPos += m_bc->immediateSize(opInfo.immediateType());
                     }
-                }		       
+                }
 
                 switch(op) {
                     case OP_DONE:
@@ -217,7 +216,7 @@ void Interpreter::stepInstruction()
                     case OP_RETURN:
                         m_retVal = popStack<Variant>();
                         break;
-		    
+
                     case OP_PUSH_LITERAL:
                         // don't push a value if it will be immediately popped
                         if (execFinished() || *m_execPos != OP_POP) {
@@ -228,7 +227,7 @@ void Interpreter::stepInstruction()
                         }
 
                         break;
-	    
+
                     case OP_PUSH:
                         MOOVE_ASSERT(imm < m_temps.size(), "temporary ID out of range");
                         MOOVE_ASSERT(!m_temps.is_null(imm), "undefined variable");
@@ -251,7 +250,7 @@ void Interpreter::stepInstruction()
                     case OP_POP:
                         popStack<Variant>();
                         break;
-                    
+
                     case OP_INDEX:
                         indexList();
                         break;
