@@ -1,0 +1,289 @@
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Tue Dec 27 17:52:22 2005
+;; Emacs version 21.4 (patch 17) "Jumbo Shrimp" XEmacs Lucid
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq search-ring '(">=" "emitImmWithoutCounting" "emitImm(" "#if 0" "not<" "Logic" "Arith" "doUnaryOp" "Base" "doUnary" "ArithmeticOperators" "GER" "NOT" "NEG" "Arith" "set_variant"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+
+;; Buffer section:
+(desktop-create-buffer 205
+  "/home/kurt/boost_1_33_0/boost/shared_ptr.hpp"
+  "shared_ptr.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode)
+  3159
+  '(nil nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/moosh/src/Makefile"
+  "Makefile<2>"
+  'makefile-mode
+  '(line-number-mode column-number-mode font-lock-mode p4-mode)
+  371
+  '(nil nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/src/codevect.cpp"
+  "codevect.cpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  226
+  '(nil nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/src/compiler.cpp"
+  "compiler.cpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  764
+  '(1 nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/src/Makefile"
+  "Makefile"
+  'makefile-mode
+  '(line-number-mode column-number-mode font-lock-mode p4-mode)
+  677
+  '(202 nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/disassembler.hpp"
+  "disassembler.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  883
+  '(nil nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/moosh/src/disasm.cpp"
+  "disasm.cpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  1072
+  '(nil nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/interpreter.hpp"
+  "interpreter.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  2147
+  '(2145 nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/strvar.hpp"
+  "strvar.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  1163
+  '(nil nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/variant.hpp"
+  "variant.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  1
+  '(nil nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/value_stack.hpp"
+  "value_stack.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode)
+  380
+  '(nil nil)
+  nil
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/op_package.hpp"
+  "op_package.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  395
+  '(nil nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/memory.hpp"
+  "memory.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  862
+  '(862 nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/except.hpp"
+  "except.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  1
+  '(nil nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/op_map.hpp"
+  "op_map.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  953
+  '(275 nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/src/interpreter.cpp"
+  "interpreter.cpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  4325
+  '(2054 nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/src/op_map.cpp"
+  "op_map.cpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  930
+  '(360 nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/task_frame.hpp"
+  "task_frame.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  409
+  '(nil nil)
+  nil
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/src/reply.cpp"
+  "reply.cpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  193
+  '(193 nil)
+  t
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/reply.hpp"
+  "reply.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  1453
+  '(nil nil)
+  nil
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/src/opcodes.cpp"
+  "opcodes.cpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  3751
+  '(1 nil)
+  nil
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/opcodes.hpp"
+  "opcodes.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  3529
+  '(3544 nil)
+  nil
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/moosh/src/moosh.cpp"
+  "moosh.cpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  4307
+  '(2753 nil)
+  nil
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/op_wrappers.hpp"
+  "op_wrappers.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  816
+  '(79 nil)
+  nil
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 205
+  "/home/kurt/perforce/moove/include/default_ops.hpp"
+  "default_ops.hpp"
+  'c++-mode
+  '(abbrev-mode line-number-mode column-number-mode font-lock-mode p4-mode)
+  1
+  '(19958 nil)
+  nil
+  nil
+  '((overwrite-mode) (fill-column . 70) (case-fold-search . t) (truncate-lines)))
+

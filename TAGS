@@ -1,0 +1,2106 @@
+
+examples/ast_viewer/graphviz_visitor.cpp,2084
+unsigned GraphvizVisitor::Node::s_nodeCount 6,110
+const char* GraphvizVisitor::PROGRAM_SHAPE 8,160
+const char* GraphvizVisitor::EXPR_SHAPE 9,214
+const char* GraphvizVisitor::STMT_SHAPE 10,267
+const char* GraphvizVisitor::INFO_SHAPE 11,320
+const char* GraphvizVisitor::VALUE_SHAPE 12,369
+std::string GraphvizVisitor::escapeStr(14,424
+void GraphvizVisitor::outputNodeDecl(33,869
+void GraphvizVisitor::outputEdgeTo(41,1066
+void GraphvizVisitor::outputEdgeToType(51,1298
+void GraphvizVisitor::beginParent(66,1697
+void GraphvizVisitor::endParent(76,1985
+void GraphvizVisitor::outputUnaryOp(81,2053
+void GraphvizVisitor::outputBinaryOp(89,2235
+void GraphvizVisitor::acceptBody(98,2448
+void GraphvizVisitor::outputID(105,2574
+void GraphvizVisitor::visit(111,2672
+void GraphvizVisitor::visit(129,3028
+void GraphvizVisitor::visit(134,3158
+void GraphvizVisitor::visit(139,3303
+void GraphvizVisitor::visit(144,3428
+void GraphvizVisitor::visit(149,3558
+void GraphvizVisitor::visit(156,3706
+void GraphvizVisitor::visit(161,3831
+void GraphvizVisitor::visit(168,3990
+   typedef Expr::Scatter::Target Target;Target170,4057
+void GraphvizVisitor::visit(193,4537
+void GraphvizVisitor::visit(202,4768
+void GraphvizVisitor::visit(210,4955
+void GraphvizVisitor::visit(219,5176
+void GraphvizVisitor::visit(236,5476
+void GraphvizVisitor::visit(244,5659
+void GraphvizVisitor::visit(257,5927
+void GraphvizVisitor::visit(264,6090
+void GraphvizVisitor::visit(276,6332
+void GraphvizVisitor::visit(288,6575
+void GraphvizVisitor::visit(293,6679
+void GraphvizVisitor::visit(302,6881
+void GraphvizVisitor::visit(314,7152
+void GraphvizVisitor::visit(323,7365
+void GraphvizVisitor::visit(332,7575
+void GraphvizVisitor::visit(342,7820
+void GraphvizVisitor::visit(350,8007
+void GraphvizVisitor::visit(368,8350
+void GraphvizVisitor::visit(376,8540
+void GraphvizVisitor::visit(385,8748
+void GraphvizVisitor::visit(393,8937
+void GraphvizVisitor::visit(405,9222
+void GraphvizVisitor::visit(415,9413
+void GraphvizVisitor::visit(422,9570
+void GraphvizVisitor::visit(429,9715
+
+examples/ast_viewer/graphviz_visitor.hpp,1979
+#define GRAPHVIZ_VISITOR_HPP3,86
+class GraphvizVisitor GraphvizVisitor16,284
+   class Node GraphvizVisitor::Node18,337
+      Node(GraphvizVisitor::Node::Node26,464
+      const std::string& label(GraphvizVisitor::Node::label30,609
+      unsigned id(GraphvizVisitor::Node::id34,718
+      static void resetCount(GraphvizVisitor::Node::resetCount38,798
+   typedef std::list<Node> NodeStack;GraphvizVisitor::NodeStack42,863
+   void acceptAll(GraphvizVisitor::acceptAll54,1305
+   static std::string toString(GraphvizVisitor::toString95,2793
+   GraphvizVisitor(GraphvizVisitor::GraphvizVisitor106,3005
+   void visit(GraphvizVisitor::visit128,3434
+   void visit(GraphvizVisitor::visit131,3513
+   void visit(GraphvizVisitor::visit134,3601
+   void visit(GraphvizVisitor::visit137,3692
+   void visit(GraphvizVisitor::visit140,3784
+   void visit(GraphvizVisitor::visit143,3876
+   void visit(GraphvizVisitor::visit146,3972
+   void visit(GraphvizVisitor::visit149,4068
+   void visit(GraphvizVisitor::visit152,4144
+   void visit(GraphvizVisitor::visit155,4224
+   void visit(GraphvizVisitor::visit158,4312
+   void visit(GraphvizVisitor::visit161,4413
+   void visit(GraphvizVisitor::visit164,4497
+   void visit(GraphvizVisitor::visit167,4602
+   void visit(GraphvizVisitor::visit170,4719
+   void visit(GraphvizVisitor::visit173,4815
+   void visit(GraphvizVisitor::visit176,4891
+   void visit(GraphvizVisitor::visit179,4971
+   void visit(GraphvizVisitor::visit182,5051
+   void visit(GraphvizVisitor::visit185,5131
+   void visit(GraphvizVisitor::visit188,5211
+   void visit(GraphvizVisitor::visit191,5294
+   void visit(GraphvizVisitor::visit194,5374
+   void visit(GraphvizVisitor::visit197,5466
+   void visit(GraphvizVisitor::visit200,5567
+   void visit(GraphvizVisitor::visit203,5668
+   void visit(GraphvizVisitor::visit206,5769
+   void visit(GraphvizVisitor::visit209,5870
+   void visit(GraphvizVisitor::visit212,5971
+
+examples/ast_viewer/main.cpp,138
+struct MyMessages MyMessages12,203
+   void error(MyMessages::error13,247
+   void warning(MyMessages::warning18,388
+int main(24,536
+
+examples/syntax_highlighter/main.cpp,6314
+struct MyMessages MyMessages29,501
+   void error(MyMessages::error30,545
+   void warning(MyMessages::warning35,671
+class IndentManip IndentManip41,804
+   IndentManip(IndentManip::IndentManip48,913
+   unsigned indentSize(IndentManip::indentSize51,950
+   void beginBlock(IndentManip::beginBlock54,1019
+   void endBlock(IndentManip::endBlock57,1059
+basic_ostream<CharT,62,1136
+basic_ostream<CharT, Traits>& operator << 62,1136
+class TestSyntaxHighlighter TestSyntaxHighlighter69,1303
+   unsigned encodeColor(TestSyntaxHighlighter::encodeColor73,1398
+   string buildStr(TestSyntaxHighlighter::buildStr104,1938
+   TestSyntaxHighlighter(TestSyntaxHighlighter::TestSyntaxHighlighter123,2292
+   bool colorize(TestSyntaxHighlighter::colorize135,2908
+   void enableColor(TestSyntaxHighlighter::enableColor138,2959
+   string highlight(TestSyntaxHighlighter::highlight141,3032
+class TestVisitor TestVisitor150,3221
+   struct PrecedenceInfo TestVisitor::PrecedenceInfo152,3270
+      enum Precedence TestVisitor::PrecedenceInfo::Precedence153,3297
+	 PREC_NONE,TestVisitor::PrecedenceInfo::Precedence::PREC_NONE154,3321
+	 PREC_ASSIGN,TestVisitor::PrecedenceInfo::Precedence::PREC_ASSIGN155,3334
+	 PREC_CONDITIONAL,TestVisitor::PrecedenceInfo::Precedence::PREC_CONDITIONAL156,3349
+	 PREC_LOGICAL,TestVisitor::PrecedenceInfo::Precedence::PREC_LOGICAL157,3369
+	 PREC_COMPARISON,TestVisitor::PrecedenceInfo::Precedence::PREC_COMPARISON158,3385
+	 PREC_ADDITIVE,TestVisitor::PrecedenceInfo::Precedence::PREC_ADDITIVE159,3404
+	 PREC_MULTIPLICATIVE,TestVisitor::PrecedenceInfo::Precedence::PREC_MULTIPLICATIVE160,3421
+	 PREC_EXPONENTIAL,TestVisitor::PrecedenceInfo::Precedence::PREC_EXPONENTIAL161,3444
+	 PREC_UNARY,TestVisitor::PrecedenceInfo::Precedence::PREC_UNARY162,3464
+	 PREC_POSTFIX,TestVisitor::PrecedenceInfo::Precedence::PREC_POSTFIX163,3478
+	 PREC_PRIMARYTestVisitor::PrecedenceInfo::Precedence::PREC_PRIMARY164,3494
+      enum ParenRule TestVisitor::PrecedenceInfo::ParenRule167,3519
+	 PAREN_NONE,TestVisitor::PrecedenceInfo::ParenRule::PAREN_NONE168,3542
+	 PAREN_NONE, PAREN_LESS,TestVisitor::PrecedenceInfo::ParenRule::PAREN_LESS168,3542
+	 PAREN_NONE, PAREN_LESS, PAREN_LESS_OR_EQUALTestVisitor::PrecedenceInfo::ParenRule::PAREN_LESS_OR_EQUAL168,3542
+   static bool isIDSuffix(TestVisitor::isIDSuffix181,3785
+   void outputParen(TestVisitor::outputParen184,3861
+   void beginExpr(TestVisitor::beginExpr195,4223
+   void endExpr(TestVisitor::endExpr202,4438
+   void beginStmt(TestVisitor::beginStmt210,4588
+   void endStmt(TestVisitor::endStmt217,4750
+   void acceptNA(TestVisitor::acceptNA222,4811
+   void acceptNA(TestVisitor::acceptNA229,4972
+   void acceptLT(TestVisitor::acceptLT234,5035
+   void acceptLE(TestVisitor::acceptLE240,5175
+   string escapeStr(TestVisitor::escapeStr246,5324
+   void listExpansion(TestVisitor::listExpansion266,5767
+   void preUnaryExpr(TestVisitor::preUnaryExpr278,5974
+   void postUnaryExpr(TestVisitor::postUnaryExpr286,6181
+   void binaryExprLeft(TestVisitor::binaryExprLeft294,6389
+   void binaryExprRight(TestVisitor::binaryExprRight307,6775
+   void binaryExprNA(TestVisitor::binaryExprNA318,7044
+   void outputPropOrVerbName(TestVisitor::outputPropOrVerbName329,7318
+   void acceptAll(TestVisitor::acceptAll347,7831
+   void acceptBlock(TestVisitor::acceptBlock354,8028
+   TestVisitor(TestVisitor::TestVisitor362,8173
+   void visit(TestVisitor::visit367,8275
+   void visit(TestVisitor::visit373,8378
+   void visit(TestVisitor::visit382,8615
+   void visit(TestVisitor::visit391,8864
+   void visit(TestVisitor::visit398,9056
+   void visit(TestVisitor::visit414,9433
+   void visit(TestVisitor::visit423,9701
+   void visit(TestVisitor::visit430,9871
+   void visit(TestVisitor::visit440,10156
+      typedef Expr::Scatter::Target Target;TestVisitor::Target442,10212
+   void visit(TestVisitor::visit465,10692
+   void visit(TestVisitor::visit468,10762
+   void visit(TestVisitor::visit471,10835
+   void visit(TestVisitor::visit474,10908
+   void visit(TestVisitor::visit477,10982
+   void visit(TestVisitor::visit480,11056
+   void visit(TestVisitor::visit483,11132
+   void visit(TestVisitor::visit486,11208
+   void visit(TestVisitor::visit489,11310
+   void visit(TestVisitor::visit492,11413
+   void visit(TestVisitor::visit495,11527
+   void visit(TestVisitor::visit498,11639
+   void visit(TestVisitor::visit501,11746
+   void visit(TestVisitor::visit504,11859
+   void visit(TestVisitor::visit507,11975
+   void visit(TestVisitor::visit510,12085
+   void visit(TestVisitor::visit518,12263
+   void visit(TestVisitor::visit521,12367
+   void visit(TestVisitor::visit524,12471
+   void visit(TestVisitor::visit527,12581
+   void visit(TestVisitor::visit530,12690
+   void visit(TestVisitor::visit533,12803
+   void visit(TestVisitor::visit536,12910
+   void visit(TestVisitor::visit539,13013
+   void visit(TestVisitor::visit542,13119
+   void visit(TestVisitor::visit545,13225
+   void visit(TestVisitor::visit548,13331
+   void visit(TestVisitor::visit551,13437
+   void visit(TestVisitor::visit554,13543
+   void visit(TestVisitor::visit557,13649
+   void visit(TestVisitor::visit568,13987
+   void visit(TestVisitor::visit578,14249
+   void visit(TestVisitor::visit590,14582
+   void visit(TestVisitor::visit611,15149
+   void visit(TestVisitor::visit620,15383
+   void visit(TestVisitor::visit627,15578
+   void visit(TestVisitor::visit637,15915
+   void visit(TestVisitor::visit649,16316
+   void visit(TestVisitor::visit658,16620
+   void visit(TestVisitor::visit666,16786
+   void visit(TestVisitor::visit678,17160
+   void visit(TestVisitor::visit694,17557
+   void visit(TestVisitor::visit710,18020
+   void visit(TestVisitor::visit723,18456
+   void visit(TestVisitor::visit738,18943
+   void visit(TestVisitor::visit748,19232
+   void visit(TestVisitor::visit758,19601
+   void visit(TestVisitor::visit769,19958
+   void visit(TestVisitor::visit782,20388
+   void visit(TestVisitor::visit796,20814
+   void visit(TestVisitor::visit810,21181
+   void visit(TestVisitor::visit824,21468
+   void visit(TestVisitor::visit836,21755
+   void visit(TestVisitor::visit848,22027
+int main(858,22225
+
+include/ast_base.hpp,599
+#define MOOVE_AST_BASE_HPP7,163
+namespace Moove Moove12,238
+struct ASTPoolObject Moove::ASTPoolObject15,301
+   virtual ~ASTPoolObject(Moove::ASTPoolObject::~ASTPoolObject16,324
+struct ASTAutoContainer ASTAutoContainer22,434
+struct ASTPoolPtr ASTPoolPtr27,536
+   explicit ASTPoolPtr(ASTPoolPtr::ASTPoolPtr28,604
+   ASTPoolPtr(ASTPoolPtr::ASTPoolPtr31,670
+   ASTPoolPtr(ASTPoolPtr::ASTPoolPtr35,756
+   ASTPoolPtr<T>& operator = ASTPoolPtr::operator =38,824
+   ASTPoolPtr<T>& operator = ASTPoolPtr::operator =45,971
+typedef MemoryPool<ASTPoolObject> ASTMemPool;ASTMemPool52,1100
+
+include/ast_visitor.hpp,174
+#define MOOVE_AST_VISITOR_HPP6,104
+namespace Moove Moove13,206
+struct ASTVisitor Moove::ASTVisitor33,1027
+   virtual ~ASTVisitor(Moove::ASTVisitor::~ASTVisitor34,1047
+
+include/bc_program.hpp,758
+#define MOOVE_BC_PROGRAM_HPP5,46
+namespace Moove Moove17,293
+class BytecodeProgram Moove::BytecodeProgram20,392
+    typedef DynamicArray<CodeVector>	ForkVector;Moove::BytecodeProgram::ForkVector22,424
+    typedef boost::ptr_vector<Variant>   LiteralVector;Moove::BytecodeProgram::LiteralVector24,474
+    virtual ~BytecodeProgram(Moove::BytecodeProgram::~BytecodeProgram43,1044
+    const CodeVector& forkVector(Moove::BytecodeProgram::forkVector46,1083
+class DebugBytecodeProgram DebugBytecodeProgram55,1342
+    typedef std::vector<Symbol>		SymbolIDMap;DebugBytecodeProgram::SymbolIDMap57,1404
+    const SymbolTable& varSymTable(DebugBytecodeProgram::varSymTable72,1790
+    Symbol varSymbolByID(DebugBytecodeProgram::varSymbolByID75,1863
+
+include/ci_string.hpp,884
+#define MOOVE_CI_STRING_HPP6,102
+namespace Moove Moove11,168
+struct ci_char_traits Moove::ci_char_traits14,209
+   static bool eq(Moove::ci_char_traits::eq15,266
+   static bool ne(Moove::ci_char_traits::ne20,380
+   static bool lt(Moove::ci_char_traits::lt25,494
+   static int compare(Moove::ci_char_traits::compare30,607
+   static const CharT* find(Moove::ci_char_traits::find39,799
+struct ltchari ltchari50,1010
+   bool operator() ltchari::operator()51,1075
+struct eqchari eqchari56,1231
+   bool operator() eqchari::operator()57,1296
+typedef std::basic_string<char,char61,1391
+typedef std::basic_string<char, ci_char_traits<char> > ci_string;ci_string61,1391
+typedef std::basic_string<wchar_t,wchar_t62,1457
+typedef std::basic_string<wchar_t, ci_char_traits<wchar_t> > ci_wstring;ci_wstring62,1457
+std::basic_ostream<CharT,65,1567
+operator << 66,1602
+
+include/codevect.hpp,400
+#define MOOVE_CODEVECT_HPP6,101
+namespace Moove Moove10,159
+class CodeVector Moove::CodeVector13,228
+   typedef unsigned char     Byte;Moove::CodeVector::Byte15,292
+   typedef size_type         Word;Moove::CodeVector::Word16,327
+   CodeVector(Moove::CodeVector::CodeVector22,419
+   CodeVector(Moove::CodeVector::CodeVector25,442
+   Word unpackWord(Moove::CodeVector::unpackWord50,1359
+
+include/compare.hpp,131
+#define MOOVE_COMPARE_HPP6,100
+namespace Moove Moove8,127
+int compare_3way(Moove::compare_3way19,426
+int compare_3way(37,896
+
+include/compiler.hpp,851
+#define MOOVE_COMPILER_HPP6,101
+namespace Moove Moove27,528
+class Compiler Moove::Compiler33,623
+    typedef CodeVector::Word	Word;Moove::Compiler::Word35,669
+    typedef CodeVector::Byte	Byte;Moove::Compiler::Byte37,709
+    typedef Word			Temp;Moove::Compiler::Temp39,745
+    typedef std::vector<Byte>	TempCodeVector;Moove::Compiler::TempCodeVector41,771
+    typedef std::map<Symbol, Temp> VarTable;Moove::Compiler::VarTable43,818
+    typedef std::deque<boost::shared_ptr<ImmediateValue> > ImmediateList;Moove::Compiler::ImmediateList45,864
+    typedef BytecodeProgram::LiteralVector       LiteralValues;Moove::Compiler::LiteralValues47,939
+    Word currentAddr(Moove::Compiler::currentAddr67,1479
+    void acceptAll(Moove::Compiler::acceptAll111,2502
+    typedef Exception CompileError;Moove::Compiler::CompileError148,3506
+
+include/deref.hpp,439
+#define MOOVE_DEREF_FUNCTORS_HPP7,179
+namespace Moove Moove12,257
+struct BinaryDerefOp Moove::BinaryDerefOp26,727
+   ABF::result_type operator () Moove::BinaryDerefOp::operator ()29,838
+struct DerefLess : public BinaryDerefOp<T,T35,999
+struct DerefLess : public BinaryDerefOp<T, std::less<T>T35,999
+struct DerefEqualTo : public BinaryDerefOp<T,T40,1133
+struct DerefEqualTo : public BinaryDerefOp<T, std::equal_to<T>T40,1133
+
+include/disassembler.hpp,280
+#define MOOVE_DISASSEMBLER_HPP5,48
+namespace Moove Moove16,221
+void displayBytes(Moove::displayBytes21,340
+void displayImmDefault(41,1243
+void displayImm(54,1693
+void displayImm(63,1980
+void disassembleIntern(81,2481
+void disassemble(126,4165
+void disassemble(132,4328
+
+include/dynamic_array.hpp,2042
+#define MOOVE_DYNAMIC_ARRAY_HPP5,49
+namespace Moove Moove15,217
+class DynamicArray Moove::DynamicArray24,546
+   typedef T            value_type;Moove::DynamicArray::value_type26,575
+   typedef T&           reference;Moove::DynamicArray::reference27,611
+   typedef const T&     const_reference;Moove::DynamicArray::const_reference28,646
+   typedef T*           iterator;Moove::DynamicArray::iterator29,687
+   typedef const T*     const_iterator;Moove::DynamicArray::const_iterator30,721
+   typedef ptrdiff_t    difference_type;Moove::DynamicArray::difference_type31,761
+   typedef size_t       size_type;Moove::DynamicArray::size_type32,802
+   typedef std::reverse_iterator<iterator>              reverse_iterator;Moove::DynamicArray::reverse_iterator34,838
+   typedef std::reverse_iterator<const_iterator>        const_reverse_iterator;Moove::DynamicArray::const_reverse_iterator35,912
+   T* getAt(Moove::DynamicArray::getAt41,1084
+   const T* getAt(Moove::DynamicArray::getAt46,1166
+   DynamicArray(Moove::DynamicArray::DynamicArray52,1267
+   DynamicArray(Moove::DynamicArray::DynamicArray55,1316
+   DynamicArray(Moove::DynamicArray::DynamicArray61,1468
+   iterator begin(Moove::DynamicArray::begin67,1613
+   iterator end(Moove::DynamicArray::end70,1658
+   const_iterator begin(Moove::DynamicArray::begin73,1706
+   const_iterator end(Moove::DynamicArray::end76,1762
+   size_type size(Moove::DynamicArray::size79,1821
+   bool empty(Moove::DynamicArray::empty82,1869
+   size_type max_size(Moove::DynamicArray::max_size85,1918
+   void resize(Moove::DynamicArray::resize88,2001
+   void swap(Moove::DynamicArray::swap97,2246
+   T& at(Moove::DynamicArray::at103,2359
+   const T& at(Moove::DynamicArray::at111,2497
+   T& operator [] Moove::DynamicArray::operator []119,2646
+   const T& operator [] Moove::DynamicArray::operator []122,2705
+   DynamicArray& operator = Moove::DynamicArray::operator =125,2775
+bool operator == 140,3129
+bool operator != 144,3310
+bool operator < 148,3429
+
+include/except.hpp,692
+#define MOOVE_EXCEPT_HPP6,99
+#define MOOVE_ASSERT_USE_PRETTY_FUNCTION13,203
+# define MOOVE_ASSERT_FUNCTION 16,285
+# define MOOVE_ASSERT_FUNCTION 18,378
+# define MOOVE_ASSERT_FUNCTION 20,460
+# define MOOVE_ASSERT_FUNCTION 22,512
+#define MOOVE_THROW_CLASS(MOOVE_THROW_CLASS25,563
+#define MOOVE_THROW(MOOVE_THROW28,680
+#define MOOVE_ASSERT(MOOVE_ASSERT31,750
+namespace Moove Moove35,838
+class Exception Moove::Exception37,857
+   Exception(Moove::Exception::Exception42,939
+   Exception(Moove::Exception::Exception45,1004
+   Exception(Moove::Exception::Exception53,1250
+   ~Exception(Moove::Exception::~Exception61,1498
+   const char* what(Moove::Exception::what64,1529
+
+include/expr_ast.hpp,7924
+#define MOOVE_EXPR_AST_HPP7,132
+namespace Moove Moove16,268
+namespace Expr Moove::Expr21,369
+typedef ASTAutoContainer<std::vector<Expr*> > ArgList;Moove::Expr::ArgList33,691
+struct Expr Moove::Expr::Expr36,789
+   virtual ~Expr(Moove::Expr::Expr::~Expr37,826
+   virtual bool assignable(Moove::Expr::Expr::assignable47,1156
+   virtual void accept(Moove::Expr::Expr::accept54,1324
+class Integer Integer58,1451
+   Integer(Integer::Integer67,1633
+   int value(Integer::value74,1786
+   void accept(Integer::accept77,1830
+class Objnum Objnum81,1956
+   Objnum(Objnum::Objnum90,2161
+   int objnum(Objnum::objnum97,2331
+   void accept(Objnum::accept100,2377
+class Str Str108,2528
+   Str(Str::Str117,2724
+   const std::string& str(Str::str124,2897
+   void accept(Str::accept127,2953
+class Real Real135,3121
+   Real(Real::Real144,3310
+   const double& value(Real::value151,3467
+   void accept(Real::accept154,3522
+class List List162,3679
+   List(List::List171,3903
+   const ArgList& elements(List::elements178,4095
+   void accept(List::accept181,4157
+class Variable Variable189,4310
+   Variable(Variable::Variable198,4506
+   Symbol id(Variable::id205,4673
+   bool assignable(Variable::assignable208,4714
+   void accept(Variable::accept211,4761
+class Scatter Scatter215,4868
+   class Target Scatter::Target218,4968
+      enum Type Scatter::Target::Type221,5052
+	 REQUIRED,Scatter::Target::Type::REQUIRED222,5070
+	 OPTIONAL,Scatter::Target::Type::OPTIONAL223,5117
+	 REST Scatter::Target::Type::REST225,5221
+      Target(Scatter::Target::Target244,5913
+      bool hasDefault(Scatter::Target::hasDefault259,6437
+      Type type(Scatter::Target::type266,6601
+      Symbol id(Scatter::Target::id273,6823
+      const Expr& expr(Scatter::Target::expr285,7176
+      void accept(Scatter::Target::accept292,7358
+   typedef ASTAutoContainer<std::vector<Target*> > TargetList;Scatter::TargetList296,7463
+   Scatter(Scatter::Scatter306,7724
+   const TargetList& targets(Scatter::targets313,7899
+   void accept(Scatter::accept316,7962
+class UnaryExpr UnaryExpr320,8045
+   UnaryExpr(UnaryExpr::UnaryExpr329,8253
+   const Expr& operand(UnaryExpr::operand336,8420
+struct Not Not341,8522
+   Not(Not::Not346,8672
+   void accept(Not::accept349,8736
+struct Negate Negate353,8834
+   Negate(Negate::Negate358,8990
+   void accept(Negate::accept361,9057
+struct Splice Splice365,9146
+   Splice(Splice::Splice370,9302
+   void accept(Splice::accept373,9369
+struct PreInc PreInc377,9468
+   PreInc(PreInc::PreInc382,9624
+   void accept(PreInc::accept385,9691
+struct PreDec PreDec389,9790
+   PreDec(PreDec::PreDec394,9946
+   void accept(PreDec::accept397,10013
+struct PostInc PostInc401,10113
+   PostInc(PostInc::PostInc406,10271
+   void accept(PostInc::accept409,10339
+struct PostDec PostDec413,10439
+   PostDec(PostDec::PostDec418,10597
+   void accept(PostDec::accept421,10665
+class BinaryExpr BinaryExpr425,10750
+   BinaryExpr(BinaryExpr::BinaryExpr436,11043
+   const Expr& left(BinaryExpr::left444,11249
+   const Expr& right(BinaryExpr::right451,11399
+struct Or Or456,11500
+   Or(Or::Or462,11701
+   void accept(Or::accept466,11799
+struct And And470,11891
+   And(And::And476,12094
+   void accept(And::accept480,12193
+struct Equal Equal484,12294
+   Equal(Equal::Equal490,12501
+   void accept(Equal::accept494,12602
+struct NotEqual NotEqual498,12705
+   NotEqual(NotEqual::NotEqual504,12918
+   void accept(NotEqual::accept508,13022
+struct Less Less512,13122
+   Less(Less::Less518,13327
+   void accept(Less::accept522,13427
+struct LessEqual LessEqual526,13537
+   LessEqual(LessEqual::LessEqual532,13752
+   void accept(LessEqual::accept536,13857
+struct GreaterEqual GreaterEqual540,13970
+   GreaterEqual(GreaterEqual::GreaterEqual546,14191
+   void accept(GreaterEqual::accept550,14299
+struct Greater Greater554,14402
+   Greater(Greater::Greater560,14613
+   void accept(Greater::accept564,14716
+struct In In568,14812
+   In(In::In574,15013
+   void accept(In::accept578,15111
+struct Add Add582,15200
+   Add(Add::Add588,15403
+   void accept(Add::accept592,15502
+struct Sub Sub596,15592
+   Sub(Sub::Sub602,15795
+   void accept(Sub::accept606,15894
+struct Mul Mul610,15988
+   Mul(Mul::Mul616,16191
+   void accept(Mul::accept620,16290
+struct Div Div624,16378
+   Div(Div::Div630,16581
+   void accept(Div::accept634,16680
+struct Mod Mod638,16767
+   Mod(Mod::Mod644,16970
+   void accept(Mod::accept648,17069
+struct Exp Exp652,17161
+   Exp(Exp::Exp658,17364
+   void accept(Exp::accept662,17463
+struct Assign Assign666,17554
+   Assign(Assign::Assign672,17763
+   void accept(Assign::accept676,17865
+struct AddEqual AddEqual680,17966
+   AddEqual(AddEqual::AddEqual686,18179
+   void accept(AddEqual::accept690,18283
+struct SubEqual SubEqual694,18386
+   SubEqual(SubEqual::SubEqual700,18599
+   void accept(SubEqual::accept704,18703
+struct MulEqual MulEqual708,18809
+   MulEqual(MulEqual::MulEqual714,19022
+   void accept(MulEqual::accept718,19126
+struct DivEqual DivEqual722,19226
+   DivEqual(DivEqual::DivEqual728,19439
+   void accept(DivEqual::accept732,19543
+struct ModEqual ModEqual736,19642
+   ModEqual(ModEqual::ModEqual742,19855
+   void accept(ModEqual::accept746,19959
+struct ExpEqual ExpEqual750,20063
+   ExpEqual(ExpEqual::ExpEqual756,20276
+   void accept(ExpEqual::accept760,20380
+class Conditional Conditional764,20475
+   Conditional(Conditional::Conditional777,20895
+   const Expr& test(Conditional::test787,21174
+   const Expr& trueExpr(Conditional::trueExpr794,21355
+   const Expr& falseExpr(Conditional::falseExpr801,21546
+   void accept(Conditional::accept804,21607
+class Index Index808,21699
+   Index(Index::Index819,21980
+   const Expr& expr(Index::expr827,22173
+   const Expr& index(Index::index834,22323
+   bool assignable(Index::assignable837,22376
+   void accept(Index::accept840,22423
+class Range Range844,22522
+   Range(Range::Range857,22904
+   const Expr& expr(Range::expr866,23138
+   const Expr& start(Range::start873,23320
+   const Expr& end(Range::end880,23497
+   bool assignable(Range::assignable883,23546
+   void accept(Range::accept886,23593
+class Catch Catch890,23691
+   Catch(Catch::Catch905,24246
+   bool hasExceptValue(Catch::hasExceptValue916,24592
+   const Expr& expr(Catch::expr923,24813
+   const ArgList& codes(Catch::codes931,25024
+   const Expr& exceptValue(Catch::exceptValue944,25419
+   void accept(Catch::accept947,25484
+class Prop Prop951,25584
+   Prop(Prop::Prop962,25864
+   const Expr& object(Prop::object970,26115
+   const Expr& name(Prop::name977,26305
+   bool assignable(Prop::assignable980,26356
+   void accept(Prop::accept983,26403
+class VerbCall VerbCall987,26497
+   VerbCall(VerbCall::VerbCall1000,26859
+   const Expr& object(VerbCall::object1010,27159
+   const Expr& name(VerbCall::name1017,27337
+   const ArgList& args(VerbCall::args1024,27512
+   void accept(VerbCall::accept1027,27566
+class SystemProp SystemProp1031,27672
+   SystemProp(SystemProp::SystemProp1040,27856
+   const std::string& name(SystemProp::name1047,28017
+   bool assignable(SystemProp::assignable1050,28075
+   void accept(SystemProp::accept1053,28122
+class SystemCall SystemCall1057,28219
+   SystemCall(SystemCall::SystemCall1068,28476
+   const std::string& name(SystemCall::name1077,28687
+   const ArgList& args(SystemCall::args1084,28865
+   void accept(SystemCall::accept1087,28919
+class Builtin Builtin1091,29023
+   Builtin(Builtin::Builtin1102,29283
+   const std::string& name(Builtin::name1110,29482
+   const ArgList& args(Builtin::args1117,29658
+   void accept(Builtin::accept1120,29712
+struct Length Length1124,29800
+   void accept(Length::accept1125,29830
+
+include/flow_ctrl.hpp,756
+#define MOOVE_FLOW_CTRL_HPP6,102
+namespace Moove Moove18,349
+class FlowControl Moove::FlowControl20,368
+   enum BlockType Moove::FlowControl::BlockType22,417
+      LOOP,Moove::FlowControl::BlockType::LOOP23,437
+      SWITCHMoove::FlowControl::BlockType::SWITCH24,450
+   struct ControlBlock Moove::FlowControl::ControlBlock28,479
+      ControlBlock(Moove::FlowControl::ControlBlock::ControlBlock36,643
+      ControlBlock(Moove::FlowControl::ControlBlock::ControlBlock39,728
+      bool operator == Moove::FlowControl::ControlBlock::operator ==42,782
+   typedef boost::ptr_vector<ControlBlock>	ControlBlockList;Moove::FlowControl::ControlBlockList46,878
+   typedef Exception FlowControlError;Moove::FlowControl::FlowControlError53,1023
+
+include/highlight.hpp,3339
+#define MOOVE_HIGHLIGHT_HPP6,102
+namespace Moove Moove10,150
+namespace Extra Moove::Extra12,169
+class HighlightAttributes Moove::Extra::HighlightAttributes14,188
+   enum Color Moove::Extra::HighlightAttributes::Color16,224
+      BLACK,Moove::Extra::HighlightAttributes::Color::BLACK17,240
+      BLACK, RED,Moove::Extra::HighlightAttributes::Color::RED17,240
+      BLACK, RED, GREEN,Moove::Extra::HighlightAttributes::Color::GREEN17,240
+      BLACK, RED, GREEN, YELLOW,Moove::Extra::HighlightAttributes::Color::YELLOW17,240
+      BLACK, RED, GREEN, YELLOW, BLUE,Moove::Extra::HighlightAttributes::Color::BLUE17,240
+      BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA,Moove::Extra::HighlightAttributes::Color::MAGENTA17,240
+      BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN,Moove::Extra::HighlightAttributes::Color::CYAN17,240
+      BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITEMoove::Extra::HighlightAttributes::Color::WHITE17,240
+   unsigned char packAttrs(Moove::Extra::HighlightAttributes::packAttrs30,608
+   HighlightAttributes(Moove::Extra::HighlightAttributes::HighlightAttributes42,854
+   HighlightAttributes(Moove::Extra::HighlightAttributes::HighlightAttributes48,1020
+   Color fg(Moove::Extra::HighlightAttributes::fg56,1195
+   Color bg(Moove::Extra::HighlightAttributes::bg59,1274
+   bool bold(Moove::Extra::HighlightAttributes::bold62,1373
+   bool underline(Moove::Extra::HighlightAttributes::underline65,1429
+class SyntaxHighlighter SyntaxHighlighter70,1525
+   enum SyntaxElement SyntaxHighlighter::SyntaxElement72,1559
+      IDENTIFIER,SyntaxHighlighter::SyntaxElement::IDENTIFIER73,1583
+      IDENTIFIER, RESERVED_WORD,SyntaxHighlighter::SyntaxElement::RESERVED_WORD73,1583
+      IDENTIFIER, RESERVED_WORD, SYMBOL,SyntaxHighlighter::SyntaxElement::SYMBOL73,1583
+      IDENTIFIER, RESERVED_WORD, SYMBOL, STRING,SyntaxHighlighter::SyntaxElement::STRING73,1583
+      IDENTIFIER, RESERVED_WORD, SYMBOL, STRING, INTEGER,SyntaxHighlighter::SyntaxElement::INTEGER73,1583
+      IDENTIFIER, RESERVED_WORD, SYMBOL, STRING, INTEGER, REAL,SyntaxHighlighter::SyntaxElement::REAL73,1583
+      IDENTIFIER, RESERVED_WORD, SYMBOL, STRING, INTEGER, REAL, OBJNUMSyntaxHighlighter::SyntaxElement::OBJNUM73,1583
+   SyntaxHighlighter(SyntaxHighlighter::SyntaxHighlighter83,1828
+   SyntaxHighlighter(SyntaxHighlighter::SyntaxHighlighter87,1951
+   virtual ~SyntaxHighlighter(SyntaxHighlighter::~SyntaxHighlighter91,2105
+   const HighlightAttributes* allAttrs(SyntaxHighlighter::allAttrs94,2144
+   HighlightAttributes attrs(SyntaxHighlighter::attrs97,2217
+   HighlightAttributes defaultAttrs(SyntaxHighlighter::defaultAttrs100,2304
+   void setAllAttrs(SyntaxHighlighter::setAllAttrs103,2378
+   void setAttrs(SyntaxHighlighter::setAttrs106,2502
+   void setDefaultAttrs(SyntaxHighlighter::setDefaultAttrs109,2600
+   StringType id(SyntaxHighlighter::id112,2697
+   StringType reserved(SyntaxHighlighter::reserved115,2785
+   StringType symbol(SyntaxHighlighter::symbol118,2882
+   StringType str(SyntaxHighlighter::str121,2970
+   StringType integer(SyntaxHighlighter::integer124,3055
+   StringType real(SyntaxHighlighter::real127,3145
+   StringType objnum(SyntaxHighlighter::objnum130,3232
+   virtual StringType highlight(SyntaxHighlighter::highlight133,3320
+
+include/immediate.hpp,797
+#define MOOVE_LINKER_REF_HPP6,103
+namespace Moove Moove12,186
+class ImmediateValue Moove::ImmediateValue21,486
+   enum Type Moove::ImmediateValue::Type24,547
+      INTEGER,Moove::ImmediateValue::Type::INTEGER25,562
+      LABEL,Moove::ImmediateValue::Type::LABEL26,623
+      LITERAL,Moove::ImmediateValue::Type::LITERAL27,677
+      TEMP,Moove::ImmediateValue::Type::TEMP28,733
+      FORK Moove::ImmediateValue::Type::FORK29,781
+   typedef boost::array<CodeVector::difference_type, NUM_TYPES>		Deltas;Moove::ImmediateValue::Deltas35,982
+   CodeVector::Word pos(Moove::ImmediateValue::pos48,1357
+   Type type(Moove::ImmediateValue::type51,1410
+   CodeVector::Word value(Moove::ImmediateValue::value54,1453
+   const Deltas& immDeltas(Moove::ImmediateValue::immDeltas57,1510
+
+include/interpreter.hpp,624
+#define MOOVE_INTERPRETER_HPP5,47
+namespace Moove Moove16,281
+class Interpreter Moove::Interpreter20,323
+    typedef boost::ptr_map<std::string, Variant, iless> VariableDefMap;Moove::Interpreter::VariableDefMap22,351
+    typedef boost::ptr_vector<boost::nullable<Variant> > TemporaryValues;Moove::Interpreter::TemporaryValues25,437
+    typedef boost::ptr_vector<Variant> VMStack;Moove::Interpreter::VMStack27,512
+    bool execFinished(Moove::Interpreter::execFinished48,1096
+    std::auto_ptr<VariantType> popStack(Moove::Interpreter::popStack76,1708
+    void pushStack(Moove::Interpreter::pushStack89,2190
+
+include/intvar.hpp,646
+#define MOOVE_INTVAR_HPP7,163
+namespace Moove Moove12,244
+struct IntVar Moove::IntVar20,449
+    typedef long value_type;Moove::IntVar::value_type21,482
+    struct Factory Moove::IntVar::Factory24,570
+    bool truthValue(Moove::IntVar::truthValue33,878
+    std::string debugStr(Moove::IntVar::debugStr36,935
+class DefaultIntVar DefaultIntVar56,1390
+    struct Factory DefaultIntVar::Factory63,1579
+    Factory& factory(DefaultIntVar::factory98,2339
+    DefaultIntVar* clone(DefaultIntVar::clone101,2394
+    void setValue(DefaultIntVar::setValue106,2481
+    static Factory& classFactory(DefaultIntVar::classFactory109,2543
+
+include/label_linker.hpp,543
+#define MOOVE_LABEL_LINKER_HPP6,105
+namespace Moove Moove13,211
+class LabelLinker Moove::LabelLinker16,338
+   struct Reference Moove::LabelLinker::Reference18,388
+   typedef std::vector<Reference> ReferenceList;Moove::LabelLinker::ReferenceList23,608
+   void linkLabels(Moove::LabelLinker::linkLabels31,858
+   LabelLinker(Moove::LabelLinker::LabelLinker37,937
+   ~LabelLinker(Moove::LabelLinker::~LabelLinker40,1014
+   CodeVector::Word addr(Moove::LabelLinker::addr43,1054
+   bool located(Moove::LabelLinker::located46,1109
+
+include/lexer.hpp,185
+#define MOOVE_LEXER_HPP8,142
+namespace Moove Moove15,240
+class Lexer Moove::Lexer19,282
+   int peekCur(Moove::Lexer::peekCur40,749
+   int peekNext(Moove::Lexer::peekNext43,818
+
+include/listvar.hpp,2670
+#define MOOVE_LISTVAR_HPP6,100
+namespace Moove Moove17,290
+struct ListVar Moove::ListVar19,309
+    typedef std::vector<boost::shared_ptr<Variant> > Container;Moove::ListVar::Container20,343
+    typedef boost::shared_ptr<Container>             ContainerRef;Moove::ListVar::ContainerRef21,407
+    struct Factory Moove::ListVar::Factory23,475
+    bool truthValue(Moove::ListVar::truthValue44,1311
+    std::string debugStr(Moove::ListVar::debugStr47,1376
+class DefaultListVar DefaultListVar60,1728
+    struct Factory DefaultListVar::Factory62,1776
+    DefaultListVar(DefaultListVar::DefaultListVar78,2134
+    DefaultListVar* clone(DefaultListVar::clone83,2232
+    ContainerRef contents(DefaultListVar::contents88,2322
+    static Factory& classFactory(DefaultListVar::classFactory101,2656
+struct PointerTo PointerTo115,2970
+    const T* operator () PointerTo::operator ()116,2989
+class ListVar ListVar120,3063
+    typedef size_t size_type;ListVar::size_type127,3200
+    class const_iterator ListVar::const_iterator129,3231
+        typedef std::random_access_iterator_tag iterator_category;ListVar::const_iterator::iterator_category135,3360
+        typedef const Variant*                  value_type;ListVar::const_iterator::value_type136,3427
+        typedef std::ptrdiff_t                  difference_type;ListVar::const_iterator::difference_type137,3487
+        typedef const Variant**                 pointer;ListVar::const_iterator::pointer138,3552
+        typedef const Variant*&                 reference;ListVar::const_iterator::reference139,3609
+        explicit const_iterator(ListVar::const_iterator::const_iterator141,3669
+        Variant& operator * ListVar::const_iterator::operator *144,3795
+        Variant* operator -> ListVar::const_iterator::operator ->147,3876
+        const_iterator& operator ++ ListVar::const_iterator::operator ++150,3958
+        const_iterator& operator -- ListVar::const_iterator::operator --156,4067
+        const_iterator operator ++ ListVar::const_iterator::operator ++162,4176
+        const_iterator operator -- ListVar::const_iterator::operator --169,4322
+        const_iterator& operator += ListVar::const_iterator::operator +=176,4468
+        const_iterator& operator -= ListVar::const_iterator::operator -=185,4707
+        const_iterator operator - ListVar::const_iterator::operator -191,4836
+        difference_type operator - ListVar::const_iterator::operator -194,4947
+        const Variant& operator [] ListVar::const_iterator::operator []197,5087
+    virtual size_type size(ListVar::size203,5220
+    void setContents(ListVar::setContents217,5573
+
+include/marray.hpp,101
+#define MOOVE_MARRAY_HPP5,42
+namespace Moove Moove9,86
+class MultiArray Moove::MultiArray12,123
+
+include/mem_pool.hpp,664
+#define MOOVE_MEM_POOL_HPP6,101
+namespace Moove Moove::MultiArray::Moove15,239
+class MemoryPool Moove::MemoryPool18,286
+   typedef AutoContainer<std::vector<BaseType*> > Pool;Moove::MemoryPool::Pool20,335
+   typedef typename Pool::iterator                iterator;Moove::MemoryPool::iterator21,391
+   typedef typename Pool::const_iterator          const_iterator;Moove::MemoryPool::const_iterator22,451
+   iterator find(Moove::MemoryPool::find26,535
+   const_iterator find(Moove::MemoryPool::find29,634
+   void insert(Moove::MemoryPool::insert33,755
+   void remove(Moove::MemoryPool::remove41,888
+   void clear(Moove::MemoryPool::clear48,1020
+
+include/memory.hpp,1510
+#define MOOVE_MEMORY_HPP6,99
+namespace Moove Moove14,240
+struct UnaryCloner Moove::UnaryCloner17,277
+   T* operator () Moove::UnaryCloner::operator ()18,341
+struct UnaryDeleter UnaryDeleter23,429
+   void operator () UnaryDeleter::operator ()24,490
+void freeRange(38,861
+void freeRange(44,1007
+   typedef typename std::iterator_traits<InputIterator>::value_type value_type;value_type46,1064
+void cloneRange(53,1330
+   typedef typename std::iterator_traits<OutputIterator>::value_type value_type;value_type55,1440
+void cloneRange(73,2054
+   typedef typename std::iterator_traits<InputIterator>::value_type value_type;value_type75,2132
+struct AutoContainer AutoContainer91,2682
+   typedef typename Container::value_type value_type;AutoContainer::value_type92,2724
+   typedef typename Container::iterator iterator;AutoContainer::iterator93,2778
+   AutoContainer(AutoContainer::AutoContainer95,2829
+   AutoContainer(AutoContainer::AutoContainer99,2888
+   AutoContainer(AutoContainer::AutoContainer103,2988
+   ~AutoContainer(AutoContainer::~AutoContainer106,3089
+   void autoPushFront(AutoContainer::autoPushFront109,3156
+   void autoPushBack(AutoContainer::autoPushBack115,3276
+   void autoErase(AutoContainer::autoErase121,3394
+   void autoPopFront(AutoContainer::autoPopFront127,3480
+   void autoPopBack(AutoContainer::autoPopBack135,3608
+   void autoClear(AutoContainer::autoClear143,3726
+   AutoContainer<Container>& operator = AutoContainer::operator =149,3823
+
+include/op_map.hpp,803
+#define MOOVE_OP_MAP_HPP6,99
+namespace Moove Moove18,323
+class OperatorMap Moove::OperatorMap26,562
+    typedef Reply (*UnaryOperator)Moove::OperatorMap::UnaryOperator28,611
+    typedef Reply (*BinaryOperator)Moove::OperatorMap::BinaryOperator30,676
+    typedef std::vector<UnaryOperator> UnaryTable;Moove::OperatorMap::UnaryTable33,771
+    typedef std::vector<BinaryOperator> BinaryTable;Moove::OperatorMap::BinaryTable34,822
+    typedef UnaryTable::size_type TypeCount;Moove::OperatorMap::TypeCount36,876
+    TypeCount typeCount(Moove::OperatorMap::typeCount41,977
+    TypeCount binaryIndex(Moove::OperatorMap::binaryIndex44,1040
+    typedef Exception DuplicatePackage;Moove::OperatorMap::DuplicatePackage48,1195
+    UnaryOperator findUnary(Moove::OperatorMap::findUnary62,1659
+
+include/op_package.hpp,278
+#define MOOVE_OPERATORS_HPP7,171
+namespace Moove Moove16,309
+struct OperatorPackage Moove::OperatorPackage18,328
+    typedef Exception UndefinedOperator;Moove::OperatorPackage::UndefinedOperator19,353
+    virtual Reply doUnaryOp(Moove::OperatorPackage::doUnaryOp21,395
+
+include/opcodes.hpp,2911
+#define MOOVE_OPCODES_HPP7,174
+namespace Moove Moove12,251
+enum Opcode Moove::Opcode20,457
+    OP_DONE,Moove::Opcode::OP_DONE23,536
+    OP_JUMP,Moove::Opcode::OP_JUMP24,549
+    OP_JUMP_FALSE,Moove::Opcode::OP_JUMP_FALSE25,586
+    OP_FORK,Moove::Opcode::OP_FORK26,605
+    OP_RETURN,Moove::Opcode::OP_RETURN27,634
+    OP_PUSH_LITERAL,Moove::Opcode::OP_PUSH_LITERAL28,663
+    OP_PUSH,Moove::Opcode::OP_PUSH29,691
+    OP_PUT,Moove::Opcode::OP_PUT30,719
+    OP_POP,Moove::Opcode::OP_POP31,748
+    OP_CALL_BUILTIN,Moove::Opcode::OP_CALL_BUILTIN32,777
+    OP_GET_PROP,Moove::Opcode::OP_GET_PROP33,809
+    OP_PUT_PROP,Moove::Opcode::OP_PUT_PROP34,838
+    OP_CALL_VERB,Moove::Opcode::OP_CALL_VERB35,867
+    OP_GET_SYSPROP,Moove::Opcode::OP_GET_SYSPROP36,885
+    OP_PUT_SYSPROP,Moove::Opcode::OP_PUT_SYSPROP37,905
+    OP_CALL_SYSVERB,Moove::Opcode::OP_CALL_SYSVERB38,925
+    OP_APPEND_LIST,Moove::Opcode::OP_APPEND_LIST39,946
+    OP_NOT,Moove::Opcode::OP_NOT44,1192
+    OP_NEGATE,Moove::Opcode::OP_NEGATE45,1273
+    OP_OR,Moove::Opcode::OP_OR48,1386
+    OP_AND,Moove::Opcode::OP_AND49,1466
+    OP_EQ,Moove::Opcode::OP_EQ50,1547
+    OP_NE,Moove::Opcode::OP_NE51,1636
+    OP_LT,Moove::Opcode::OP_LT52,1727
+    OP_LE,Moove::Opcode::OP_LE53,1817
+    OP_GE,Moove::Opcode::OP_GE54,1919
+    OP_GT,Moove::Opcode::OP_GT55,2024
+    OP_IN,Moove::Opcode::OP_IN56,2117
+    OP_ADD,Moove::Opcode::OP_ADD57,2206
+    OP_SUB,Moove::Opcode::OP_SUB58,2284
+    OP_MUL,Moove::Opcode::OP_MUL59,2365
+    OP_DIV,Moove::Opcode::OP_DIV60,2449
+    OP_MOD,Moove::Opcode::OP_MOD61,2527
+    OP_EXP,Moove::Opcode::OP_EXP62,2604
+    OP_INDEX,Moove::Opcode::OP_INDEX65,2722
+    OP_INDEX_SET,Moove::Opcode::OP_INDEX_SET66,2802
+    OP_RANGE,Moove::Opcode::OP_RANGE67,2899
+    OP_RANGE_SET,Moove::Opcode::OP_RANGE_SET68,2984
+    OP_LENGTH,Moove::Opcode::OP_LENGTH69,3076
+    OP_SPLICE Moove::Opcode::OP_SPLICE70,3199
+    NUM_OPCODES Moove::Opcode::NUM_OPCODES72,3283
+class OpcodeInfo OpcodeInfo75,3374
+    enum FunctionalGroup OpcodeInfo::FunctionalGroup77,3401
+        FG_NONE OpcodeInfo::FunctionalGroup::FG_NONE78,3428
+        FG_ARITHMETIC OpcodeInfo::FunctionalGroup::FG_ARITHMETIC79,3457
+        FG_COMPARISON OpcodeInfo::FunctionalGroup::FG_COMPARISON80,3491
+        FG_LOGIC OpcodeInfo::FunctionalGroup::FG_LOGIC81,3525
+    class Op OpcodeInfo::Op86,3667
+        Op(OpcodeInfo::Op::Op93,3809
+        Opcode opcode(OpcodeInfo::Op::opcode96,3931
+        const char* name(OpcodeInfo::Op::name99,3990
+        bool hasImmediate(OpcodeInfo::Op::hasImmediate102,4050
+        ImmediateValue::Type immediateType(OpcodeInfo::Op::immediateType105,4120
+        bool isBinaryOp(OpcodeInfo::Op::isBinaryOp110,4267
+        FunctionalGroup functionalGroup(OpcodeInfo::Op::functionalGroup113,4359
+    static const Op& getOp(OpcodeInfo::getOp123,4552
+
+include/parser.hpp,657
+#define MOOVE_PARSER_HPP7,162
+namespace Moove Moove16,302
+class Parser Moove::Parser31,798
+      DISABLE_SWITCH,Moove::Parser::DISABLE_SWITCH48,1260
+      DISABLE_OBJNUMS,Moove::Parser::DISABLE_OBJNUMS49,1322
+      DISABLE_INC_DEC,Moove::Parser::DISABLE_INC_DEC50,1385
+      DISABLE_ASSIGN_OPS,Moove::Parser::DISABLE_ASSIGN_OPS51,1463
+      NUM_OPTIONSMoove::Parser::NUM_OPTIONS52,1543
+   typedef std::bitset<NUM_OPTIONS> Options;Moove::Parser::Options56,1620
+   typedef std::logic_error MisformedProgram;Moove::Parser::MisformedProgram65,1878
+   Parser(Moove::Parser::Parser68,1954
+   bool hasErrors(Moove::Parser::hasErrors106,3303
+
+include/parser_msgs.hpp,192
+#define MOOVE_PARSER_MSGS_HPP6,104
+namespace Moove Moove10,154
+struct ParserMessages Moove::ParserMessages12,173
+   virtual ~ParserMessages(Moove::ParserMessages::~ParserMessages13,197
+
+include/parser_state.hpp,1209
+#define MOOVE_PARSER_STATE_HPP6,105
+namespace Moove Moove19,352
+class ParserState Moove::ParserState24,407
+   struct BlockMarker Moove::ParserState::BlockMarker26,457
+      enum BlockType Moove::ParserState::BlockMarker::BlockType27,481
+	 LOOP,Moove::ParserState::BlockMarker::BlockType::LOOP28,504
+	 LOOP, SWITCH,Moove::ParserState::BlockMarker::BlockType::SWITCH28,504
+	 LOOP, SWITCH, FORKMoove::ParserState::BlockMarker::BlockType::FORK28,504
+      BlockMarker(Moove::ParserState::BlockMarker::BlockMarker33,558
+   typedef std::vector<BlockMarker> BlockList;Moove::ParserState::BlockList37,649
+   typedef std::logic_error UnmatchedBlock;Moove::ParserState::UnmatchedBlock48,995
+   Lexer& lexer(Moove::ParserState::lexer56,1213
+   unsigned switchDepth(Moove::ParserState::switchDepth59,1254
+   unsigned dollarDepth(Moove::ParserState::dollarDepth62,1315
+   bool hasErrors(Moove::ParserState::hasErrors65,1376
+   const Program& program(Moove::ParserState::program68,1429
+   std::auto_ptr<Program> releaseProgram(Moove::ParserState::releaseProgram71,1489
+   Symbol loopID(Moove::ParserState::loopID96,1968
+   void decDollarDepth(Moove::ParserState::decDollarDepth107,2171
+
+include/partial_ast_visitor.hpp,4076
+#define MOOVE_PARTIAL_AST_VISITOR_HPP6,112
+namespace Moove Moove10,179
+class PartialASTVisitor Moove::PartialASTVisitor12,198
+   typedef std::logic_error UnimplementedVisitor;Moove::PartialASTVisitor::UnimplementedVisitor14,252
+   virtual void unhandledExpr(Moove::PartialASTVisitor::unhandledExpr18,369
+   virtual void unhandledStmt(Moove::PartialASTVisitor::unhandledStmt22,550
+   virtual void visit(Moove::PartialASTVisitor::visit29,746
+   virtual void visit(Moove::PartialASTVisitor::visit32,824
+   virtual void visit(Moove::PartialASTVisitor::visit35,901
+   virtual void visit(Moove::PartialASTVisitor::visit38,975
+   virtual void visit(Moove::PartialASTVisitor::visit41,1050
+   virtual void visit(Moove::PartialASTVisitor::visit44,1125
+   virtual void visit(Moove::PartialASTVisitor::visit47,1204
+   virtual void visit(Moove::PartialASTVisitor::visit52,1343
+   virtual void visit(Moove::PartialASTVisitor::visit55,1417
+   virtual void visit(Moove::PartialASTVisitor::visit58,1494
+   virtual void visit(Moove::PartialASTVisitor::visit61,1571
+   virtual void visit(Moove::PartialASTVisitor::visit64,1648
+   virtual void visit(Moove::PartialASTVisitor::visit67,1725
+   virtual void visit(Moove::PartialASTVisitor::visit70,1803
+   virtual void visit(Moove::PartialASTVisitor::visit73,1881
+   virtual void visit(Moove::PartialASTVisitor::visit76,1954
+   virtual void visit(Moove::PartialASTVisitor::visit79,2028
+   virtual void visit(Moove::PartialASTVisitor::visit82,2104
+   virtual void visit(Moove::PartialASTVisitor::visit85,2183
+   virtual void visit(Moove::PartialASTVisitor::visit88,2258
+   virtual void visit(Moove::PartialASTVisitor::visit91,2338
+   virtual void visit(Moove::PartialASTVisitor::visit94,2421
+   virtual void visit(Moove::PartialASTVisitor::visit97,2499
+   virtual void visit(Moove::PartialASTVisitor::visit100,2572
+   virtual void visit(Moove::PartialASTVisitor::visit103,2646
+   virtual void visit(Moove::PartialASTVisitor::visit106,2720
+   virtual void visit(Moove::PartialASTVisitor::visit109,2794
+   virtual void visit(Moove::PartialASTVisitor::visit112,2868
+   virtual void visit(Moove::PartialASTVisitor::visit115,2945
+   virtual void visit(Moove::PartialASTVisitor::visit118,3019
+   virtual void visit(Moove::PartialASTVisitor::visit121,3096
+   virtual void visit(Moove::PartialASTVisitor::visit124,3175
+   virtual void visit(Moove::PartialASTVisitor::visit127,3254
+   virtual void visit(Moove::PartialASTVisitor::visit130,3333
+   virtual void visit(Moove::PartialASTVisitor::visit133,3412
+   virtual void visit(Moove::PartialASTVisitor::visit136,3491
+   virtual void visit(Moove::PartialASTVisitor::visit139,3570
+   virtual void visit(Moove::PartialASTVisitor::visit142,3652
+   virtual void visit(Moove::PartialASTVisitor::visit145,3728
+   virtual void visit(Moove::PartialASTVisitor::visit148,3804
+   virtual void visit(Moove::PartialASTVisitor::visit151,3880
+   virtual void visit(Moove::PartialASTVisitor::visit154,3955
+   virtual void visit(Moove::PartialASTVisitor::visit157,4036
+   virtual void visit(Moove::PartialASTVisitor::visit160,4117
+   virtual void visit(Moove::PartialASTVisitor::visit163,4196
+   virtual void visit(Moove::PartialASTVisitor::visit166,4274
+   virtual void visit(Moove::PartialASTVisitor::visit170,4370
+   virtual void visit(Moove::PartialASTVisitor::visit175,4497
+   virtual void visit(Moove::PartialASTVisitor::visit178,4573
+   virtual void visit(Moove::PartialASTVisitor::visit181,4651
+   virtual void visit(Moove::PartialASTVisitor::visit184,4730
+   virtual void visit(Moove::PartialASTVisitor::visit189,4873
+   virtual void visit(Moove::PartialASTVisitor::visit192,4954
+   virtual void visit(Moove::PartialASTVisitor::visit195,5029
+   virtual void visit(Moove::PartialASTVisitor::visit200,5164
+   virtual void visit(Moove::PartialASTVisitor::visit203,5241
+   virtual void visit(Moove::PartialASTVisitor::visit206,5320
+   virtual void visit(Moove::PartialASTVisitor::visit209,5396
+
+include/program_ast.hpp,336
+#define MOOVE_PROGRAM_AST_HPP6,104
+namespace Moove Moove14,236
+class Program Moove::Program23,504
+   const Stmt::Block& stmts(Moove::Program::stmts33,793
+   const SymbolTable& varTable(Moove::Program::varTable41,1027
+   SymbolTable& varTable(Moove::Program::varTable50,1282
+   void setStmts(Moove::Program::setStmts58,1468
+
+include/realvar.hpp,660
+#define MOOVE_REALVAR_HPP7,167
+namespace Moove Moove12,249
+struct RealVar Moove::RealVar20,465
+    typedef double value_type;Moove::RealVar::value_type21,499
+    struct Factory Moove::RealVar::Factory23,531
+    bool truthValue(Moove::RealVar::truthValue27,644
+    std::string debugStr(Moove::RealVar::debugStr30,701
+class DefaultRealVar DefaultRealVar48,1134
+    struct Factory DefaultRealVar::Factory50,1182
+    Factory& factory(DefaultRealVar::factory85,1947
+    DefaultRealVar* clone(DefaultRealVar::clone88,2002
+    void setValue(DefaultRealVar::setValue93,2086
+    static Factory& classFactory(DefaultRealVar::classFactory96,2155
+
+include/refcount.hpp,872
+#define MOOVE_REFCOUNT_HPP6,101
+namespace Moove Moove10,148
+class RefCountPtr Moove::RefCountPtr28,727
+   struct Data Moove::RefCountPtr::Data30,756
+      explicit Data(Moove::RefCountPtr::Data::Data34,832
+   void release(Moove::RefCountPtr::release40,919
+   explicit RefCountPtr(Moove::RefCountPtr::RefCountPtr49,1071
+   RefCountPtr(Moove::RefCountPtr::RefCountPtr52,1140
+   ~RefCountPtr(Moove::RefCountPtr::~RefCountPtr55,1222
+   unsigned int refCount(Moove::RefCountPtr::refCount58,1259
+   const T& operator * Moove::RefCountPtr::operator *61,1321
+   T& operator * Moove::RefCountPtr::operator *64,1387
+   const T* operator -> Moove::RefCountPtr::operator ->67,1442
+   T* operator -> Moove::RefCountPtr::operator ->70,1508
+   void reset(Moove::RefCountPtr::reset73,1563
+   RefCountPtr<T>& operator = Moove::RefCountPtr::operator =79,1654
+
+include/reply.hpp,481
+#define MOOVE_REPLY_HPP7,167
+namespace Moove Moove14,271
+class Reply Moove::Reply24,611
+   enum Type Moove::Reply::Type27,701
+      NORMAL,Moove::Reply::Type::NORMAL28,716
+      EXCEPTION	Moove::Reply::Type::EXCEPTION29,773
+   Reply(Moove::Reply::Reply42,1040
+   Type type(Moove::Reply::type63,1531
+   const boost::shared_ptr<Variant> value(Moove::Reply::value70,1693
+   bool normal(Moove::Reply::normal91,2337
+   bool exception(Moove::Reply::exception98,2533
+
+include/stmt_ast.hpp,4241
+#define MOOVE_STMT_AST_HPP6,101
+namespace Moove Moove10,154
+namespace Stmt Moove::Stmt15,253
+typedef ASTAutoContainer<std::vector<Stmt*> > Block;Moove::Stmt::Block25,452
+struct Stmt Moove::Stmt::Stmt28,553
+   virtual ~Stmt(Moove::Stmt::Stmt::~Stmt29,590
+   virtual void accept(Moove::Stmt::Stmt::accept36,726
+class If If40,813
+   class ElseIf If::ElseIf43,885
+      ElseIf(If::ElseIf::ElseIf53,1179
+      ElseIf(If::ElseIf::ElseIf62,1503
+      bool hasTest(If::ElseIf::hasTest70,1758
+      const Expr::Expr& test(If::ElseIf::test82,2143
+      const Block& body(If::ElseIf::body89,2305
+      void accept(If::ElseIf::accept96,2490
+   typedef ElseIf Else;If::Else100,2588
+   typedef ASTAutoContainer<std::vector<Else*> > ElseList;If::ElseList103,2683
+   If(If::If117,3109
+   const Expr::Expr& test(If::test127,3388
+   const Block& body(If::body134,3542
+   const ElseList& elseList(If::elseList141,3732
+   void accept(If::accept144,3795
+class While While148,3870
+   While(While::While162,4277
+   Symbol id(While::id173,4582
+   const Block& body(While::body180,4708
+   const Expr::Expr& test(While::test187,4870
+   void accept(While::accept190,4927
+class ForList ForList194,5028
+   ForList(ForList::ForList207,5422
+   Symbol id(ForList::id218,5723
+   const Expr::Expr& expr(ForList::expr225,5884
+   const Block& body(ForList::body232,6026
+   void accept(ForList::accept235,6078
+class ForRange ForRange239,6180
+   ForRange(ForRange::ForRange254,6645
+   Symbol id(ForRange::id265,6937
+   const Expr::Expr& start(ForRange::start272,7109
+   const Expr::Expr& end(ForRange::end279,7295
+   const Block& body(ForRange::body286,7435
+   void accept(ForRange::accept289,7487
+class TryExcept TryExcept293,7569
+   class Except TryExcept::Except296,7668
+      Except(TryExcept::Except::Except310,8132
+      Symbol id(TryExcept::Except::id322,8474
+      const Expr::ArgList& codes(TryExcept::Except::codes329,8661
+      const Block& body(TryExcept::Except::body336,8833
+      void accept(TryExcept::Except::accept343,9013
+   typedef ASTAutoContainer<std::vector<Except*> > ExceptList;TryExcept::ExceptList347,9113
+   TryExcept(TryExcept::TryExcept359,9458
+   const Block& body(TryExcept::body367,9668
+   const ExceptList& excepts(TryExcept::excepts374,9828
+   void accept(TryExcept::accept377,9891
+class TryFinally TryFinally381,9972
+   TryFinally(TryFinally::TryFinally392,10246
+   const Block& body(TryFinally::body400,10451
+   const Block& finally(TryFinally::finally407,10593
+   void accept(TryFinally::accept410,10651
+class Fork Fork414,10727
+   Fork(Fork::Fork428,11144
+   Symbol id(Fork::id440,11432
+   const Expr::Expr& delay(Fork::delay447,11578
+   const Block body(Fork::body454,11722
+   void accept(Fork::accept457,11773
+class Switch Switch461,11851
+   class Case Switch::Case464,11948
+      Case(Switch::Case::Case474,12202
+      Case(Switch::Case::Case482,12441
+      bool isDefault(Switch::Case::isDefault493,12845
+      const Expr::Expr& expr(Switch::Case::expr500,13011
+      const Block& body(Switch::Case::body507,13168
+      void accept(Switch::Case::accept514,13359
+   typedef Case Default;Switch::Default518,13453
+   typedef ASTAutoContainer<std::vector<Case*> > CaseList;Switch::CaseList521,13530
+   Switch(Switch::Switch533,13860
+   const Expr::Expr& expr(Switch::expr541,14103
+   const CaseList& cases(Switch::cases548,14270
+   void accept(Switch::accept551,14327
+class Return Return555,14405
+   Return(Return::Return561,14542
+   explicit Return(Return::Return568,14692
+   bool hasExpr(Return::hasExpr575,14884
+   const Expr::Expr& expr(Return::expr587,15220
+   void accept(Return::accept590,15277
+class Continue Continue594,15357
+   explicit Continue(Continue::Continue604,15595
+   Symbol id(Continue::id612,15833
+   void accept(Continue::accept615,15874
+class Break Break619,15951
+   explicit Break(Break::Break629,16174
+   Symbol id(Break::id637,16413
+   void accept(Break::accept640,16454
+class Expr Expr644,16537
+   explicit Expr(Expr::Expr653,16734
+   const Moove::Expr::Expr& expr(Expr::expr660,16915
+   void accept(Expr::accept663,16979
+
+include/string_utils.hpp,931
+#define MOOVE_STRING_UTILS_HPP6,105
+namespace Moove Moove12,195
+typedef std::equal_to<std::string> StringEqualTo;Moove::StringEqualTo16,221
+typedef std::less<std::string>     StringLess;Moove::StringLess17,271
+struct StringEqualToICase Moove::StringEqualToICase19,319
+   static bool charEqualToICase(Moove::StringEqualToICase::charEqualToICase20,347
+   bool operator () Moove::StringEqualToICase::operator ()23,446
+struct StringLessICase StringLessICase26,521
+   static bool charLessICase(StringLessICase::charLessICase27,546
+   bool operator () StringLessICase::operator ()30,644
+struct iless iless35,727
+   static bool charCmp(iless::charCmp36,742
+   bool operator () iless::operator ()39,821
+struct StringHash StringHash45,1008
+   std::size_t operator () StringHash::operator ()46,1028
+struct StringHashICase StringHashICase49,1090
+   std::size_t operator () StringHashICase::operator ()50,1115
+
+include/strvar.hpp,768
+#define MOOVE_STRVAR_HPP6,99
+namespace Moove Moove13,199
+struct StrVar Moove::StrVar28,764
+    typedef std::string value_type;Moove::StrVar::value_type29,797
+    struct Factory Moove::StrVar::Factory31,834
+    bool truthValue(Moove::StrVar::truthValue35,953
+    std::string debugStr(Moove::StrVar::debugStr38,1014
+class DefaultStrVar DefaultStrVar58,1502
+    struct Factory DefaultStrVar::Factory60,1580
+    DefaultStrVar(DefaultStrVar::DefaultStrVar74,1873
+    DefaultStrVar(DefaultStrVar::DefaultStrVar81,2020
+    DefaultStrVar(DefaultStrVar::DefaultStrVar90,2246
+    Factory& factory(DefaultStrVar::factory93,2314
+    DefaultStrVar* clone(DefaultStrVar::clone96,2369
+    static Factory& classFactory(DefaultStrVar::classFactory103,2508
+
+include/symbol_table.hpp,1006
+#define MOOVE_SYMBOL_TABLE_HPP6,105
+namespace Moove Moove15,251
+class Symbol Moove::Symbol17,270
+   Symbol(Moove::Symbol::Symbol22,333
+   explicit Symbol(Moove::Symbol::Symbol25,364
+   const std::string& name(Moove::Symbol::name28,430
+   operator bool Moove::Symbol::operator bool30,472
+   bool operator == Moove::Symbol::operator ==33,525
+   bool operator != Moove::Symbol::operator !=36,607
+   bool operator < Moove::Symbol::operator <39,689
+class SymbolTable SymbolTable42,738
+   typedef std::set<std::string, iless> Table;SymbolTable::Table44,767
+   typedef Table::const_iterator const_iterator;SymbolTable::const_iterator56,1087
+   typedef const_iterator        iterator;SymbolTable::iterator57,1136
+   typedef  Table::size_type     size_type;SymbolTable::size_type58,1179
+   size_type size(SymbolTable::size63,1251
+   const_iterator begin(SymbolTable::begin66,1308
+   const_iterator end(SymbolTable::end69,1372
+   Symbol findSymbol(SymbolTable::findSymbol72,1435
+
+include/task.hpp,119
+#define MOOVE_TASK_HPP6,97
+namespace Moove Moove8,121
+typedef boost::ptr_vector<TaskFrame> Task;Moove::Task10,140
+
+include/type_registry.hpp,2944
+#define MOOVE_TYPE_REGISTRY_HPP6,106
+namespace Moove Moove17,291
+class TypeRegistry Moove::TypeRegistry32,790
+   struct TypeEntryNameLessThan Moove::TypeRegistry::TypeEntryNameLessThan37,870
+      bool operator () Moove::TypeRegistry::TypeEntryNameLessThan::operator ()38,904
+   typedef std::set<TypeEntry, TypeEntryNameLessThan>	Registry;Moove::TypeRegistry::Registry41,981
+   typedef std::deque<const TypeEntry*>			TypeEnumerator;Moove::TypeRegistry::TypeEnumerator43,1046
+   typedef TypeEnumerator::size_type			TypeID;Moove::TypeRegistry::TypeID47,1177
+   class TypeEntry Moove::TypeRegistry::TypeEntry49,1225
+      TypeEntry(Moove::TypeRegistry::TypeEntry::TypeEntry63,1664
+      TypeEntry(Moove::TypeRegistry::TypeEntry::TypeEntry66,1730
+      const std::string& name(Moove::TypeRegistry::TypeEntry::name69,1863
+      TypeID id(Moove::TypeRegistry::TypeEntry::id72,1926
+      VariantFactory& factory(Moove::TypeRegistry::TypeEntry::factory75,1973
+      operator TypeID Moove::TypeRegistry::TypeEntry::operator TypeID78,2040
+   class const_iterator Moove::TypeRegistry::const_iterator88,2352
+      typedef std::bidirectional_iterator_tag	iterator_category;Moove::TypeRegistry::const_iterator::iterator_category93,2447
+      typedef TypeEntry				value_type;Moove::TypeRegistry::const_iterator::value_type94,2512
+      typedef ptrdiff_t				difference_type;Moove::TypeRegistry::const_iterator::difference_type95,2551
+      typedef TypeEntry*			pointer;Moove::TypeRegistry::const_iterator::pointer96,2595
+      typedef TypeEntry&			reference;Moove::TypeRegistry::const_iterator::reference97,2631
+      explicit const_iterator(Moove::TypeRegistry::const_iterator::const_iterator99,2670
+      const TypeEntry& operator * Moove::TypeRegistry::const_iterator::operator *102,2762
+      const TypeEntry* operator -> Moove::TypeRegistry::const_iterator::operator ->105,2832
+      const_iterator& operator ++ Moove::TypeRegistry::const_iterator::operator ++108,2902
+      const_iterator& operator -- Moove::TypeRegistry::const_iterator::operator --114,2984
+      const_iterator operator ++ Moove::TypeRegistry::const_iterator::operator ++120,3067
+      const_iterator operator -- Moove::TypeRegistry::const_iterator::operator --123,3150
+      bool operator == Moove::TypeRegistry::const_iterator::operator ==126,3233
+      bool operator != Moove::TypeRegistry::const_iterator::operator !=129,3324
+   typedef Exception			DuplicateType;Moove::TypeRegistry::DuplicateType134,3466
+   typedef Exception			DuplicatePackage;Moove::TypeRegistry::DuplicatePackage137,3574
+   typedef Exception			InvalidType;Moove::TypeRegistry::InvalidType140,3686
+   TypeID typeCount(Moove::TypeRegistry::typeCount146,3837
+   const_iterator begin(Moove::TypeRegistry::begin156,4117
+   const_iterator end(Moove::TypeRegistry::end166,4404
+   const TypeEntry* findType(Moove::TypeRegistry::findType175,4700
+
+include/variant.hpp,222
+#define MOOVE_VARIANT_HPP7,148
+namespace Moove Moove14,244
+struct Variant Moove::Variant25,541
+    virtual ~Variant(Moove::Variant::~Variant26,558
+    virtual VariantFactory& factory(Moove::Variant::factory33,746
+
+include/variant_factory.hpp,867
+#define MOOVE_VARIANT_FACTORY_HPP6,108
+namespace Moove Moove14,244
+class VariantFactory Moove::VariantFactory25,509
+   typedef Exception InvalidType;Moove::VariantFactory::InvalidType32,767
+   VariantFactory(Moove::VariantFactory::VariantFactory34,802
+   virtual ~VariantFactory(Moove::VariantFactory::~VariantFactory37,861
+   size_t instances(Moove::VariantFactory::instances40,897
+   const TypeRegistry::TypeEntry& regEntry(Moove::VariantFactory::regEntry47,1096
+   void instanceCreated(Moove::VariantFactory::instanceCreated76,1997
+   void instanceDestroyed(Moove::VariantFactory::instanceDestroyed86,2269
+   void setRegEntry(Moove::VariantFactory::setRegEntry97,2648
+struct InstanceCounter InstanceCounter102,2768
+   InstanceCounter(InstanceCounter::InstanceCounter103,2793
+   ~InstanceCounter(InstanceCounter::~InstanceCounter106,2865
+
+include/variant_id.hpp,370
+#define MOOVE_VARIANT_ID_HPP6,103
+namespace Moove Moove10,163
+class VariantID Moove::VariantID15,262
+   VariantID(Moove::VariantID::VariantID25,483
+   explicit VariantID(Moove::VariantID::VariantID49,1238
+   operator bool Moove::VariantID::operator bool57,1492
+inline bool operator == 63,1597
+inline bool operator != 66,1696
+inline bool operator < 69,1795
+
+include/vm.hpp,360
+#define MOOVE_VM_HPP5,38
+namespace Moove Moove14,177
+class VirtualMachine Moove::VirtualMachine18,212
+   typedef std::deque<boost::shared_ptr<Variant> > ArgumentStack;Moove::VirtualMachine::ArgumentStack20,244
+   VirtualMachine(Moove::VirtualMachine::VirtualMachine26,377
+   boost::shared_ptr<Variant> stackTop(Moove::VirtualMachine::stackTop33,546
+
+include/builtin_registry.hpp,369
+#define MOOVE_BUITLIN_REGISTRY_HPP5,52
+namespace Moove Moove14,195
+class BuiltinRegistry Moove::BuiltinRegistry18,237
+    typedef Reply (*Function)Moove::BuiltinRegistry::Function20,269
+    typedef std::map<std::string, Function, iless> BuiltinMap;Moove::BuiltinRegistry::BuiltinMap23,366
+    Function findFunction(Moove::BuiltinRegistry::findFunction28,463
+
+include/default_ops.hpp,2396
+#define MOOVE_DEFAULT_OPS_HPP5,47
+namespace Moove Moove22,406
+class OperatorSetBase Moove::OperatorSetBase30,623
+    const T& variant_cast(Moove::OperatorSetBase::variant_cast33,678
+    T& variant_cast(Moove::OperatorSetBase::variant_cast43,880
+    boost::shared_ptr<ResultVariant> createResult(Moove::OperatorSetBase::createResult58,1197
+    const LeftVariant& castLeft(Moove::OperatorSetBase::castLeft68,1638
+    const RightVariant& castRight(Moove::OperatorSetBase::castRight78,2009
+    typedef typename ResultVariant::value_type  result_value_type;result_value_type143,5062
+    typedef OperatorSetBase<BooleanVariant, LeftVariant, RightVariant> Base;Base259,9492
+        typedef typename BooleanVariant::value_type result_value_type;result_value_type275,9936
+    typedef typename BooleanVariant::value_type result_value_type;result_value_type355,13489
+class DefaultOperatorPackage DefaultOperatorPackage424,16059
+    struct ConditionalInstantiate DefaultOperatorPackage::ConditionalInstantiate428,16293
+    struct ConditionalInstantiate<DefaultOperatorPackage::ConditionalInstantiate432,16370
+        Reply doUnaryOp(DefaultOperatorPackage::ConditionalInstantiate::doUnaryOp433,16412
+        Reply doBinaryOp(DefaultOperatorPackage::ConditionalInstantiate::doBinaryOp436,16520
+    Reply doUnaryOp(DefaultOperatorPackage::doUnaryOp455,17471
+    Reply doBinaryOp(DefaultOperatorPackage::doBinaryOp475,18069
+namespace OperatorWrappers OperatorWrappers496,18780
+DefaultRealVar::value_type variant_mod(OperatorWrappers::variant_mod498,18820
+DefaultRealVar::value_type variant_mod(504,18981
+DefaultRealVar::value_type variant_mod(510,19182
+DefaultIntVar::value_type pow(515,19372
+DefaultIntVar::value_type variant_exp(552,20102
+DefaultRealVar::value_type variant_exp(558,20254
+DefaultRealVar::value_type variant_exp(564,20454
+DefaultIntVar::value_type variant_not(570,20654
+DefaultIntVar::value_type variant_or(576,20760
+DefaultIntVar::value_type variant_and(582,20927
+Reply ArithmeticOperators<DefaultStrVar,591,21186
+Reply ArithmeticOperators<DefaultStrVar, StrVar,591,21186
+Reply ArithmeticOperators<DefaultStrVar, StrVar, StrVar>::doUnaryOp(591,21186
+Reply ArithmeticOperators<DefaultStrVar,597,21345
+Reply ArithmeticOperators<DefaultStrVar, StrVar,597,21345
+Reply ArithmeticOperators<DefaultStrVar, StrVar, StrVar>::doBinaryOp(597,21345
+
+include/basic_op_pkgs.hpp,115
+#define MOOVE_BASIC_OP_PKGS_HPP5,49
+namespace Moove Moove11,132
+    void operator () Moove::operator ()15,250
+
+include/errorvar.hpp,317
+#define MOOVE_ERRORVAR_HPP7,177
+namespace Moove Moove12,260
+struct ErrorVar Moove::ErrorVar14,279
+    struct Factory Moove::ErrorVar::Factory15,314
+    virtual const Variant& value(Moove::ErrorVar::value19,435
+class DefaultErrorVar DefaultErrorVar22,484
+    struct Factory DefaultErrorVar::Factory24,534
+
+include/task_frame.hpp,241
+#define MOOVE_TASK_FRAME_HPP6,103
+namespace Moove DefaultErrorVar::Moove14,257
+struct TaskFrame Moove::TaskFrame18,299
+class BytecodeTaskFrame BytecodeTaskFrame24,540
+    BytecodeTaskFrame(BytecodeTaskFrame::BytecodeTaskFrame29,629
+
+include/value_stack.hpp,267
+#define MOOVE_VALUE_STACK_HPP6,104
+namespace Moove Moove10,182
+class ValueStack Moove::ValueStack12,201
+    typedef boost::ptr_vector<Variant> ValueArray;Moove::ValueStack::ValueArray14,229
+    const Variant& operator [] Moove::ValueStack::operator []19,316
+
+include/op_wrappers.hpp,1371
+#define MOOVE_OP_WRAPPERS_HPP5,47
+namespace Moove Moove::ValueStack::Moove9,96
+typename VariantType::value_type get_variant_value(Moove::get_variant_value23,705
+void set_variant_value(40,1412
+namespace OperatorWrappers OperatorWrappers46,1643
+ResultType variant_negate(OperatorWrappers::variant_negate49,1722
+ResultType variant_add(OperatorWrappers::variant_add53,1878
+ResultType variant_sub(OperatorWrappers::variant_sub57,2095
+ResultType variant_mul(OperatorWrappers::variant_mul61,2312
+ResultType variant_div(OperatorWrappers::variant_div65,2529
+ResultType variant_mod(OperatorWrappers::variant_mod69,2746
+ResultType variant_exp(OperatorWrappers::variant_exp73,2963
+BooleanType variant_not(OperatorWrappers::variant_not77,3173
+BooleanType variant_or(OperatorWrappers::variant_or81,3328
+BooleanType variant_and(OperatorWrappers::variant_and85,3547
+BooleanType variant_equal(OperatorWrappers::variant_equal89,3767
+BooleanType variant_not_equal(OperatorWrappers::variant_not_equal93,3989
+BooleanType variant_less_than(OperatorWrappers::variant_less_than97,4215
+BooleanType variant_less_than_or_equal(OperatorWrappers::variant_less_than_or_equal101,4440
+BooleanType variant_greater_than_or_equal(OperatorWrappers::variant_greater_than_or_equal105,4675
+BooleanType variant_greater_than(OperatorWrappers::variant_greater_than109,4913
+
+include/exec_state.hpp,1068
+#define MOOVE_EXEC_STATE_HPP6,103
+namespace Moove Moove22,429
+class ExecutionState Moove::ExecutionState24,448
+    typename T::Factory* findTypeFactory(Moove::ExecutionState::findTypeFactory38,830
+    const BuiltinRegistry& builtinRegistry(Moove::ExecutionState::builtinRegistry50,1314
+    BuiltinRegistry& builtinRegistry(Moove::ExecutionState::builtinRegistry53,1394
+    const TypeRegistry& typeRegistry(Moove::ExecutionState::typeRegistry56,1463
+    TypeRegistry& typeRegistry(Moove::ExecutionState::typeRegistry59,1534
+    const OperatorMap& operatorMap(Moove::ExecutionState::operatorMap62,1594
+    OperatorMap& operatorMap(Moove::ExecutionState::operatorMap65,1661
+    const Task& currentTask(Moove::ExecutionState::currentTask68,1721
+    IntVar::Factory& intFactory(Moove::ExecutionState::intFactory71,1783
+    RealVar::Factory& realFactory(Moove::ExecutionState::realFactory74,1853
+    StrVar::Factory& strFactory(Moove::ExecutionState::strFactory77,1926
+    ListVar::Factory& listFactory(Moove::ExecutionState::listFactory80,1996
+
+src/bc_program.cpp,527
+namespace Moove Moove4,49
+BytecodeProgram::BytecodeProgram(Moove::BytecodeProgram::BytecodeProgram6,68
+BytecodeProgram::BytecodeProgram(16,545
+const CodeVector& BytecodeProgram::forkVector(23,800
+const Variant& BytecodeProgram::literal(28,906
+CodeVector::Word BytecodeProgram::immediateSize(33,1021
+BytecodeProgram& BytecodeProgram::operator = 57,1563
+DebugBytecodeProgram::DebugBytecodeProgram(71,1909
+Symbol DebugBytecodeProgram::varSymbolByID(82,2552
+CodeVector::Word DebugBytecodeProgram::varIDBySymbol(88,2732
+
+src/codevect.cpp,232
+namespace Moove Moove6,63
+bool CodeVector::checkPackSize(Moove::CodeVector::checkPackSize8,82
+void CodeVector::packWord(15,289
+CodeVector::Word CodeVector::unpackWord(26,526
+CodeVector::Word CodeVector::packedWordSize(40,805
+
+src/compiler.cpp,3502
+namespace Moove Moove9,145
+void Compiler::setAddr(Moove::Compiler::setAddr11,164
+void Compiler::emitOp(16,259
+ImmediateValue& Compiler::emitImmWithoutCounting(21,327
+ImmediateValue& Compiler::emitImm(29,566
+void Compiler::emitLabel(36,748
+Compiler::Temp Compiler::findTemp(42,920
+void Compiler::pushVar(54,1175
+void Compiler::putVar(59,1242
+Compiler::Temp Compiler::createTemp(64,1307
+void Compiler::pushTemp(69,1380
+void Compiler::putTemp(75,1480
+void Compiler::incTemp(81,1578
+void Compiler::pushLiteral(91,1769
+void Compiler::pushString(99,1973
+void Compiler::pushList(105,2114
+void Compiler::unaryExpr(122,2562
+void Compiler::binaryExpr(128,2685
+void Compiler::preAssign(135,2836
+void Compiler::assignTo(154,3670
+void Compiler::opAssignTo(185,4911
+void Compiler::jump(194,5108
+void Compiler::jumpFalse(200,5196
+void Compiler::ifElse(206,5295
+void Compiler::beginLoop(213,5464
+void Compiler::endLoop(218,5579
+void Compiler::setContinueAddr(223,5658
+void Compiler::jumpLoopBegin(228,5752
+void Compiler::jumpLoopContinue(235,5950
+void Compiler::jumpLoopEnd(242,6154
+void Compiler::jumpFalseLoopEnd(249,6351
+Compiler::Word Compiler::calcImmSizes(256,6556
+Compiler::sumImmByteDeltas(280,7740
+std::auto_ptr<BytecodeProgram::ForkVector> Compiler::link(288,8209
+void Compiler::reset(341,10284
+Compiler::Compiler(352,10484
+std::auto_ptr<BytecodeProgram> Compiler::compile(395,12021
+std::auto_ptr<DebugBytecodeProgram> Compiler::compileDebug(412,12721
+void Compiler::visit(438,13991
+void Compiler::visit(443,14063
+void Compiler::visit(449,14217
+void Compiler::visit(454,14302
+void Compiler::visit(460,14450
+void Compiler::visit(466,14604
+void Compiler::visit(471,14694
+void Compiler::visit(476,14778
+void Compiler::visit(481,14865
+void Compiler::visit(486,14988
+void Compiler::visit(491,15068
+void Compiler::visit(496,15154
+void Compiler::visit(502,15264
+void Compiler::visit(513,15524
+void Compiler::visit(524,15784
+void Compiler::visit(539,16146
+void Compiler::visit(554,16508
+void Compiler::visit(559,16587
+void Compiler::visit(564,16668
+void Compiler::visit(569,16770
+void Compiler::visit(574,16856
+void Compiler::visit(579,16938
+void Compiler::visit(584,17025
+void Compiler::visit(589,17115
+void Compiler::visit(594,17200
+void Compiler::visit(597,17275
+void Compiler::visit(602,17357
+void Compiler::visit(607,17439
+void Compiler::visit(612,17521
+void Compiler::visit(617,17602
+void Compiler::visit(622,17687
+void Compiler::visit(627,17768
+void Compiler::visit(634,17910
+void Compiler::visit(639,18018
+void Compiler::visit(644,18126
+void Compiler::visit(649,18234
+void Compiler::visit(654,18342
+void Compiler::visit(659,18450
+void Compiler::visit(664,18558
+void Compiler::visit(678,18871
+void Compiler::visit(685,19022
+void Compiler::visit(693,19208
+void Compiler::visit(698,19291
+void Compiler::visit(705,19442
+void Compiler::visit(711,19569
+void Compiler::visit(718,19731
+void Compiler::visit(726,19934
+void Compiler::visit(733,20093
+void Compiler::visit(738,20163
+void Compiler::visit(775,21176
+void Compiler::visit(780,21315
+void Compiler::visit(793,21562
+void Compiler::visit(841,22844
+void Compiler::visit(872,23485
+void Compiler::visit(877,23570
+void Compiler::visit(882,23712
+void Compiler::visit(887,23798
+void Compiler::visit(892,23879
+void Compiler::visit(897,23964
+void Compiler::visit(902,24055
+void Compiler::visit(914,24327
+void Compiler::visit(919,24430
+void Compiler::visit(924,24519
+
+src/disassembler.cpp,94
+namespace Moove Moove7,87
+const char* getImmediateTypeStr(Moove::getImmediateTypeStr9,106
+
+src/expr_ast.cpp,1480
+namespace Moove Moove6,110
+namespace Expr Moove::Expr8,129
+void Integer::accept(Moove::Expr::Integer::accept10,147
+void Objnum::accept(15,224
+void Str::accept(20,300
+void Real::accept(25,373
+void List::accept(30,447
+void Variable::accept(35,521
+void Scatter::accept(40,599
+void Scatter::Target::accept(45,676
+void Not::accept(50,761
+void Negate::accept(55,834
+void Splice::accept(60,910
+void PreInc::accept(65,986
+void PreDec::accept(70,1062
+void PostInc::accept(75,1138
+void PostDec::accept(80,1215
+void Or::accept(85,1292
+void And::accept(90,1364
+void Equal::accept(95,1437
+void NotEqual::accept(100,1512
+void Less::accept(105,1590
+void LessEqual::accept(110,1664
+void GreaterEqual::accept(115,1743
+void Greater::accept(120,1825
+void In::accept(125,1902
+void Add::accept(130,1974
+void Sub::accept(135,2047
+void Mul::accept(140,2120
+void Div::accept(145,2193
+void Mod::accept(150,2266
+void Exp::accept(155,2339
+void Assign::accept(160,2412
+void AddEqual::accept(165,2488
+void SubEqual::accept(170,2566
+void MulEqual::accept(174,2643
+void DivEqual::accept(178,2720
+void ModEqual::accept(182,2797
+void ExpEqual::accept(187,2875
+void Conditional::accept(192,2953
+void Index::accept(197,3034
+void Range::accept(202,3109
+void Catch::accept(207,3184
+void Prop::accept(212,3259
+void SystemProp::accept(217,3333
+void SystemCall::accept(222,3413
+void VerbCall::accept(227,3493
+void Builtin::accept(232,3571
+void Length::accept(237,3648
+
+src/flow_ctrl.cpp,363
+namespace Moove Moove7,124
+FlowControl::ControlBlock& FlowControl::findCtrlBlock(Moove::FlowControl::findCtrlBlock9,143
+void FlowControl::beginBlock(29,644
+void FlowControl::setContinueAddr(35,882
+void FlowControl::endBlock(43,1228
+void FlowControl::addBeginLabel(51,1474
+void FlowControl::addContinueLabel(56,1652
+void FlowControl::addEndLabel(65,1979
+
+src/immediate.cpp,139
+namespace Moove Moove6,105
+ImmediateValue::ImmediateValue(Moove::ImmediateValue::ImmediateValue8,124
+void ImmediateValue::link(14,321
+
+src/interpreter.cpp,581
+namespace Moove Moove16,308
+void Interpreter::clearTemps(Moove::Interpreter::clearTemps18,327
+void Interpreter::defineVariables(25,530
+bool Interpreter::execFinished(48,1444
+void Interpreter::execBuiltin(53,1519
+void Interpreter::lengthList(76,2444
+void Interpreter::appendList(86,2711
+void Interpreter::indexList(95,2937
+void Interpreter::setIndexList(106,3303
+void Interpreter::rangeList(118,3749
+void Interpreter::spliceList(135,4494
+void Interpreter::stepInstruction(147,4881
+Interpreter::Interpreter(302,10736
+std::auto_ptr<Variant> Interpreter::run(311,11051
+
+src/intvar.cpp,396
+namespace Moove Moove6,100
+std::string IntVar::debugStr(Moove::IntVar::debugStr10,169
+DefaultIntVar* DefaultIntVar::Factory::create(18,278
+DefaultIntVar* DefaultIntVar::Factory::createValue(23,360
+DefaultIntVar::DefaultIntVar(28,470
+DefaultIntVar::DefaultIntVar(33,538
+DefaultIntVar::DefaultIntVar(38,639
+DefaultIntVar::~DefaultIntVar(43,747
+DefaultIntVar* DefaultIntVar::clone(48,818
+
+src/label_linker.cpp,165
+namespace Moove Moove7,128
+void LabelLinker::linkLabels(Moove::LabelLinker::linkLabels9,147
+void LabelLinker::setAddr(28,746
+void LabelLinker::addLabel(35,920
+
+src/listvar.cpp,652
+namespace Moove Moove7,85
+std::string ListVar::debugStr(Moove::ListVar::debugStr11,156
+DefaultListVar* DefaultListVar::Factory::create(31,558
+DefaultListVar* DefaultListVar::Factory::createList(36,644
+DefaultListVar* DefaultListVar::Factory::createListCopy(43,831
+DefaultListVar::Container::value_type DefaultListVar::cloneElement(50,1045
+DefaultListVar::DefaultListVar(55,1194
+DefaultListVar* DefaultListVar::clone(60,1284
+void DefaultListVar::setContents(65,1378
+void DefaultListVar::copyContents(70,1476
+void DefaultListVar::setIndex(75,1557
+void DefaultListVar::appendValue(87,1896
+DefaultListVar& DefaultListVar::operator = 97,2137
+
+src/moove.y,1726
+#define MAKE_BINARY_EXPR(MAKE_BINARY_EXPR16,246
+#define BEGIN_BLOCK(BEGIN_BLOCK20,359
+#define END_BLOCK(END_BLOCK21,386
+inline auto_ptr<T> poolToAuto(56,1113
+auto_ptr<T> poolPtrToAuto(63,1234
+void safePushBack(84,1727
+void safePushBack(92,1895
+inline void yyerror(98,2018
+typedef Expr::Scatter::Target       ScatterTarget;ScatterTarget105,2104
+typedef Expr::Scatter::TargetList   ScatterTargetList;ScatterTargetList106,2155
+typedef Stmt::TryExcept::Except     Except;Except107,2210
+typedef Stmt::TryExcept::ExceptList ExceptList;ExceptList108,2254
+program:168,3915
+stmts:174,4034
+stmt:188,4301
+elseifs:325,8539
+else_block:337,8896
+opt_id:347,9128
+excepts:357,9352
+except_codes:386,10180
+switch_cases:396,10429
+arglist:421,11120
+ne_arglist:431,11357
+argument:443,11657
+expr:454,11878
+scatter:715,20218
+opt_target:751,21190
+dollars_up:770,21676
+catch_result:776,21779
+bool listToScatter(806,22306
+   typedef Expr::ArgList ArgList;ArgList808,22382
+   typedef Expr::Variable Variable;Variable809,22416
+   typedef Expr::Splice Splice;Splice810,22452
+   typedef ScatterTarget Target;Target811,22484
+void checkAssignable(838,23211
+int yylex(845,23399
+void Lexer::warning(859,23568
+bool Lexer::isWS(864,23648
+bool Lexer::myIsDigit(869,23728
+bool Lexer::isIDSuffixChar(874,23787
+void Lexer::skipWS(879,23865
+void Lexer::skipDigits(884,23947
+void Lexer::skipID(889,24038
+int Lexer::parseNumber(894,24130
+int Lexer::parseObjnum(946,25254
+int Lexer::parseString(964,25544
+void Lexer::parseComment(991,26134
+int Lexer::parseID(1003,26404
+int Lexer::parseOp(1023,26889
+Lexer::Lexer(1042,27361
+Lexer::Lexer(1047,27576
+int Lexer::nextToken(1052,27783
+int parseSource(1087,28619
+
+src/op_map.cpp,291
+namespace Moove Moove7,128
+void OperatorMap::reserve(Moove::OperatorMap::reserve9,147
+OperatorMap::UnaryOperator OperatorMap::findUnary(32,843
+OperatorMap::BinaryOperator OperatorMap::findBinary(37,986
+void OperatorMap::registerUnary(43,1212
+void OperatorMap::registerBinary(52,1475
+
+src/op_package.cpp,1023
+namespace Moove Moove3,27
+Reply OperatorPackage::doUnaryOp(Moove::OperatorPackage::doUnaryOp5,46
+Reply OperatorPackage::doBinaryOp(10,215
+Reply OperatorPackage::doIndexSetOp(15,413
+Reply OperatorPackage::doRangeOp(22,710
+Reply OperatorPackage::doRangeSetOp(27,936
+Reply OperatorPackage::not(36,1313
+Reply OperatorPackage::negate(41,1468
+Reply OperatorPackage::length(46,1629
+Reply OperatorPackage::splice(51,1790
+Reply OperatorPackage::or(56,1951
+Reply OperatorPackage::and(61,2131
+Reply OperatorPackage::eq(66,2313
+Reply OperatorPackage::ne(71,2493
+Reply OperatorPackage::lt(76,2673
+Reply OperatorPackage::le(81,2853
+Reply OperatorPackage::ge(86,3032
+Reply OperatorPackage::gt(91,3212
+Reply OperatorPackage::in(96,3392
+Reply OperatorPackage::add(101,3571
+Reply OperatorPackage::subtract(106,3752
+Reply OperatorPackage::multiply(111,3943
+Reply OperatorPackage::divide(116,4134
+Reply OperatorPackage::modulo(121,4321
+Reply OperatorPackage::exponent(126,4508
+Reply OperatorPackage::index(131,4699
+
+src/opcodes.cpp,157
+namespace Moove Moove4,46
+ImmediateValue::Type OpcodeInfo::Op::immediateType(52,3004
+OpcodeInfo::FunctionalGroup OpcodeInfo::Op::functionalGroup(58,3191
+
+src/operators.cpp,1075
+namespace Moove Moove8,123
+struct UnaryOpMask Moove::UnaryOpMask12,164
+   UnaryOpMask(Moove::UnaryOpMask::UnaryOpMask16,244
+bool operator < 20,327
+struct BinaryOpMask BinaryOpMask31,569
+   BinaryOpMask(BinaryOpMask::BinaryOpMask36,687
+bool operator < 42,825
+struct OperatorMapper::Impl OperatorMapper::Impl58,1181
+   typedef map<UnaryOpMask, const Operator*> UnaryOpMap;OperatorMapper::Impl::UnaryOpMap59,1211
+   typedef map<BinaryOpMask, const Operator*> BinaryOpMap;OperatorMapper::Impl::BinaryOpMap60,1268
+   Impl(OperatorMapper::Impl::Impl65,1380
+   Impl(OperatorMapper::Impl::Impl68,1397
+Reply Operator::unaryOp(72,1486
+Reply Operator::binaryOp(77,1664
+OperatorMapper::OperatorMapper(84,1872
+OperatorMapper::OperatorMapper(89,1932
+OperatorMapper::~OperatorMapper(94,2036
+const Operator* OperatorMapper::lookupUnaryOp(99,2093
+OperatorMapper::lookupBinaryOp(112,2408
+void OperatorMapper::addUnaryOp(125,2744
+void OperatorMapper::addBinaryOp(136,3108
+bool OperatorMapper::removeUnaryOp(148,3543
+bool OperatorMapper::removeBinaryOp(160,3844
+
+src/parser.cpp,236
+namespace Moove Moove6,109
+Parser::Parser(Moove::Parser::Parser10,167
+Parser::Parser(15,276
+bool Parser::parse(20,392
+bool Parser::parse(27,580
+bool Parser::hasErrors(34,775
+std::auto_ptr<Program> Parser::releaseProgram(39,842
+
+src/parser_state.cpp,755
+namespace Moove Moove7,135
+ParserState::ParserState(Moove::ParserState::ParserState9,154
+ParserState::ParserState(18,391
+ParserState::~ParserState(27,637
+void ParserState::error(30,669
+void ParserState::warning(36,767
+void ParserState::setProgram(41,846
+void ParserState::addToPool(47,968
+void ParserState::removeFromPool(53,1078
+void ParserState::beginLoop(59,1179
+void ParserState::endLoop(65,1332
+void ParserState::beginFork(73,1546
+void ParserState::endFork(78,1636
+void ParserState::beginSwitch(86,1850
+void ParserState::endSwitch(92,1964
+Symbol ParserState::loopID(101,2206
+bool ParserState::checkLoopID(113,2601
+Symbol ParserState::addVar(124,2949
+Symbol ParserState::findVar(129,3058
+void ParserState::parseFinished(134,3171
+
+src/realvar.cpp,412
+namespace Moove Moove7,119
+std::string RealVar::debugStr(Moove::RealVar::debugStr11,190
+DefaultRealVar* DefaultRealVar::Factory::create(20,361
+DefaultRealVar* DefaultRealVar::Factory::createValue(25,446
+DefaultRealVar::DefaultRealVar(30,566
+DefaultRealVar::DefaultRealVar(35,636
+DefaultRealVar::DefaultRealVar(40,746
+DefaultRealVar::~DefaultRealVar(45,857
+DefaultRealVar* DefaultRealVar::clone(50,930
+
+src/reply.cpp,140
+namespace Moove Moove4,79
+Reply::Reply(Moove::Reply::Reply6,98
+Reply::Reply(10,192
+void Reply::reset(14,310
+void Reply::reset(20,416
+
+src/stmt_ast.cpp,532
+namespace Moove Moove6,110
+namespace Stmt Moove::Stmt8,129
+void If::accept(Moove::Stmt::If::accept10,147
+void If::Else::accept(15,219
+void While::accept(20,297
+void ForList::accept(25,372
+void ForRange::accept(30,449
+void TryExcept::accept(35,527
+void TryExcept::Except::accept(40,606
+void TryFinally::accept(45,693
+void Fork::accept(50,773
+void Switch::accept(55,847
+void Switch::Case::accept(60,923
+void Return::accept(65,1005
+void Continue::accept(70,1081
+void Break::accept(75,1159
+void Expr::accept(80,1234
+
+src/string_utils.cpp,247
+namespace Moove Moove4,86
+bool StringEqualToICase::operator () Moove::StringEqualToICase::operator ()7,111
+bool StringLessICase::operator () 12,299
+std::size_t StringHash::operator () 21,678
+std::size_t StringHashICase::operator () 37,1000
+
+src/strvar.cpp,284
+namespace Moove Moove6,100
+std::string StrVar::debugStr(Moove::StrVar::debugStr10,169
+DefaultStrVar* DefaultStrVar::Factory::create(15,243
+DefaultStrVar* DefaultStrVar::Factory::createValue(20,325
+DefaultStrVar* DefaultStrVar::clone(25,442
+void DefaultStrVar::setValue(30,532
+
+src/symbol_table.cpp,331
+namespace Moove Moove5,49
+const std::string& Symbol::name(Moove::Symbol::name7,68
+bool Symbol::operator < 13,155
+SymbolTable::SymbolTable(19,293
+Symbol SymbolTable::findSymbol(22,345
+std::pair<Symbol,31,544
+std::pair<Symbol, bool> SymbolTable::insert(31,544
+void SymbolTable::erase(43,844
+void SymbolTable::erase(50,986
+
+src/type_registry.cpp,305
+namespace Moove Moove5,118
+bool TypeRegistry::TypeEntryNameLessThan::operator () Moove::TypeRegistry::TypeEntryNameLessThan::operator ()7,137
+const TypeRegistry::TypeEntry* TypeRegistry::findType(12,273
+const TypeRegistry::TypeEntry* TypeRegistry::findType(22,509
+TypeRegistry::registerType(33,800
+
+src/vm.cpp,340
+namespace Moove Moove6,65
+void VirtualMachine::pushOnStack(Moove::VirtualMachine::pushOnStack8,84
+boost::shared_ptr<Variant> VirtualMachine::popOffStack(13,182
+boost::shared_ptr<Variant> VirtualMachine::stackTop(21,359
+void VirtualMachine::doUnaryOp(27,474
+void VirtualMachine::doBinaryOp(38,751
+void VirtualMachine::reset(51,1163
+
+src/lexer_symbols.hpp,443
+#define MOOVE_LEXER_SYMBOLS_HPP38,2034
+struct LexerSymbol ::LexerSymbol45,2135
+class LexerSymbolTable::LexerSymbolTable48,2234
+LexerSymbolTable::hash 57,2455
+LexerSymbolTable::in_word_set 92,3901
+      TOTAL_KEYWORDS ::TOTAL_KEYWORDS96,4000
+      MIN_WORD_LENGTH ::MIN_WORD_LENGTH97,4027
+      MAX_WORD_LENGTH ::MAX_WORD_LENGTH98,4054
+      MIN_HASH_VALUE ::MIN_HASH_VALUE99,4081
+      MAX_HASH_VALUE ::MAX_HASH_VALUE100,4107
+
+src/variant.cpp,29
+namespace Moove Moove6,111
+
+src/variant_factory.cpp,97
+namespace Moove Moove4,89
+Variant* VariantFactory::create(Moove::VariantFactory::create6,108
+
+src/task_frame.cpp,111
+namespace Moove Moove4,84
+std::auto_ptr<Variant> BytecodeTaskFrame::run(Moove::BytecodeTaskFrame::run6,103
+
+src/exec_state.cpp,158
+namespace Moove Moove3,27
+std::auto_ptr<Variant> ExecutionState::call(Moove::ExecutionState::call5,46
+std::auto_ptr<Variant> ExecutionState::call(12,230
+
+src/builtin_registry.cpp,223
+namespace Moove Moove3,33
+BuiltinRegistry::Function BuiltinRegistry::findFunction(Moove::BuiltinRegistry::findFunction5,52
+void BuiltinRegistry::registerFunction(12,252
+void BuiltinRegistry::unregisterFunction(20,499
+
+tests/symbol_table_test/test.cpp,66
+SymbolTable table;10,171
+void putString(12,191
+int main(17,249
+
+tests/type_reg/test_reply.cpp,33
+Reply func(5,46
+int main(10,81
+
+tests/type_reg/type_reg_test.cpp,461
+struct IntIntOpPkg IntIntOpPkg15,248
+   Reply doBinaryOp(IntIntOpPkg::doBinaryOp16,294
+struct RealRealOpPkg RealRealOpPkg19,378
+   Reply doBinaryOp(RealRealOpPkg::doBinaryOp20,426
+class IntRealOpPkg IntRealOpPkg23,510
+   Reply doBinaryOp(IntRealOpPkg::doBinaryOp27,619
+Reply IntIntOpPkg::doBinaryOp(36,748
+Reply RealRealOpPkg::doBinaryOp(48,1166
+double IntRealOpPkg::upcastToReal(61,1593
+Reply IntRealOpPkg::doBinaryOp(70,1808
+int main(93,2409
+
+tests/variant_test/test.cpp,993
+struct Add Add15,311
+   Reply binaryOp(Add::binaryOp16,342
+static const Add<IntVar,29,714
+static const Add<IntVar, IntVar,29,714
+static const Add<IntVar, IntVar, DefaultIntVar> AddIntInt;29,714
+static const Add<IntVar,30,773
+static const Add<IntVar, RealVar,30,773
+static const Add<IntVar, RealVar, DefaultRealVar> AddIntReal;30,773
+static const Add<RealVar,31,835
+static const Add<RealVar, IntVar,31,835
+static const Add<RealVar, IntVar, DefaultRealVar> AddRealInt;31,835
+static const Add<RealVar,32,897
+static const Add<RealVar, RealVar,32,897
+static const Add<RealVar, RealVar, DefaultRealVar> AddRealReal;32,897
+static const Add<StrVar,33,961
+static const Add<StrVar, StrVar,33,961
+static const Add<StrVar, StrVar, DefaultStrVar> AddStrStr;33,961
+static DefaultIntFactory intFactory;35,1021
+static DefaultRealFactory realFactory;36,1058
+static DefaultStrFactory strFactory;37,1097
+int main(39,1135
+      typedef vector<Variant*> VariantVector;VariantVector59,1856
+
+moosh/include/msg_handler.hpp,134
+#define MOOSH_MSG_HANDLER_HPP2,30
+class MessageHandler MessageHandler6,89
+   MessageHandler(MessageHandler::MessageHandler11,187
+
+moosh/include/script_visitor.hpp,2289
+#define MOOSH_SCRIPT_VISITOR_HPP5,50
+class ScriptVisitor ScriptVisitor21,359
+   typedef std::map<Moove::Symbol, boost::shared_ptr<Moove::Variant> > VariableTable;ScriptVisitor::VariableTable23,417
+   void visitAll(ScriptVisitor::visitAll40,927
+   typedef std::runtime_error UndefinedVariable;ScriptVisitor::UndefinedVariable54,1335
+   typedef std::runtime_error InvalidAssignment;ScriptVisitor::InvalidAssignment55,1384
+   typedef std::logic_error   InvalidType;ScriptVisitor::InvalidType56,1433
+   typedef std::runtime_error OutOfRange;ScriptVisitor::OutOfRange57,1476
+   void visit(ScriptVisitor::visit66,1652
+   void visit(ScriptVisitor::visit77,1872
+   void visit(ScriptVisitor::visit80,1922
+   void visit(ScriptVisitor::visit83,1980
+   void visit(ScriptVisitor::visit86,2026
+   void visit(ScriptVisitor::visit99,2297
+   void visit(ScriptVisitor::visit102,2384
+   void visit(ScriptVisitor::visit105,2475
+   void visit(ScriptVisitor::visit108,2565
+   void visit(ScriptVisitor::visit111,2658
+   void visit(ScriptVisitor::visit114,2747
+   void visit(ScriptVisitor::visit117,2841
+   void visit(ScriptVisitor::visit120,2938
+   void visit(ScriptVisitor::visit123,3030
+   void visit(ScriptVisitor::visit126,3075
+   void visit(ScriptVisitor::visit129,3166
+   void visit(ScriptVisitor::visit132,3257
+   void visit(ScriptVisitor::visit135,3348
+   void visit(ScriptVisitor::visit138,3439
+   void visit(ScriptVisitor::visit141,3488
+   void visit(ScriptVisitor::visit154,3762
+   void visit(ScriptVisitor::visit157,3813
+   void visit(ScriptVisitor::visit164,3956
+   void visit(ScriptVisitor::visit167,4004
+   void visit(ScriptVisitor::visit170,4052
+   void visit(ScriptVisitor::visit173,4099
+   void visit(ScriptVisitor::visit176,4152
+   void visit(ScriptVisitor::visit179,4205
+   void visit(ScriptVisitor::visit193,4493
+   void visit(ScriptVisitor::visit198,4589
+   void visit(ScriptVisitor::visit201,4641
+   void visit(ScriptVisitor::visit204,4701
+   void visit(ScriptVisitor::visit207,4754
+   void visit(ScriptVisitor::visit210,4801
+   void visit(ScriptVisitor::visit213,4850
+   void visit(ScriptVisitor::visit216,4905
+   void visit(ScriptVisitor::visit219,4954
+   void visit(ScriptVisitor::visit222,5005
+
+moosh/include/moosh_builtins.hpp,32
+#define MOOSH_BUILTINS_HPP2,27
+
+moosh/src/disasm.cpp,122
+std::auto_ptr<BytecodeProgram> compile(24,345
+std::auto_ptr<DebugBytecodeProgram> compileDebug(38,770
+int main(52,1210
+
+moosh/src/moosh.cpp,2546
+typedef DefaultOperatorPackage<DefaultIntVar,DefaultIntVar20,357
+typedef DefaultOperatorPackage<DefaultIntVar, DefaultIntVar,DefaultIntVar20,357
+typedef DefaultOperatorPackage<DefaultIntVar, DefaultIntVar, IntVar,IntVar20,357
+typedef DefaultOperatorPackage<DefaultIntVar, DefaultIntVar, IntVar, IntVar,IntVar20,357
+typedef DefaultOperatorPackage<DefaultIntVar, DefaultIntVar, IntVar, IntVar, OpcodeInfo::ALL_FUNCTIONAL_GROUPS> IntOpSet;IntOpSet20,357
+typedef DefaultOperatorPackage<DefaultRealVar,DefaultRealVar21,479
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar,DefaultIntVar21,479
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar, RealVar,RealVar21,479
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar, RealVar, RealVar,RealVar21,479
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar, RealVar, RealVar, OpcodeInfo::ALL_FUNCTIONAL_GROUPS> RealOpSet;RealOpSet21,479
+typedef DefaultOperatorPackage<DefaultRealVar,DefaultRealVar22,605
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar,DefaultIntVar22,605
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar, IntVar,IntVar22,605
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar, IntVar, RealVar,RealVar22,605
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar, IntVar, RealVar, OpcodeInfo::ALL_FUNCTIONAL_GROUPS> IntRealOpSet;IntRealOpSet22,605
+typedef DefaultOperatorPackage<DefaultRealVar,DefaultRealVar23,733
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar,DefaultIntVar23,733
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar, RealVar,RealVar23,733
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar, RealVar, IntVar,IntVar23,733
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar, RealVar, IntVar, OpcodeInfo::ALL_FUNCTIONAL_GROUPS> RealIntOpSet;RealIntOpSet23,733
+typedef DefaultOperatorPackage<DefaultStrVar,DefaultStrVar24,861
+typedef DefaultOperatorPackage<DefaultStrVar, DefaultIntVar,DefaultIntVar24,861
+typedef DefaultOperatorPackage<DefaultStrVar, DefaultIntVar, StrVar,StrVar24,861
+typedef DefaultOperatorPackage<DefaultStrVar, DefaultIntVar, StrVar, StrVar,StrVar24,861
+typedef DefaultOperatorPackage<DefaultStrVar, DefaultIntVar, StrVar, StrVar, OpcodeInfo::ALL_FUNCTIONAL_GROUPS> StrOpSet;StrOpSet24,861
+void registerTypes(26,984
+void registerBuiltins(50,2404
+std::auto_ptr<Variant> evalScript(59,2835
+std::auto_ptr<Variant> evalExpr(85,3714
+void parseScriptArgs(95,4067
+int main(115,4651
+
+moosh/src/msg_handler.cpp,70
+void MessageHandler::error(5,49
+void MessageHandler::warning(10,212
+
+moosh/src/script_visitor.cpp,2889
+struct FixedCast FixedCast18,350
+   T operator () FixedCast::operator ()19,369
+struct BinaryCast BinaryCast24,535
+   T operator () BinaryCast::operator ()25,555
+class ScriptOperatorPackage ScriptOperatorPackage38,904
+   Reply doBinaryMathOp(ScriptOperatorPackage::doBinaryMathOp42,985
+   Reply doBinaryCompareOp(ScriptOperatorPackage::doBinaryCompareOp71,1715
+   Reply doBinaryOp(ScriptOperatorPackage::doBinaryOp109,2598
+ScriptOperatorPackage<DefaultStrVar,133,3034
+		      FixedCast<const std::string&, StrVar> >::doBinaryMathOp(134,3072
+typedef ScriptOperatorPackage<DefaultIntVar,DefaultIntVar147,3520
+typedef ScriptOperatorPackage<DefaultIntVar, FixedCast<int,int147,3520
+typedef ScriptOperatorPackage<DefaultIntVar, FixedCast<int, IntVar> > IntOpPkg;IntOpPkg147,3520
+typedef ScriptOperatorPackage<DefaultRealVar,DefaultRealVar148,3600
+typedef ScriptOperatorPackage<DefaultRealVar, FixedCast<double,double148,3600
+typedef ScriptOperatorPackage<DefaultRealVar, FixedCast<double, RealVar> > RealOpPkg;RealOpPkg148,3600
+typedef ScriptOperatorPackage<DefaultRealVar,DefaultRealVar149,3686
+typedef ScriptOperatorPackage<DefaultRealVar, BinaryCast<double,double149,3686
+typedef ScriptOperatorPackage<DefaultRealVar, BinaryCast<double, IntVar,IntVar149,3686
+typedef ScriptOperatorPackage<DefaultRealVar, BinaryCast<double, IntVar, RealVar> > IntRealOpPkg;IntRealOpPkg149,3686
+typedef ScriptOperatorPackage<DefaultStrVar,DefaultStrVar150,3784
+typedef ScriptOperatorPackage<DefaultStrVar, FixedCast<const std::string&, StrVar> > StrOpPkg;StrOpPkg150,3784
+void ScriptVisitor::visitStmts(161,3975
+void ScriptVisitor::doBinaryOp(168,4195
+void ScriptVisitor::assignTo(175,4366
+void ScriptVisitor::acceptArgs(183,4607
+bool ScriptVisitor::runIf(205,5320
+ScriptVisitor::ScriptVisitor(225,5973
+void ScriptVisitor::visit(242,6781
+void ScriptVisitor::visit(251,6936
+void ScriptVisitor::visit(256,7104
+void ScriptVisitor::visit(261,7273
+void ScriptVisitor::visit(266,7435
+void ScriptVisitor::visit(271,7530
+void ScriptVisitor::visit(280,7775
+void ScriptVisitor::visit(286,7904
+void ScriptVisitor::visit(294,8162
+void ScriptVisitor::visit(302,8421
+void ScriptVisitor::visit(312,8744
+void ScriptVisitor::visit(322,9068
+void ScriptVisitor::visit(328,9200
+void ScriptVisitor::visit(334,9329
+void ScriptVisitor::visit(340,9458
+void ScriptVisitor::visit(346,9587
+void ScriptVisitor::visit(352,9716
+void ScriptVisitor::visit(364,10045
+void ScriptVisitor::printVariant(379,10577
+void ScriptVisitor::visit(404,11465
+   typedef boost::indirect_iterator<ListVar::Container::const_iterator> ArgIterator;ArgIterator406,11527
+void ScriptVisitor::visit(452,13068
+void ScriptVisitor::visit(458,13337
+void ScriptVisitor::visit(472,13678
+void ScriptVisitor::visit(482,13931
+void ScriptVisitor::visit(496,14268
+void ScriptVisitor::visit(524,15065
+
+moosh/src/moosh_builtins.cpp,212
+Reply builtin_input(15,242
+Reply builtin_print_or_println(::builtin_print_or_println47,1465
+Reply builtin_print(71,2338
+Reply builtin_println(76,2480
+Reply builtin_length(81,2623
+Reply builtin_chr(96,3356

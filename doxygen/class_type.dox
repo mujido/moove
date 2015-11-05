@@ -1,0 +1,40 @@
+/**
+   \page class_type MOOVE Inline Class Type
+ 
+   \section class_type_intro Introduction
+   Some uses of MOOVE will require the ability to define inline class types within source. These class types are then used
+   to generate instance objects, which would behave the same as any other data type but adhere to the structure defined within
+   the class defintion.
+
+   \section class_type_requirements Requirements
+        - Source-level definition of a class including properties and methods.
+        - Support an optional parent. If no parent is given, it defaults to a simplistic \ref class_type_default_parent 
+          "internal class" type described below.
+        - Support verb overriding. Children can override a parent's verb of the same name. The builtin function <tt>pass()</tt>
+          may be used to pass execution to the parent's verb from the child.
+        - Classes will be represented as a special internal Variant type which must provide a way of creating an instance.
+    
+    \section class_type_non_requirements Non-Requirements
+        - Multiple inheritence will not be supported.
+      
+    \section class_type_open_issues Open Issues
+        - Should a "destructor" method be supported, that is called whenever the object is freed.
+
+    \section class_type_syntax Source Syntax
+    \code
+        <variable> = class[(<parent>)]
+            property <property name>[ = <initial value>];
+                         .
+                         .
+                         .
+
+            verb <verb name>()
+                 <body>
+            endverb
+                         .
+                         .
+                         .
+        endclass
+    \endcode
+*/
+                

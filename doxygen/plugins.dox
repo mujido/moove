@@ -1,0 +1,30 @@
+/**
+   \page plugins Plugin Interface
+
+   Plugins are used to allow the MOOVE system and its users a great amount
+   of flexibility without necessarily having a profound knowledge of its inner
+   workings. The actual meaning of plugins is somewhat ambiguous, however.
+   MOOVE has two methods of plugging functionality into the server. Both use
+   a common midpoint however, a special kind of Moove::Variant class. The
+   first is the most native to the server itself, and in fact a mediator
+   between the second method and the MOOVE server and is called
+   \ref variant_plugin. The second is an actual dynamically-loaded module
+   (DLL in Windows or shared library in Linux). It can be found at
+   \ref dynamic_plugin.
+
+   \section variant_plugin Variant Plugin Interface
+
+   Variants are used in many evil ways. This happens to be one. A complex
+   library of verbs and properties can be completely built in C++ by
+   providing the abstract interface of Moove::Variant to it. After creating
+   a Variant wrapper for it, one can then add Moove::Operator implementations
+   for the various Moove::CustomizableOpcode types for verb and property
+   references as well as any additional operator support required. Doing so
+   would allow the plugin to provide a new type to the language.
+
+   \endsection
+
+   \section dynamic_plugin Dynamically-Loaded Plugins
+
+   \endsection
+*/

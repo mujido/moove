@@ -1,0 +1,333 @@
+#include "interpreter.hpp"
+#include "reply.hpp"
+#include "except.hpp"
+#include "opcodes.hpp"
+#include "op_map.hpp"
+#include "op_package.hpp"
+#include "type_registry.hpp"
+#include "listvar.hpp"
+#include "strvar.hpp"
+#include "intvar.hpp"
+#include "realvar.hpp"
+
+#include <iostream>
+
+namespace Moove {
+
+bool Interpreter::execFinished()const
+{
+    return m_retVal.get() != 0;
+}
+
+void Interpreter::execBuiltin()
+{
+    std::auto_ptr<ListVar> args(popStack<ListVar>());
+    std::auto_ptr<StrVar> name(popStack<StrVar>());
+
+    std::auto_ptr<Variant> result;
+
+    if (name->value() == "input") {
+        MOOVE_ASSERT(args->contents()->size() == 1, "invald number of arguments to builtin 'input'");
+        boost::shared_ptr<StrVar> inputType = boost::dynamic_pointer_cast<StrVar>(args->contents()[0]);
+        MOOVE_ASSERT(inputType, "invalid type");
+
+        std::cout << "Enter value: ";
+
+        if(inputType->value() == "int") {
+            int value;
+            
+            MOOVE_ASSERT(std::cin >> value, "unable to input value");
+            std::cin.ignore();
+            pushStack(std::auto_ptr<Variant>(m_intFactory->createValue(value)));
+        } else if(inputType->value() == "real") {
+            double value;
+            
+            MOOVE_ASSERT(std::cin >> value, "unable to input value");
+            std::cin.ignore();
+            pushStack(std::auto_ptr<Variant>(m_realFactory->createValue(value)));
+        } else if(inputType->value() == "str") {
+            std::string value;
+
+            MOOVE_ASSERT(std::getline(std::cin, value), "unable to input value");
+            pushStack(std::auto_ptr<Variant>(m_strFactory->createValue(value)));
+        } else {
+            MOOVE_THROW("invalid input type");
+        }
+
+        return;
+    } else if(name->value() == "print" || name->value() == "println") {
+        ListVar::Container::const_iterator argsEnd = args->contents()->end();
+        for(ListVar::Container::const_iterator arg = args->contents()->begin(); arg != argsEnd; ++arg) {
+            if(boost::dynamic_pointer_cast<IntVar>(*arg) || 
+               boost::dynamic_pointer_cast<RealVar>(*arg) || 
+               boost::dynamic_pointer_cast<ListVar>(*arg))
+                std::cout << (*arg)->debugStr();
+            else if(boost::shared_ptr<StrVar> strValue = boost::dynamic_pointer_cast<StrVar>(*arg))
+                std::cout << strValue->value();
+            else
+                MOOVE_THROW("invalid type: " + (*arg)->factory().regEntry().name());
+        }
+        
+        if (name->value() == "println") 
+            std::cout << std::endl;
+        else
+        	std::cout.flush();
+    } else if(name->value() == "length") {
+        MOOVE_ASSERT(args->contents()->size() == 1, "invalid number of arguments");
+        if(boost::shared_ptr<StrVar> strValue = boost::dynamic_pointer_cast<StrVar>(args->contents()[0]))
+            m_stack.push_back(m_intFactory->createValue(strValue->value().size()));
+        else if(boost::shared_ptr<ListVar> listValue = boost::dynamic_pointer_cast<ListVar>(args->contents()[0]))
+            m_stack.push_back(m_intFactory->createValue(listValue->contents()->size()));
+        else
+            MOOVE_THROW("invalid type: " + args->contents()[0]->factory().regEntry().name());
+
+        return;
+    } else if(name->value() == "chr") {
+        MOOVE_ASSERT(args->contents()->size() == 1, "invalid number of arguments");
+        if(boost::shared_ptr<IntVar> intValue = boost::dynamic_pointer_cast<IntVar>(args->contents()[0])) {
+            MOOVE_ASSERT(intValue->value() > 0 && intValue->value() <= 255, "chr() argument out of range");
+            m_stack.push_back(m_strFactory->createValue(std::string(1, static_cast<char>(intValue->value()))));
+        } else
+            MOOVE_THROW("invalid type: " + args->contents()[0]->factory().regEntry().name());
+        
+        return;            
+    } else
+        MOOVE_THROW("invalid builtin function");
+
+    // if at this point, a builtin was executed that does not return a value. return a bogus value
+    pushStack(std::auto_ptr<Variant>(m_intFactory->createValue(0)));
+}
+
+void Interpreter::indexList()
+{
+    std::auto_ptr<IntVar> indexVar(popStack<IntVar>());
+    std::auto_ptr<ListVar> listVar(popStack<ListVar>());
+
+    
+    MOOVE_ASSERT(indexVar->value() >= 1 && indexVar->value() <= listVar->contents()->size(), "index out of range");
+
+    pushStack(std::auto_ptr<Variant>(listVar->contents()[indexVar->value() - 1]->clone()));
+}
+
+void Interpreter::setIndexList()
+{
+    std::auto_ptr<IntVar> indexVar = popStack<IntVar>();
+    std::auto_ptr<ListVar> listVar = popStack<ListVar>();
+    std::auto_ptr<Variant> valueVar = popStack<Variant>();
+    
+    MOOVE_ASSERT(indexVar->value() >= 1 && indexVar->value() <= listVar->contents()->size(), "index out of range");
+
+    ListVar::Container newContents(listVar->contents());
+    newContents[indexVar->value() - 1] = valueVar;
+    listVar->setContents(newContents);
+
+    pushStack(listVar);
+}    
+
+void Interpreter::rangeList()
+{
+    std::auto_ptr<IntVar> endVar(popStack<IntVar>());
+    std::auto_ptr<IntVar> startVar(popStack<IntVar>());
+    std::auto_ptr<ListVar> listVar(popStack<ListVar>());
+
+    MOOVE_ASSERT(startVar->value() >= 1 && startVar->value() <= listVar->contents()->size(), "index out of range");
+    MOOVE_ASSERT(endVar->value() >= startVar->value() && endVar->value() <= listVar->contents()->size(), "index out of range");
+
+    ListVar::Container range;
+
+    for(ListVar::Container::size_type i = startVar->value() - 1; i < endVar->value(); ++i)
+        range.push_back(boost::shared_ptr<Variant>(listVar->contents()[i]->clone()));
+
+    pushStack(std::auto_ptr<Variant>(m_listFactory->createList(range)));
+}
+
+void Interpreter::spliceList()
+{
+    std::auto_ptr<ListVar> srcListVar(popStack<ListVar>());
+    std::auto_ptr<ListVar> destListVar(popStack<ListVar>());
+
+    ListVar::Container contents(destListVar->contents());
+
+    ListVar::Container::const_iterator srcEnd = srcListVar->contents()->end();
+    for(ListVar::Container::const_iterator srcIter = srcListVar->contents()->begin(); srcIter != srcEnd; ++srcIter)
+        contents.push_back(boost::shared_ptr<Variant>((*srcIter)->clone()));
+
+    destListVar->setContents(contents);
+    pushStack(destListVar);
+}
+
+void Interpreter::stepInstruction()
+{
+    try {
+        MOOVE_ASSERT(m_curVect != 0, "NULL current CodeVector");
+
+        if(!execFinished()) {
+            Reply reply;
+
+            Opcode op = static_cast<Opcode>(*m_execPos++);
+            MOOVE_ASSERT(OpcodeInfo::validOp(op), "invalid opcode");
+
+            const OpcodeInfo::Op& opInfo = OpcodeInfo::getOp(op);
+            if(opInfo.isUnaryOp()) {
+                std::auto_ptr<Variant> operand(popStack<Variant>());
+
+                boost::shared_ptr<OperatorPackage> opPkg = m_opMap->findUnary(operand->factory().regEntry());
+                MOOVE_ASSERT(opPkg, "unhandled unary operation");
+
+                reply = opPkg->doUnaryOp(op, operand);
+                MOOVE_ASSERT(reply.normal(), "error occured in unary operation");
+
+                pushStack(std::auto_ptr<Variant>(reply.value()->clone()));
+            } else if(opInfo.isBinaryOp()) {
+                std::auto_ptr<Variant> rightOperand(popStack<Variant>());
+                std::auto_ptr<Variant> leftOperand(popStack<Variant>());
+
+                boost::shared_ptr<OperatorPackage> opPkg = m_opMap->findBinary(leftOperand->factory().regEntry(), 
+                                                                               rightOperand->factory().regEntry());
+                MOOVE_ASSERT(opPkg != 0, "unhandled binary operation");
+
+                reply = opPkg->doBinaryOp(op, leftOperand, rightOperand);
+                MOOVE_ASSERT(reply.normal(), "error occured in binary operation");
+	    
+                pushStack(std::auto_ptr<Variant>(reply.value()->clone()));
+            } else {
+                CodeVector::Word imm;
+
+                if (opInfo.hasImmediate()) {
+                    if (opInfo.immediateType() == ImmediateValue::LABEL) {
+                        imm = m_curVect->unpackWord(m_execPos, m_curVect->labelSize());
+                        m_execPos += m_curVect->labelSize();
+                    } else {
+                        imm = m_curVect->unpackWord(m_execPos, m_bc.immediateSize(opInfo.immediateType()));
+                        m_execPos += m_bc.immediateSize(opInfo.immediateType());
+                    }
+                }		       
+
+                switch(op) {
+                    case OP_DONE:
+                        m_retVal.reset(m_intFactory->createValue(0));
+                        break;
+
+                    case OP_JUMP_FALSE:
+                    {
+                        std::auto_ptr<Variant> testVar = popStack<Variant>();
+                        if(testVar->truthValue()) {
+                            // value is true, continue executing next instruction
+                            break;
+                        }
+
+                        // value is false, fall throuth to jump case
+                    }
+
+                    case OP_JUMP:
+                        m_execPos = m_curVect->begin() + imm;
+                        break;
+
+                    case OP_RETURN:
+                        m_retVal = popStack<Variant>();
+                        break;
+		    
+                    case OP_PUSH_LITERAL:
+                        pushStack(std::auto_ptr<Variant>(m_bc.literal(imm).clone()));
+                        break;
+	    
+                    case OP_PUSH:
+                        MOOVE_ASSERT(imm < m_temps.size(), "temporary ID out of range");
+                        pushStack(std::auto_ptr<Variant>(m_temps[imm]->clone()));
+                        break;
+
+                    case OP_PUT:
+                        MOOVE_ASSERT(imm < m_temps.size(), "temporary ID out of range");
+                        m_temps[imm].reset(m_stack.back().clone());
+                        break;
+
+                    case OP_POP:
+                        popStack<Variant>();
+                        break;
+                    
+                    case OP_INDEX:
+                        indexList();
+                        break;
+
+                    case OP_INDEX_SET:
+                        setIndexList();
+                        break;
+
+                    case OP_RANGE:
+                        rangeList();
+                        break;
+
+                    case OP_SPLICE:
+                        spliceList();
+                        break;
+
+                    case OP_LENGTH:
+                    {
+                        std::auto_ptr<ListVar> listVar = popStack<ListVar>();
+                        IntVar::value_type size = listVar->contents()->size();
+                        
+                        pushStack(listVar);
+                        pushStack(std::auto_ptr<Variant>(m_intFactory->createValue(size)));
+                        break;
+                    }
+
+                    case OP_APPEND_LIST:
+                    {
+                        std::auto_ptr<Variant> valueVar = popStack<Variant>();
+                        std::auto_ptr<ListVar> listVar = popStack<ListVar>();
+
+                        ListVar::Container contents(listVar->contents());
+                        contents.push_back(boost::shared_ptr<Variant>(valueVar.release()));
+                        listVar->setContents(contents);
+                        pushStack(listVar);
+
+                        break;
+                    }
+
+                    case OP_CALL_BUILTIN:
+                        execBuiltin();
+                        break;
+
+                    default:
+                        MOOVE_THROW((std::string)"not yet implemented: " + opInfo.name());
+                }
+            }
+
+            if (m_stackTraceFlag) {
+                std::cerr << opInfo.name() << std::endl;
+                dumpStack(std::cerr);
+            }
+        }
+    } catch (...) {
+        std::cerr << "Error occured at BC position " << (m_execPos - m_curVect->begin()) << std::endl;
+
+        std::cerr << "\nStack dump:\n";
+        dumpStack(std::cerr);
+        throw;
+    }
+}
+
+std::auto_ptr<Variant> Interpreter::run()
+{
+    m_retVal.reset();
+    m_stack.clear();
+    
+    m_temps.clear();
+    m_temps.resize(1000);
+
+    m_intFactory = findTypeFactory<IntVar>("int");
+    m_realFactory = findTypeFactory<RealVar>("real");
+    m_strFactory = findTypeFactory<StrVar>("str");
+    m_listFactory = findTypeFactory<ListVar>("list");
+
+    m_curVect = &m_bc.forkVector(0);
+    m_execPos = m_curVect->begin();
+
+    while(!execFinished())
+	stepInstruction();
+
+    MOOVE_ASSERT(m_retVal.get() != 0, "no return value");
+    return m_retVal;
+}
+
+}	// namespace Moove
