@@ -1,0 +1,95 @@
+/**
+   \mainpage
+   \author Kurt Stutsman
+   \date October 27, 2004.
+
+   \section main_purpose Purpose
+   MOOVE is a C++ library to enable other programs to use a high-level
+   language for scripting purposes without a great deal of knowledge of
+   parsing or interpreting concepts. It is also designed to be very flexible--
+   allowing change in many phases of the parsing, compilation, and
+   interpretation steps. One can build their own parser and use the provided
+   AST classes to generate syntax trees and use the default compiler
+   or visitor classes to compile the code or directly traverse the trees.
+   Compilation, being merely an implementation of tree traversal, is easily
+   replaced as well. Finally, the interpreter system will be very flexible and
+   utilize a highly dynamic model of data types.
+
+   \section main_parsing Parsing Phase
+   Parsing is done by default using the class Moove::Parser with a client 
+   implementation of Moove::ParserMessages used for relaying error and warning
+   messages. Examples of parsing can be found in the \b examples directory in 
+   the \b ast_viewer and \b syntax_highlighter subdirectories.
+   
+   The Moove::Parser class uses the bison/yacc generated parser and 
+   Moove::Lexer class to parse the default language of MOOVE, which is derived
+   from the MOO language. The MOO language is a powerful and flexible 
+   object-oriented programming language developed by Pavel at Xerox PARC. MOOVE
+   is fully backwards compatible with this language but incoporates additional
+   features often requested by C/C++ programmers.
+   
+   Once source code is parsed, the AST is returned in a Moove::Program object 
+   that also contains the Moove::SymbolTable for all variables found within 
+   the program.
+   
+   \section main_traversal AST Traversal
+   The AST classes were designed with the visitor pattern in mind. Using an
+   implementation of ASTVisitor, a tree can be easily traversed for
+   interpretation, complication, or any other reason one might have. Examples
+   of this are also found in the \b ast_viewer and \b syntax_highlighter.
+   
+   To visualize the language and the associated AST, an example below
+   will demonstrate a possible source input to a shell program built using
+   the MOOVE library. After the code, a diagram of the resultant AST appears:
+
+   \include file_ext.moo
+   ... produces the following tree:
+   \image html file_ext.png "Figure created using the ast_viewer example combined with the GraphViz package by AT&T"
+
+   It is planned that the runtime/interpretation enviroment will be designed so
+   that either tree-traversal or byte code interpretation methods of execution
+   may be used.
+
+   \section main_types Data Types
+   MOOVE requires the implementation of certain primative types. These types
+   include integers, real (floating-point) numbers, strings, and possibly
+   object numbers if enabled in the Moove::Parser. In addition to the primative
+   types, the MOOVE syntax also requires a list (or array) type. Together,
+   these types alone create a powerful backbone for the language.
+
+   However, the ability to customize the language and have client-defined types
+   is another important goal. For this reason, all types are implementations of
+   the Moove::Variant class. This class provides basic necessary interfaces
+   that any data type may be treated in a very generic way by the runtime
+   system but allow for great flexibilty in client design and MOOVE language.
+   
+   To allow for a generic interface to allocating a new instance of a type or 
+   cloning another instance, another class called Moove::VariantFactory
+   exists. The factory also serves as the source for type identification.
+
+   Finally, another class called Moove::TypeRegistry serves as the information
+   center on types. It has two important features:
+      1. It allows for retrieving the Moove::VariantFactory for a type from 
+	 either its registered name or by its Moove::TypeRegistry::TypeID. The
+	 ID is genreated by the registry when a type is registered and allows 
+	 an enumeration of types for easier categorization in certain 
+	 situations.
+      2. It stores and retrieves the Moove::OperatorPackage objects associated
+	 with types for operator overloading. When the factory is registered,
+	 operator packages can also be registered for unary and binary
+	 operators. For unary operators, a single package may be registered
+	 for the type. For binary operators, a package can be registered for
+	 each unique pair of types (with order sensitivity). A package may
+	 be used more than once if desired.
+
+   \section main_compilation Compilation and Byte Code
+   Eventually, byte code compilation and interpretation will be incorporated
+   into the library. The byte code is based on the original MOO byte code
+   system loosely. This portion is still under design and not much is
+   to be said about it.
+
+   \section main_interpretation Interpretation
+   It is expected that interpretation on both AST and byte code will be
+   available eventually. Simillar to compilation, this portion is also still
+   in the design phase.
+*/

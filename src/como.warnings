@@ -1,0 +1,126 @@
+rm -f *.o moove.a moove_parser.a moove.tab.* lexer_symbols.hpp
+gperf -S 1 -t -D -C -L 'C++' -E -Z 'LexerSymbolTable' \
+lexer_symbols.hpp.gperf | \
+	sed -e 's/strcmp/std::strcmp/g' > lexer_symbols.hpp
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c reply.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c type_registry.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c intvar.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c realvar.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c strvar.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c op_map.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c op_package.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c listvar.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c compiler.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c disassembler.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c codevect.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c opcodes.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c symbol_table.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c bc_program.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c string_utils.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c label_linker.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c immediate.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c flow_ctrl.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c interpreter.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+bison -o moove.tab.cpp moove.y
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c moove.tab.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c parser_state.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c expr_ast.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c stmt_ast.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+como   -I /home/kurt/perforce/moove2/lib/include -I /home/kurt/boost_1_33_0 -I .  -c parser.cpp
+Comeau C/C++ 4.3.3 (Oct 24 2003 16:00:23) for RedHat_LINUX_INTEL_ELF
+Copyright 1988-2003 Comeau Computing.  All rights reserved.
+MODE:strict errors C++
+
+ar rcs moove.a lexer_symbols.hpp reply.o type_registry.o intvar.o realvar.o strvar.o op_map.o op_package.o listvar.o compiler.o disassembler.o codevect.o opcodes.o symbol_table.o bc_program.o string_utils.o label_linker.o immediate.o flow_ctrl.o interpreter.o moove.tab.o parser_state.o expr_ast.o stmt_ast.o parser.o

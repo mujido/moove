@@ -1,0 +1,5914 @@
+Grammar
+
+    0 $accept: program $end
+
+    1 program: stmts
+
+    2 stmts: /* empty */
+    3      | stmts stmt
+
+    4 stmt: tIF '(' expr ')' stmts elseifs else_block tENDIF
+
+    5 @1: /* empty */
+
+    6 stmt: tWHILE opt_id '(' expr ')' @1 stmts tENDWHILE
+
+    7 @2: /* empty */
+
+    8 stmt: tFOR tID tIN '(' expr ')' @2 stmts tENDFOR
+
+    9 @3: /* empty */
+
+   10 stmt: tFOR tID tIN '[' expr tTO expr ']' @3 stmts tENDFOR
+   11     | tTRY stmts excepts tENDTRY
+   12     | tTRY stmts tFINALLY stmts tENDTRY
+
+   13 @4: /* empty */
+
+   14 stmt: tFORK opt_id '(' expr ')' @4 stmts tENDFORK
+
+   15 @5: /* empty */
+
+   16 stmt: tSWITCH '(' expr ')' @5 switch_cases tENDSWITCH
+   17     | tRETURN ';'
+   18     | tRETURN expr ';'
+   19     | tCONTINUE opt_id ';'
+   20     | tBREAK opt_id ';'
+   21     | expr ';'
+   22     | ';'
+
+   23 elseifs: /* empty */
+   24        | elseifs tELSEIF '(' expr ')' stmts
+
+   25 else_block: /* empty */
+   26           | tELSE stmts
+
+   27 opt_id: /* empty */
+   28       | tID
+
+   29 excepts: tEXCEPT opt_id '(' except_codes ')' stmts
+   30        | excepts tEXCEPT opt_id '(' except_codes ')' stmts
+
+   31 except_codes: tANY
+   32             | ne_arglist
+
+   33 switch_cases: /* empty */
+   34             | switch_cases tCASE '(' expr ')' stmts
+
+   35 @6: /* empty */
+
+   36 switch_cases: switch_cases tDEFAULT @6 stmts
+
+   37 arglist: /* empty */
+   38        | ne_arglist
+
+   39 ne_arglist: argument
+   40           | ne_arglist ',' argument
+
+   41 argument: expr
+   42         | '@' expr
+
+   43 expr: tINT
+   44     | tOBJNUM
+   45     | tSTR
+   46     | tREAL
+   47     | '{' arglist '}'
+   48     | tID
+   49     | '!' expr
+   50     | '-' expr
+   51     | tINCREMENT expr
+   52     | tDECREMENT expr
+   53     | expr tINCREMENT
+   54     | expr tDECREMENT
+   55     | expr '=' expr
+   56     | '{' scatter '}' '=' expr
+   57     | expr tOR expr
+   58     | expr tAND expr
+   59     | expr tEQ expr
+   60     | expr tNE expr
+   61     | expr '<' expr
+   62     | expr tLE expr
+   63     | expr '>' expr
+   64     | expr tGE expr
+   65     | expr tIN expr
+   66     | expr '+' expr
+   67     | expr '-' expr
+   68     | expr '*' expr
+   69     | expr '/' expr
+   70     | expr '%' expr
+   71     | expr '^' expr
+   72     | expr tADD_EQ expr
+   73     | expr tSUB_EQ expr
+   74     | expr tMUL_EQ expr
+   75     | expr tDIV_EQ expr
+   76     | expr tMOD_EQ expr
+   77     | expr tEXP_EQ expr
+   78     | expr '?' expr '|' expr
+   79     | expr '.' tID
+   80     | expr '.' '(' expr ')'
+   81     | expr ':' tID '(' arglist ')'
+   82     | expr ':' '(' expr ')' '(' arglist ')'
+   83     | expr '[' dollars_up expr ']'
+   84     | expr '[' dollars_up expr tTO expr ']'
+   85     | '$'
+   86     | '$' tID
+   87     | '$' tID '(' arglist ')'
+   88     | tID '(' arglist ')'
+   89     | '`' expr '!' except_codes catch_result '''
+   90     | '(' expr ')'
+
+   91 scatter: opt_target
+   92        | scatter ',' opt_target
+   93        | scatter ',' tID
+   94        | scatter ',' '@' tID
+   95        | ne_arglist ',' opt_target
+
+   96 opt_target: '?' tID
+   97           | '?' tID '=' expr
+
+   98 dollars_up: /* empty */
+
+   99 catch_result: /* empty */
+  100             | tARROW expr
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'!' (33) 49 89
+'$' (36) 85 86 87
+'%' (37) 70
+''' (39) 89
+'(' (40) 4 6 8 14 16 24 29 30 34 80 81 82 87 88 90
+')' (41) 4 6 8 14 16 24 29 30 34 80 81 82 87 88 90
+'*' (42) 68
+'+' (43) 66
+',' (44) 40 92 93 94 95
+'-' (45) 50 67
+'.' (46) 79 80
+'/' (47) 69
+':' (58) 81 82
+';' (59) 17 18 19 20 21 22
+'<' (60) 61
+'=' (61) 55 56 97
+'>' (62) 63
+'?' (63) 78 96 97
+'@' (64) 42 94
+'[' (91) 10 83 84
+']' (93) 10 83 84
+'^' (94) 71
+'`' (96) 89
+'{' (123) 47 56
+'|' (124) 78
+'}' (125) 47 56
+error (256)
+tINT (258) 43
+tOBJNUM (259) 44
+tSTR (260) 45
+tID (261) 8 10 28 48 79 81 86 87 88 93 94 96 97
+tREAL (262) 46
+tIF (263) 4
+tELSEIF (264) 24
+tELSE (265) 26
+tENDIF (266) 4
+tWHILE (267) 6
+tENDWHILE (268) 6
+tFOR (269) 8 10
+tENDFOR (270) 8 10
+tFORK (271) 14
+tENDFORK (272) 14
+tTRY (273) 11 12
+tEXCEPT (274) 29 30
+tFINALLY (275) 12
+tENDTRY (276) 11 12
+tSWITCH (277) 16
+tCASE (278) 34
+tDEFAULT (279) 36
+tENDSWITCH (280) 16
+tRETURN (281) 17 18
+tCONTINUE (282) 19
+tBREAK (283) 20
+tANY (284) 31
+tTO (285) 10 84
+tARROW (286) 100
+tIN (287) 8 10 65
+tEXP_EQ (288) 77
+tMOD_EQ (289) 76
+tDIV_EQ (290) 75
+tMUL_EQ (291) 74
+tSUB_EQ (292) 73
+tADD_EQ (293) 72
+tAND (294) 58
+tOR (295) 57
+tGE (296) 64
+tLE (297) 62
+tNE (298) 60
+tEQ (299) 59
+tDECREMENT (300) 52 54
+tINCREMENT (301) 51 53
+tNEGATE (302)
+
+
+Nonterminals, with rules where they appear
+
+$accept (74)
+    on left: 0
+program (75)
+    on left: 1, on right: 0
+stmts (76)
+    on left: 2 3, on right: 1 3 4 6 8 10 11 12 14 24 26 29 30 34 36
+stmt (77)
+    on left: 4 6 8 10 11 12 14 16 17 18 19 20 21 22,
+    on right: 3
+@1 (78)
+    on left: 5, on right: 6
+@2 (79)
+    on left: 7, on right: 8
+@3 (80)
+    on left: 9, on right: 10
+@4 (81)
+    on left: 13, on right: 14
+@5 (82)
+    on left: 15, on right: 16
+elseifs (83)
+    on left: 23 24, on right: 4 24
+else_block (84)
+    on left: 25 26, on right: 4
+opt_id (85)
+    on left: 27 28, on right: 6 14 19 20 29 30
+excepts (86)
+    on left: 29 30, on right: 11 30
+except_codes (87)
+    on left: 31 32, on right: 29 30 89
+switch_cases (88)
+    on left: 33 34 36, on right: 16 34 36
+@6 (89)
+    on left: 35, on right: 36
+arglist (90)
+    on left: 37 38, on right: 47 81 82 87 88
+ne_arglist (91)
+    on left: 39 40, on right: 32 38 40 95
+argument (92)
+    on left: 41 42, on right: 39 40
+expr (93)
+    on left: 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60
+    61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81
+    82 83 84 85 86 87 88 89 90, on right: 4 6 8 10 14 16 18 21 24 34
+    41 42 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67
+    68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 89 90 97 100
+scatter (94)
+    on left: 91 92 93 94 95, on right: 56 92 93 94
+opt_target (95)
+    on left: 96 97, on right: 91 92 95
+dollars_up (96)
+    on left: 98, on right: 83 84
+catch_result (97)
+    on left: 99 100, on right: 89
+
+
+state 0
+
+    0 $accept: . program $end
+
+    $default  reduce using rule 2 (stmts)
+
+    program  go to state 1
+    stmts    go to state 2
+
+
+state 1
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 3
+
+
+state 2
+
+    1 program: stmts .
+    3 stmts: stmts . stmt
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 1 (program)
+
+    stmt  go to state 27
+    expr  go to state 28
+
+
+state 3
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+state 4
+
+   43 expr: tINT .
+
+    $default  reduce using rule 43 (expr)
+
+
+state 5
+
+   44 expr: tOBJNUM .
+
+    $default  reduce using rule 44 (expr)
+
+
+state 6
+
+   45 expr: tSTR .
+
+    $default  reduce using rule 45 (expr)
+
+
+state 7
+
+   48 expr: tID .
+   88     | tID . '(' arglist ')'
+
+    '('  shift, and go to state 29
+
+    $default  reduce using rule 48 (expr)
+
+
+state 8
+
+   46 expr: tREAL .
+
+    $default  reduce using rule 46 (expr)
+
+
+state 9
+
+    4 stmt: tIF . '(' expr ')' stmts elseifs else_block tENDIF
+
+    '('  shift, and go to state 30
+
+
+state 10
+
+    6 stmt: tWHILE . opt_id '(' expr ')' @1 stmts tENDWHILE
+
+    tID  shift, and go to state 31
+
+    $default  reduce using rule 27 (opt_id)
+
+    opt_id  go to state 32
+
+
+state 11
+
+    8 stmt: tFOR . tID tIN '(' expr ')' @2 stmts tENDFOR
+   10     | tFOR . tID tIN '[' expr tTO expr ']' @3 stmts tENDFOR
+
+    tID  shift, and go to state 33
+
+
+state 12
+
+   14 stmt: tFORK . opt_id '(' expr ')' @4 stmts tENDFORK
+
+    tID  shift, and go to state 31
+
+    $default  reduce using rule 27 (opt_id)
+
+    opt_id  go to state 34
+
+
+state 13
+
+   11 stmt: tTRY . stmts excepts tENDTRY
+   12     | tTRY . stmts tFINALLY stmts tENDTRY
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 35
+
+
+state 14
+
+   16 stmt: tSWITCH . '(' expr ')' @5 switch_cases tENDSWITCH
+
+    '('  shift, and go to state 36
+
+
+state 15
+
+   17 stmt: tRETURN . ';'
+   18     | tRETURN . expr ';'
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 37
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 38
+
+
+state 16
+
+   19 stmt: tCONTINUE . opt_id ';'
+
+    tID  shift, and go to state 31
+
+    $default  reduce using rule 27 (opt_id)
+
+    opt_id  go to state 39
+
+
+state 17
+
+   20 stmt: tBREAK . opt_id ';'
+
+    tID  shift, and go to state 31
+
+    $default  reduce using rule 27 (opt_id)
+
+    opt_id  go to state 40
+
+
+state 18
+
+   50 expr: '-' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 41
+
+
+state 19
+
+   49 expr: '!' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 42
+
+
+state 20
+
+   52 expr: tDECREMENT . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 43
+
+
+state 21
+
+   51 expr: tINCREMENT . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 44
+
+
+state 22
+
+   85 expr: '$' .
+   86     | '$' . tID
+   87     | '$' . tID '(' arglist ')'
+
+    tID  shift, and go to state 45
+
+    $default  reduce using rule 85 (expr)
+
+
+state 23
+
+   90 expr: '(' . expr ')'
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 46
+
+
+state 24
+
+   22 stmt: ';' .
+
+    $default  reduce using rule 22 (stmt)
+
+
+state 25
+
+   47 expr: '{' . arglist '}'
+   56     | '{' . scatter '}' '=' expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '?'         shift, and go to state 47
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '@'         shift, and go to state 48
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 37 (arglist)
+
+    arglist     go to state 49
+    ne_arglist  go to state 50
+    argument    go to state 51
+    expr        go to state 52
+    scatter     go to state 53
+    opt_target  go to state 54
+
+
+state 26
+
+   89 expr: '`' . expr '!' except_codes catch_result '''
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 55
+
+
+state 27
+
+    3 stmts: stmts stmt .
+
+    $default  reduce using rule 3 (stmts)
+
+
+state 28
+
+   21 stmt: expr . ';'
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ';'         shift, and go to state 84
+
+
+state 29
+
+   88 expr: tID '(' . arglist ')'
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '@'         shift, and go to state 48
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 37 (arglist)
+
+    arglist     go to state 85
+    ne_arglist  go to state 86
+    argument    go to state 51
+    expr        go to state 52
+
+
+state 30
+
+    4 stmt: tIF '(' . expr ')' stmts elseifs else_block tENDIF
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 87
+
+
+state 31
+
+   28 opt_id: tID .
+
+    $default  reduce using rule 28 (opt_id)
+
+
+state 32
+
+    6 stmt: tWHILE opt_id . '(' expr ')' @1 stmts tENDWHILE
+
+    '('  shift, and go to state 88
+
+
+state 33
+
+    8 stmt: tFOR tID . tIN '(' expr ')' @2 stmts tENDFOR
+   10     | tFOR tID . tIN '[' expr tTO expr ']' @3 stmts tENDFOR
+
+    tIN  shift, and go to state 89
+
+
+state 34
+
+   14 stmt: tFORK opt_id . '(' expr ')' @4 stmts tENDFORK
+
+    '('  shift, and go to state 90
+
+
+state 35
+
+    3 stmts: stmts . stmt
+   11 stmt: tTRY stmts . excepts tENDTRY
+   12     | tTRY stmts . tFINALLY stmts tENDTRY
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tEXCEPT     shift, and go to state 91
+    tFINALLY    shift, and go to state 92
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    stmt     go to state 27
+    excepts  go to state 93
+    expr     go to state 28
+
+
+state 36
+
+   16 stmt: tSWITCH '(' . expr ')' @5 switch_cases tENDSWITCH
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 94
+
+
+state 37
+
+   17 stmt: tRETURN ';' .
+
+    $default  reduce using rule 17 (stmt)
+
+
+state 38
+
+   18 stmt: tRETURN expr . ';'
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ';'         shift, and go to state 95
+
+
+state 39
+
+   19 stmt: tCONTINUE opt_id . ';'
+
+    ';'  shift, and go to state 96
+
+
+state 40
+
+   20 stmt: tBREAK opt_id . ';'
+
+    ';'  shift, and go to state 97
+
+
+state 41
+
+   50 expr: '-' expr .
+   53     | expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '.'  shift, and go to state 81
+    ':'  shift, and go to state 82
+    '['  shift, and go to state 83
+
+    $default  reduce using rule 50 (expr)
+
+
+state 42
+
+   49 expr: '!' expr .
+   53     | expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '.'  shift, and go to state 81
+    ':'  shift, and go to state 82
+    '['  shift, and go to state 83
+
+    $default  reduce using rule 49 (expr)
+
+
+state 43
+
+   52 expr: tDECREMENT expr .
+   53     | expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '.'  shift, and go to state 81
+    ':'  shift, and go to state 82
+    '['  shift, and go to state 83
+
+    $default  reduce using rule 52 (expr)
+
+
+state 44
+
+   51 expr: tINCREMENT expr .
+   53     | expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '.'  shift, and go to state 81
+    ':'  shift, and go to state 82
+    '['  shift, and go to state 83
+
+    $default  reduce using rule 51 (expr)
+
+
+state 45
+
+   86 expr: '$' tID .
+   87     | '$' tID . '(' arglist ')'
+
+    '('  shift, and go to state 98
+
+    $default  reduce using rule 86 (expr)
+
+
+state 46
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+   90     | '(' expr . ')'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ')'         shift, and go to state 99
+
+
+state 47
+
+   96 opt_target: '?' . tID
+   97           | '?' . tID '=' expr
+
+    tID  shift, and go to state 100
+
+
+state 48
+
+   42 argument: '@' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 101
+
+
+state 49
+
+   47 expr: '{' arglist . '}'
+
+    '}'  shift, and go to state 102
+
+
+state 50
+
+   38 arglist: ne_arglist .
+   40 ne_arglist: ne_arglist . ',' argument
+   95 scatter: ne_arglist . ',' opt_target
+
+    ','  shift, and go to state 103
+
+    $default  reduce using rule 38 (arglist)
+
+
+state 51
+
+   39 ne_arglist: argument .
+
+    $default  reduce using rule 39 (ne_arglist)
+
+
+state 52
+
+   41 argument: expr .
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 41 (argument)
+
+
+state 53
+
+   56 expr: '{' scatter . '}' '=' expr
+   92 scatter: scatter . ',' opt_target
+   93        | scatter . ',' tID
+   94        | scatter . ',' '@' tID
+
+    ','  shift, and go to state 104
+    '}'  shift, and go to state 105
+
+
+state 54
+
+   91 scatter: opt_target .
+
+    $default  reduce using rule 91 (scatter)
+
+
+state 55
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+   89     | '`' expr . '!' except_codes catch_result '''
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    '!'         shift, and go to state 106
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+
+state 56
+
+   65 expr: expr tIN . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 107
+
+
+state 57
+
+   55 expr: expr '=' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 108
+
+
+state 58
+
+   77 expr: expr tEXP_EQ . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 109
+
+
+state 59
+
+   76 expr: expr tMOD_EQ . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 110
+
+
+state 60
+
+   75 expr: expr tDIV_EQ . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 111
+
+
+state 61
+
+   74 expr: expr tMUL_EQ . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 112
+
+
+state 62
+
+   73 expr: expr tSUB_EQ . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 113
+
+
+state 63
+
+   72 expr: expr tADD_EQ . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 114
+
+
+state 64
+
+   78 expr: expr '?' . expr '|' expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 115
+
+
+state 65
+
+   58 expr: expr tAND . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 116
+
+
+state 66
+
+   57 expr: expr tOR . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 117
+
+
+state 67
+
+   61 expr: expr '<' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 118
+
+
+state 68
+
+   63 expr: expr '>' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 119
+
+
+state 69
+
+   64 expr: expr tGE . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 120
+
+
+state 70
+
+   62 expr: expr tLE . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 121
+
+
+state 71
+
+   60 expr: expr tNE . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 122
+
+
+state 72
+
+   59 expr: expr tEQ . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 123
+
+
+state 73
+
+   66 expr: expr '+' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 124
+
+
+state 74
+
+   67 expr: expr '-' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 125
+
+
+state 75
+
+   68 expr: expr '*' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 126
+
+
+state 76
+
+   69 expr: expr '/' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 127
+
+
+state 77
+
+   70 expr: expr '%' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 128
+
+
+state 78
+
+   71 expr: expr '^' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 129
+
+
+state 79
+
+   54 expr: expr tDECREMENT .
+
+    $default  reduce using rule 54 (expr)
+
+
+state 80
+
+   53 expr: expr tINCREMENT .
+
+    $default  reduce using rule 53 (expr)
+
+
+state 81
+
+   79 expr: expr '.' . tID
+   80     | expr '.' . '(' expr ')'
+
+    tID  shift, and go to state 130
+    '('  shift, and go to state 131
+
+
+state 82
+
+   81 expr: expr ':' . tID '(' arglist ')'
+   82     | expr ':' . '(' expr ')' '(' arglist ')'
+
+    tID  shift, and go to state 132
+    '('  shift, and go to state 133
+
+
+state 83
+
+   83 expr: expr '[' . dollars_up expr ']'
+   84     | expr '[' . dollars_up expr tTO expr ']'
+
+    $default  reduce using rule 98 (dollars_up)
+
+    dollars_up  go to state 134
+
+
+state 84
+
+   21 stmt: expr ';' .
+
+    $default  reduce using rule 21 (stmt)
+
+
+state 85
+
+   88 expr: tID '(' arglist . ')'
+
+    ')'  shift, and go to state 135
+
+
+state 86
+
+   38 arglist: ne_arglist .
+   40 ne_arglist: ne_arglist . ',' argument
+
+    ','  shift, and go to state 136
+
+    $default  reduce using rule 38 (arglist)
+
+
+state 87
+
+    4 stmt: tIF '(' expr . ')' stmts elseifs else_block tENDIF
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ')'         shift, and go to state 137
+
+
+state 88
+
+    6 stmt: tWHILE opt_id '(' . expr ')' @1 stmts tENDWHILE
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 138
+
+
+state 89
+
+    8 stmt: tFOR tID tIN . '(' expr ')' @2 stmts tENDFOR
+   10     | tFOR tID tIN . '[' expr tTO expr ']' @3 stmts tENDFOR
+
+    '['  shift, and go to state 139
+    '('  shift, and go to state 140
+
+
+state 90
+
+   14 stmt: tFORK opt_id '(' . expr ')' @4 stmts tENDFORK
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 141
+
+
+state 91
+
+   29 excepts: tEXCEPT . opt_id '(' except_codes ')' stmts
+
+    tID  shift, and go to state 31
+
+    $default  reduce using rule 27 (opt_id)
+
+    opt_id  go to state 142
+
+
+state 92
+
+   12 stmt: tTRY stmts tFINALLY . stmts tENDTRY
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 143
+
+
+state 93
+
+   11 stmt: tTRY stmts excepts . tENDTRY
+   30 excepts: excepts . tEXCEPT opt_id '(' except_codes ')' stmts
+
+    tEXCEPT  shift, and go to state 144
+    tENDTRY  shift, and go to state 145
+
+
+state 94
+
+   16 stmt: tSWITCH '(' expr . ')' @5 switch_cases tENDSWITCH
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ')'         shift, and go to state 146
+
+
+state 95
+
+   18 stmt: tRETURN expr ';' .
+
+    $default  reduce using rule 18 (stmt)
+
+
+state 96
+
+   19 stmt: tCONTINUE opt_id ';' .
+
+    $default  reduce using rule 19 (stmt)
+
+
+state 97
+
+   20 stmt: tBREAK opt_id ';' .
+
+    $default  reduce using rule 20 (stmt)
+
+
+state 98
+
+   87 expr: '$' tID '(' . arglist ')'
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '@'         shift, and go to state 48
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 37 (arglist)
+
+    arglist     go to state 147
+    ne_arglist  go to state 86
+    argument    go to state 51
+    expr        go to state 52
+
+
+state 99
+
+   90 expr: '(' expr ')' .
+
+    $default  reduce using rule 90 (expr)
+
+
+state 100
+
+   96 opt_target: '?' tID .
+   97           | '?' tID . '=' expr
+
+    '='  shift, and go to state 148
+
+    $default  reduce using rule 96 (opt_target)
+
+
+state 101
+
+   42 argument: '@' expr .
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 42 (argument)
+
+
+state 102
+
+   47 expr: '{' arglist '}' .
+
+    $default  reduce using rule 47 (expr)
+
+
+state 103
+
+   40 ne_arglist: ne_arglist ',' . argument
+   95 scatter: ne_arglist ',' . opt_target
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '?'         shift, and go to state 47
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '@'         shift, and go to state 48
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    argument    go to state 149
+    expr        go to state 52
+    opt_target  go to state 150
+
+
+state 104
+
+   92 scatter: scatter ',' . opt_target
+   93        | scatter ',' . tID
+   94        | scatter ',' . '@' tID
+
+    tID  shift, and go to state 151
+    '?'  shift, and go to state 47
+    '@'  shift, and go to state 152
+
+    opt_target  go to state 153
+
+
+state 105
+
+   56 expr: '{' scatter '}' . '=' expr
+
+    '='  shift, and go to state 154
+
+
+state 106
+
+   89 expr: '`' expr '!' . except_codes catch_result '''
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tANY        shift, and go to state 155
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '@'         shift, and go to state 48
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    except_codes  go to state 156
+    ne_arglist    go to state 157
+    argument      go to state 51
+    expr          go to state 52
+
+
+state 107
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   65     | expr tIN expr .
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 65 (expr)
+
+
+state 108
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   55     | expr '=' expr .
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 55 (expr)
+
+
+state 109
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   77     | expr tEXP_EQ expr .
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 77 (expr)
+
+
+state 110
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   76     | expr tMOD_EQ expr .
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 76 (expr)
+
+
+state 111
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   75     | expr tDIV_EQ expr .
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 75 (expr)
+
+
+state 112
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   74     | expr tMUL_EQ expr .
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 74 (expr)
+
+
+state 113
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   73     | expr tSUB_EQ expr .
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 73 (expr)
+
+
+state 114
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   72     | expr tADD_EQ expr .
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 72 (expr)
+
+
+state 115
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   78     | expr '?' expr . '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    '|'         shift, and go to state 158
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+
+state 116
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   58     | expr tAND expr .
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 58 (expr)
+
+
+state 117
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   57     | expr tOR expr .
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 57 (expr)
+
+
+state 118
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   61     | expr '<' expr .
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 61 (expr)
+
+
+state 119
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   63     | expr '>' expr .
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 63 (expr)
+
+
+state 120
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   64     | expr tGE expr .
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 64 (expr)
+
+
+state 121
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   62     | expr tLE expr .
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 62 (expr)
+
+
+state 122
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   60     | expr tNE expr .
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 60 (expr)
+
+
+state 123
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   59     | expr tEQ expr .
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 59 (expr)
+
+
+state 124
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   66     | expr '+' expr .
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 66 (expr)
+
+
+state 125
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   67     | expr '-' expr .
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 67 (expr)
+
+
+state 126
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   68     | expr '*' expr .
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 68 (expr)
+
+
+state 127
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   69     | expr '/' expr .
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 69 (expr)
+
+
+state 128
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   70     | expr '%' expr .
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 70 (expr)
+
+
+state 129
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   71     | expr '^' expr .
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 71 (expr)
+
+
+state 130
+
+   79 expr: expr '.' tID .
+
+    $default  reduce using rule 79 (expr)
+
+
+state 131
+
+   80 expr: expr '.' '(' . expr ')'
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 159
+
+
+state 132
+
+   81 expr: expr ':' tID . '(' arglist ')'
+
+    '('  shift, and go to state 160
+
+
+state 133
+
+   82 expr: expr ':' '(' . expr ')' '(' arglist ')'
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 161
+
+
+state 134
+
+   83 expr: expr '[' dollars_up . expr ']'
+   84     | expr '[' dollars_up . expr tTO expr ']'
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 162
+
+
+state 135
+
+   88 expr: tID '(' arglist ')' .
+
+    $default  reduce using rule 88 (expr)
+
+
+state 136
+
+   40 ne_arglist: ne_arglist ',' . argument
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '@'         shift, and go to state 48
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    argument  go to state 149
+    expr      go to state 52
+
+
+state 137
+
+    4 stmt: tIF '(' expr ')' . stmts elseifs else_block tENDIF
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 163
+
+
+state 138
+
+    6 stmt: tWHILE opt_id '(' expr . ')' @1 stmts tENDWHILE
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ')'         shift, and go to state 164
+
+
+state 139
+
+   10 stmt: tFOR tID tIN '[' . expr tTO expr ']' @3 stmts tENDFOR
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 165
+
+
+state 140
+
+    8 stmt: tFOR tID tIN '(' . expr ')' @2 stmts tENDFOR
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 166
+
+
+state 141
+
+   14 stmt: tFORK opt_id '(' expr . ')' @4 stmts tENDFORK
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ')'         shift, and go to state 167
+
+
+state 142
+
+   29 excepts: tEXCEPT opt_id . '(' except_codes ')' stmts
+
+    '('  shift, and go to state 168
+
+
+state 143
+
+    3 stmts: stmts . stmt
+   12 stmt: tTRY stmts tFINALLY stmts . tENDTRY
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tENDTRY     shift, and go to state 169
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    stmt  go to state 27
+    expr  go to state 28
+
+
+state 144
+
+   30 excepts: excepts tEXCEPT . opt_id '(' except_codes ')' stmts
+
+    tID  shift, and go to state 31
+
+    $default  reduce using rule 27 (opt_id)
+
+    opt_id  go to state 170
+
+
+state 145
+
+   11 stmt: tTRY stmts excepts tENDTRY .
+
+    $default  reduce using rule 11 (stmt)
+
+
+state 146
+
+   16 stmt: tSWITCH '(' expr ')' . @5 switch_cases tENDSWITCH
+
+    $default  reduce using rule 15 (@5)
+
+    @5  go to state 171
+
+
+state 147
+
+   87 expr: '$' tID '(' arglist . ')'
+
+    ')'  shift, and go to state 172
+
+
+state 148
+
+   97 opt_target: '?' tID '=' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 173
+
+
+state 149
+
+   40 ne_arglist: ne_arglist ',' argument .
+
+    $default  reduce using rule 40 (ne_arglist)
+
+
+state 150
+
+   95 scatter: ne_arglist ',' opt_target .
+
+    $default  reduce using rule 95 (scatter)
+
+
+state 151
+
+   93 scatter: scatter ',' tID .
+
+    $default  reduce using rule 93 (scatter)
+
+
+state 152
+
+   94 scatter: scatter ',' '@' . tID
+
+    tID  shift, and go to state 174
+
+
+state 153
+
+   92 scatter: scatter ',' opt_target .
+
+    $default  reduce using rule 92 (scatter)
+
+
+state 154
+
+   56 expr: '{' scatter '}' '=' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 175
+
+
+state 155
+
+   31 except_codes: tANY .
+
+    $default  reduce using rule 31 (except_codes)
+
+
+state 156
+
+   89 expr: '`' expr '!' except_codes . catch_result '''
+
+    tARROW  shift, and go to state 176
+
+    $default  reduce using rule 99 (catch_result)
+
+    catch_result  go to state 177
+
+
+state 157
+
+   32 except_codes: ne_arglist .
+   40 ne_arglist: ne_arglist . ',' argument
+
+    ','  shift, and go to state 136
+
+    $default  reduce using rule 32 (except_codes)
+
+
+state 158
+
+   78 expr: expr '?' expr '|' . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 178
+
+
+state 159
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   80     | expr '.' '(' expr . ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ')'         shift, and go to state 179
+
+
+state 160
+
+   81 expr: expr ':' tID '(' . arglist ')'
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '@'         shift, and go to state 48
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 37 (arglist)
+
+    arglist     go to state 180
+    ne_arglist  go to state 86
+    argument    go to state 51
+    expr        go to state 52
+
+
+state 161
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   82     | expr ':' '(' expr . ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ')'         shift, and go to state 181
+
+
+state 162
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   83     | expr '[' dollars_up expr . ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+   84     | expr '[' dollars_up expr . tTO expr ']'
+
+    tTO         shift, and go to state 182
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ']'         shift, and go to state 183
+
+
+state 163
+
+    3 stmts: stmts . stmt
+    4 stmt: tIF '(' expr ')' stmts . elseifs else_block tENDIF
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 23 (elseifs)
+
+    stmt     go to state 27
+    elseifs  go to state 184
+    expr     go to state 28
+
+
+state 164
+
+    6 stmt: tWHILE opt_id '(' expr ')' . @1 stmts tENDWHILE
+
+    $default  reduce using rule 5 (@1)
+
+    @1  go to state 185
+
+
+state 165
+
+   10 stmt: tFOR tID tIN '[' expr . tTO expr ']' @3 stmts tENDFOR
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tTO         shift, and go to state 186
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+
+state 166
+
+    8 stmt: tFOR tID tIN '(' expr . ')' @2 stmts tENDFOR
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ')'         shift, and go to state 187
+
+
+state 167
+
+   14 stmt: tFORK opt_id '(' expr ')' . @4 stmts tENDFORK
+
+    $default  reduce using rule 13 (@4)
+
+    @4  go to state 188
+
+
+state 168
+
+   29 excepts: tEXCEPT opt_id '(' . except_codes ')' stmts
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tANY        shift, and go to state 155
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '@'         shift, and go to state 48
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    except_codes  go to state 189
+    ne_arglist    go to state 157
+    argument      go to state 51
+    expr          go to state 52
+
+
+state 169
+
+   12 stmt: tTRY stmts tFINALLY stmts tENDTRY .
+
+    $default  reduce using rule 12 (stmt)
+
+
+state 170
+
+   30 excepts: excepts tEXCEPT opt_id . '(' except_codes ')' stmts
+
+    '('  shift, and go to state 190
+
+
+state 171
+
+   16 stmt: tSWITCH '(' expr ')' @5 . switch_cases tENDSWITCH
+
+    $default  reduce using rule 33 (switch_cases)
+
+    switch_cases  go to state 191
+
+
+state 172
+
+   87 expr: '$' tID '(' arglist ')' .
+
+    $default  reduce using rule 87 (expr)
+
+
+state 173
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+   97 opt_target: '?' tID '=' expr .
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 97 (opt_target)
+
+
+state 174
+
+   94 scatter: scatter ',' '@' tID .
+
+    $default  reduce using rule 94 (scatter)
+
+
+state 175
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   56     | '{' scatter '}' '=' expr .
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 56 (expr)
+
+
+state 176
+
+  100 catch_result: tARROW . expr
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 192
+
+
+state 177
+
+   89 expr: '`' expr '!' except_codes catch_result . '''
+
+    '''  shift, and go to state 193
+
+
+state 178
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   78     | expr '?' expr '|' expr .
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    '?'  error (nonassociative)
+
+    $default  reduce using rule 78 (expr)
+
+
+state 179
+
+   80 expr: expr '.' '(' expr ')' .
+
+    $default  reduce using rule 80 (expr)
+
+
+state 180
+
+   81 expr: expr ':' tID '(' arglist . ')'
+
+    ')'  shift, and go to state 194
+
+
+state 181
+
+   82 expr: expr ':' '(' expr ')' . '(' arglist ')'
+
+    '('  shift, and go to state 195
+
+
+state 182
+
+   84 expr: expr '[' dollars_up expr tTO . expr ']'
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 196
+
+
+state 183
+
+   83 expr: expr '[' dollars_up expr ']' .
+
+    $default  reduce using rule 83 (expr)
+
+
+state 184
+
+    4 stmt: tIF '(' expr ')' stmts elseifs . else_block tENDIF
+   24 elseifs: elseifs . tELSEIF '(' expr ')' stmts
+
+    tELSEIF  shift, and go to state 197
+    tELSE    shift, and go to state 198
+
+    $default  reduce using rule 25 (else_block)
+
+    else_block  go to state 199
+
+
+state 185
+
+    6 stmt: tWHILE opt_id '(' expr ')' @1 . stmts tENDWHILE
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 200
+
+
+state 186
+
+   10 stmt: tFOR tID tIN '[' expr tTO . expr ']' @3 stmts tENDFOR
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 201
+
+
+state 187
+
+    8 stmt: tFOR tID tIN '(' expr ')' . @2 stmts tENDFOR
+
+    $default  reduce using rule 7 (@2)
+
+    @2  go to state 202
+
+
+state 188
+
+   14 stmt: tFORK opt_id '(' expr ')' @4 . stmts tENDFORK
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 203
+
+
+state 189
+
+   29 excepts: tEXCEPT opt_id '(' except_codes . ')' stmts
+
+    ')'  shift, and go to state 204
+
+
+state 190
+
+   30 excepts: excepts tEXCEPT opt_id '(' . except_codes ')' stmts
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tANY        shift, and go to state 155
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '@'         shift, and go to state 48
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    except_codes  go to state 205
+    ne_arglist    go to state 157
+    argument      go to state 51
+    expr          go to state 52
+
+
+state 191
+
+   16 stmt: tSWITCH '(' expr ')' @5 switch_cases . tENDSWITCH
+   34 switch_cases: switch_cases . tCASE '(' expr ')' stmts
+   36             | switch_cases . tDEFAULT @6 stmts
+
+    tCASE       shift, and go to state 206
+    tDEFAULT    shift, and go to state 207
+    tENDSWITCH  shift, and go to state 208
+
+
+state 192
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+  100 catch_result: tARROW expr .
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+
+    $default  reduce using rule 100 (catch_result)
+
+
+state 193
+
+   89 expr: '`' expr '!' except_codes catch_result ''' .
+
+    $default  reduce using rule 89 (expr)
+
+
+state 194
+
+   81 expr: expr ':' tID '(' arglist ')' .
+
+    $default  reduce using rule 81 (expr)
+
+
+state 195
+
+   82 expr: expr ':' '(' expr ')' '(' . arglist ')'
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '@'         shift, and go to state 48
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 37 (arglist)
+
+    arglist     go to state 209
+    ne_arglist  go to state 86
+    argument    go to state 51
+    expr        go to state 52
+
+
+state 196
+
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+   84     | expr '[' dollars_up expr tTO expr . ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ']'         shift, and go to state 210
+
+
+state 197
+
+   24 elseifs: elseifs tELSEIF . '(' expr ')' stmts
+
+    '('  shift, and go to state 211
+
+
+state 198
+
+   26 else_block: tELSE . stmts
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 212
+
+
+state 199
+
+    4 stmt: tIF '(' expr ')' stmts elseifs else_block . tENDIF
+
+    tENDIF  shift, and go to state 213
+
+
+state 200
+
+    3 stmts: stmts . stmt
+    6 stmt: tWHILE opt_id '(' expr ')' @1 stmts . tENDWHILE
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tENDWHILE   shift, and go to state 214
+    tFOR        shift, and go to state 11
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    stmt  go to state 27
+    expr  go to state 28
+
+
+state 201
+
+   10 stmt: tFOR tID tIN '[' expr tTO expr . ']' @3 stmts tENDFOR
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ']'         shift, and go to state 215
+
+
+state 202
+
+    8 stmt: tFOR tID tIN '(' expr ')' @2 . stmts tENDFOR
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 216
+
+
+state 203
+
+    3 stmts: stmts . stmt
+   14 stmt: tFORK opt_id '(' expr ')' @4 stmts . tENDFORK
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tFORK       shift, and go to state 12
+    tENDFORK    shift, and go to state 217
+    tTRY        shift, and go to state 13
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    stmt  go to state 27
+    expr  go to state 28
+
+
+state 204
+
+   29 excepts: tEXCEPT opt_id '(' except_codes ')' . stmts
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 218
+
+
+state 205
+
+   30 excepts: excepts tEXCEPT opt_id '(' except_codes . ')' stmts
+
+    ')'  shift, and go to state 219
+
+
+state 206
+
+   34 switch_cases: switch_cases tCASE . '(' expr ')' stmts
+
+    '('  shift, and go to state 220
+
+
+state 207
+
+   36 switch_cases: switch_cases tDEFAULT . @6 stmts
+
+    $default  reduce using rule 35 (@6)
+
+    @6  go to state 221
+
+
+state 208
+
+   16 stmt: tSWITCH '(' expr ')' @5 switch_cases tENDSWITCH .
+
+    $default  reduce using rule 16 (stmt)
+
+
+state 209
+
+   82 expr: expr ':' '(' expr ')' '(' arglist . ')'
+
+    ')'  shift, and go to state 222
+
+
+state 210
+
+   84 expr: expr '[' dollars_up expr tTO expr ']' .
+
+    $default  reduce using rule 84 (expr)
+
+
+state 211
+
+   24 elseifs: elseifs tELSEIF '(' . expr ')' stmts
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 223
+
+
+state 212
+
+    3 stmts: stmts . stmt
+   26 else_block: tELSE stmts .
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 26 (else_block)
+
+    stmt  go to state 27
+    expr  go to state 28
+
+
+state 213
+
+    4 stmt: tIF '(' expr ')' stmts elseifs else_block tENDIF .
+
+    $default  reduce using rule 4 (stmt)
+
+
+state 214
+
+    6 stmt: tWHILE opt_id '(' expr ')' @1 stmts tENDWHILE .
+
+    $default  reduce using rule 6 (stmt)
+
+
+state 215
+
+   10 stmt: tFOR tID tIN '[' expr tTO expr ']' . @3 stmts tENDFOR
+
+    $default  reduce using rule 9 (@3)
+
+    @3  go to state 224
+
+
+state 216
+
+    3 stmts: stmts . stmt
+    8 stmt: tFOR tID tIN '(' expr ')' @2 stmts . tENDFOR
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tENDFOR     shift, and go to state 225
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    stmt  go to state 27
+    expr  go to state 28
+
+
+state 217
+
+   14 stmt: tFORK opt_id '(' expr ')' @4 stmts tENDFORK .
+
+    $default  reduce using rule 14 (stmt)
+
+
+state 218
+
+    3 stmts: stmts . stmt
+   29 excepts: tEXCEPT opt_id '(' except_codes ')' stmts .
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 29 (excepts)
+
+    stmt  go to state 27
+    expr  go to state 28
+
+
+state 219
+
+   30 excepts: excepts tEXCEPT opt_id '(' except_codes ')' . stmts
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 226
+
+
+state 220
+
+   34 switch_cases: switch_cases tCASE '(' . expr ')' stmts
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    expr  go to state 227
+
+
+state 221
+
+   36 switch_cases: switch_cases tDEFAULT @6 . stmts
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 228
+
+
+state 222
+
+   82 expr: expr ':' '(' expr ')' '(' arglist ')' .
+
+    $default  reduce using rule 82 (expr)
+
+
+state 223
+
+   24 elseifs: elseifs tELSEIF '(' expr . ')' stmts
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ')'         shift, and go to state 229
+
+
+state 224
+
+   10 stmt: tFOR tID tIN '[' expr tTO expr ']' @3 . stmts tENDFOR
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 230
+
+
+state 225
+
+    8 stmt: tFOR tID tIN '(' expr ')' @2 stmts tENDFOR .
+
+    $default  reduce using rule 8 (stmt)
+
+
+state 226
+
+    3 stmts: stmts . stmt
+   30 excepts: excepts tEXCEPT opt_id '(' except_codes ')' stmts .
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 30 (excepts)
+
+    stmt  go to state 27
+    expr  go to state 28
+
+
+state 227
+
+   34 switch_cases: switch_cases tCASE '(' expr . ')' stmts
+   53 expr: expr . tINCREMENT
+   54     | expr . tDECREMENT
+   55     | expr . '=' expr
+   57     | expr . tOR expr
+   58     | expr . tAND expr
+   59     | expr . tEQ expr
+   60     | expr . tNE expr
+   61     | expr . '<' expr
+   62     | expr . tLE expr
+   63     | expr . '>' expr
+   64     | expr . tGE expr
+   65     | expr . tIN expr
+   66     | expr . '+' expr
+   67     | expr . '-' expr
+   68     | expr . '*' expr
+   69     | expr . '/' expr
+   70     | expr . '%' expr
+   71     | expr . '^' expr
+   72     | expr . tADD_EQ expr
+   73     | expr . tSUB_EQ expr
+   74     | expr . tMUL_EQ expr
+   75     | expr . tDIV_EQ expr
+   76     | expr . tMOD_EQ expr
+   77     | expr . tEXP_EQ expr
+   78     | expr . '?' expr '|' expr
+   79     | expr . '.' tID
+   80     | expr . '.' '(' expr ')'
+   81     | expr . ':' tID '(' arglist ')'
+   82     | expr . ':' '(' expr ')' '(' arglist ')'
+   83     | expr . '[' dollars_up expr ']'
+   84     | expr . '[' dollars_up expr tTO expr ']'
+
+    tIN         shift, and go to state 56
+    '='         shift, and go to state 57
+    tEXP_EQ     shift, and go to state 58
+    tMOD_EQ     shift, and go to state 59
+    tDIV_EQ     shift, and go to state 60
+    tMUL_EQ     shift, and go to state 61
+    tSUB_EQ     shift, and go to state 62
+    tADD_EQ     shift, and go to state 63
+    '?'         shift, and go to state 64
+    tAND        shift, and go to state 65
+    tOR         shift, and go to state 66
+    '<'         shift, and go to state 67
+    '>'         shift, and go to state 68
+    tGE         shift, and go to state 69
+    tLE         shift, and go to state 70
+    tNE         shift, and go to state 71
+    tEQ         shift, and go to state 72
+    '+'         shift, and go to state 73
+    '-'         shift, and go to state 74
+    '*'         shift, and go to state 75
+    '/'         shift, and go to state 76
+    '%'         shift, and go to state 77
+    '^'         shift, and go to state 78
+    tDECREMENT  shift, and go to state 79
+    tINCREMENT  shift, and go to state 80
+    '.'         shift, and go to state 81
+    ':'         shift, and go to state 82
+    '['         shift, and go to state 83
+    ')'         shift, and go to state 231
+
+
+state 228
+
+    3 stmts: stmts . stmt
+   36 switch_cases: switch_cases tDEFAULT @6 stmts .
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 36 (switch_cases)
+
+    stmt  go to state 27
+    expr  go to state 28
+
+
+state 229
+
+   24 elseifs: elseifs tELSEIF '(' expr ')' . stmts
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 232
+
+
+state 230
+
+    3 stmts: stmts . stmt
+   10 stmt: tFOR tID tIN '[' expr tTO expr ']' @3 stmts . tENDFOR
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tENDFOR     shift, and go to state 233
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    stmt  go to state 27
+    expr  go to state 28
+
+
+state 231
+
+   34 switch_cases: switch_cases tCASE '(' expr ')' . stmts
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 234
+
+
+state 232
+
+    3 stmts: stmts . stmt
+   24 elseifs: elseifs tELSEIF '(' expr ')' stmts .
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 24 (elseifs)
+
+    stmt  go to state 27
+    expr  go to state 28
+
+
+state 233
+
+   10 stmt: tFOR tID tIN '[' expr tTO expr ']' @3 stmts tENDFOR .
+
+    $default  reduce using rule 10 (stmt)
+
+
+state 234
+
+    3 stmts: stmts . stmt
+   34 switch_cases: switch_cases tCASE '(' expr ')' stmts .
+
+    tINT        shift, and go to state 4
+    tOBJNUM     shift, and go to state 5
+    tSTR        shift, and go to state 6
+    tID         shift, and go to state 7
+    tREAL       shift, and go to state 8
+    tIF         shift, and go to state 9
+    tWHILE      shift, and go to state 10
+    tFOR        shift, and go to state 11
+    tFORK       shift, and go to state 12
+    tTRY        shift, and go to state 13
+    tSWITCH     shift, and go to state 14
+    tRETURN     shift, and go to state 15
+    tCONTINUE   shift, and go to state 16
+    tBREAK      shift, and go to state 17
+    '-'         shift, and go to state 18
+    '!'         shift, and go to state 19
+    tDECREMENT  shift, and go to state 20
+    tINCREMENT  shift, and go to state 21
+    '$'         shift, and go to state 22
+    '('         shift, and go to state 23
+    ';'         shift, and go to state 24
+    '{'         shift, and go to state 25
+    '`'         shift, and go to state 26
+
+    $default  reduce using rule 34 (switch_cases)
+
+    stmt  go to state 27
+    expr  go to state 28

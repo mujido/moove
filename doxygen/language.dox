@@ -1,0 +1,74 @@
+/**
+   \page language MOOVE Programming Language
+   
+   \section language_intro Introduction
+   The MOOVE language is derived from the MOO (MUD Object Oriented) language.
+   The entire language structure will be presented below, but only a few
+   modifications have been made, which will be noted.
+
+   \section language_expr Expressions
+   Expressions will first be discussed, including differences between MOO and
+   MOOVE.
+
+   \subsection language_expr_primatives Primative types
+   There are four primative types in MOOVE. This differs from MOO in that it
+   contains a fifth, ERR, used for error codes. Values of this type were
+   essentially named constants and nothing that a variable couldn't represent.
+   For this reason they were not included to allow for more flexibility in
+   client use of the library.
+
+   \subsubsection language_expr_integer Integers
+   Integers (called INT or NUM in MOO) are numbers with no decimal/fractional
+   portion, i.e. \c 1, \c 387, and \c -45. Internally they are stored in C++ 
+   \c int type. In AST format, they are represented by Moove::Expr::Integer.
+
+   \subsubsection language_expr_real Reals
+   Real numbers (called FLOAT in MOO) are decimal/fractional numbers, i.e.
+   \c 123.45, \c -0.1, and \c 3.5e20. Internally they are stored in C++
+   \c double type. In AST format, they are represented by Moove::Expr::Real.
+
+   \subsubsection language_expr_objnum Object Numbers
+   Object numbers (called OBJ in MOO) are unique identifiers for each object
+   in a MOO. They appear as a pound sign (#) followed by an integer, i.e.
+   \c #1234 and \c #-32. This is a highly database-dependent feature but is 
+   included for compatibility. As such, this feature can also be disabled from
+   Moove::Parser. Internally they are stored in C++ \c int type. In AST format,
+   they are represented by Moove::Expr::Objnum.
+
+   \subsubsection language_expr_string Strings
+   Strings (called STR in MOO) hold characters and text, i.e. \c "abc",
+   <tt>"I like pizza!"</tt>, and <tt>"\"A quoted string\""</tt>. Internally 
+   they are stored in C++ \c std::string type. In AST format, they are 
+   represented by Moove::Expr::Str.
+
+   \subsection language_expr_list Lists
+   Lists are the last library-defined type. They work much like lists or
+   arrays in any other language. Syntactically, they are created by enclosing
+   a collection of expressions separated by commas between two curly braces.
+   Examples include \c {}, <tt>{1, 2, 3}</tt>, and <tt>{"hi", 3 + 5, #2}</tt>.
+   In AST format, they are represented by Moove::Expr::List.
+
+   \subsection language_expr_var Variables
+   Variables are a named location to store data within a program. They must
+   begin with a letter or underscore (_) and then consist of letters, numbers,
+   and underscore characters. Examples include \c x, \c abc, and \c a_var.
+   In AST format, they are represented by Moove::Expr::Variable.
+
+   \subsection language_expr_op Operators
+   Operators are the most common way of manipulating data. They are separated
+   into 3 categories.
+
+   \subsubsection language_expr_unary_op Unary Operators
+   <table>
+   <tr>
+   <th>Symbol</th>
+   <th>Name</th>
+   <th>Description</th>
+   </tr>
+   <tr>
+   <td>!</td>
+   <td>Not</td>
+   <td>Determines the logical value of the expression and then inverts it.</td>
+   </tr>
+   </table>
+*/
