@@ -1,0 +1,114 @@
+#include "msg_handler.hpp"
+#include <parser.hpp>
+#include <compiler.hpp>
+#include <interpreter.hpp>
+#include <op_map.hpp>
+#include <op_package.hpp>
+#include <default_ops.hpp>
+#include <intvar.hpp>
+#include <realvar.hpp>
+#include <strvar.hpp>
+#include <listvar.hpp>
+
+#include <iostream>
+#include <fstream>
+#include <memory>
+
+using namespace Moove;
+
+typedef DefaultOperatorPackage<DefaultIntVar, DefaultIntVar, IntVar, IntVar, OpcodeInfo::ALL_FUNCTIONAL_GROUPS> IntOpSet;
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar, RealVar, RealVar, OpcodeInfo::ALL_FUNCTIONAL_GROUPS> RealOpSet;
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar, IntVar, RealVar, OpcodeInfo::ALL_FUNCTIONAL_GROUPS> IntRealOpSet;
+typedef DefaultOperatorPackage<DefaultRealVar, DefaultIntVar, RealVar, IntVar, OpcodeInfo::ALL_FUNCTIONAL_GROUPS> RealIntOpSet;
+typedef DefaultOperatorPackage<DefaultStrVar, DefaultIntVar, StrVar, StrVar, OpcodeInfo::ALL_FUNCTIONAL_GROUPS> StrOpSet;
+
+void registerTypes(TypeRegistry& typeReg, OperatorMap& opMap)
+{
+    const TypeRegistry::TypeEntry& intType = typeReg.registerType("int", DefaultIntVar::classFactory());
+    const TypeRegistry::TypeEntry& realType = typeReg.registerType("real", DefaultRealVar::classFactory());
+    const TypeRegistry::TypeEntry& strType = typeReg.registerType("str", DefaultStrVar::classFactory());
+    const TypeRegistry::TypeEntry& listType = typeReg.registerType("list", DefaultListVar::classFactory());
+
+    boost::shared_ptr<OperatorPackage> intPkg(new IntOpSet);
+    boost::shared_ptr<OperatorPackage> realPkg(new RealOpSet);
+    boost::shared_ptr<OperatorPackage> intRealPkg(new IntRealOpSet);
+    boost::shared_ptr<OperatorPackage> realIntPkg(new RealIntOpSet);
+    boost::shared_ptr<OperatorPackage> strPkg(new StrOpSet);
+    
+    opMap.registerUnary(intType, intPkg);
+    opMap.registerUnary(realType, realPkg);
+    opMap.registerUnary(strType, strPkg);
+
+    opMap.registerBinary(intType, intType, intPkg);
+    opMap.registerBinary(realType, realType, realPkg);
+    opMap.registerBinary(intType, realType, intRealPkg);
+    opMap.registerBinary(realType, intType, realIntPkg);
+    opMap.registerBinary(strType, strType, strPkg);
+}    
+
+int main(int argc, char **argv)
+{
+    try {
+        std::string source, line;
+        std::ifstream file;
+        std::istream* inStream = &std::cin;
+        unsigned lineOffset = 0;
+        bool traceStack = false;
+
+        if(argc > 1) {
+            const char *filename = argv[1];
+
+            if (strcmp(argv[1], "-t") == 0) {
+                filename = argv[2];
+                traceStack = true;
+            }
+
+            file.open(filename, std::ios::in);
+            if(!file) {
+                std::cerr << "Error opening file '" << filename << "'\n";
+                return 1;
+            }
+
+            inStream = &file;
+        }
+
+        TypeRegistry typeReg;
+        OperatorMap opMap;
+        
+        registerTypes(typeReg, opMap);
+
+        while(std::getline(*inStream, line)) {
+            if(source.empty() && line.length() > 2 && line[0] == '#' && line[1] == '!') {
+                // ignore executable line. Increase lineOffset to keep line numbers correct
+                ++lineOffset;
+                continue;
+            }
+
+            source += line + '\n';
+        }
+
+        // clear EOF state so that executing code can input from stdin
+        std::cin.clear();
+
+        MessageHandler msgs(lineOffset);
+        Parser parser;
+        if(parser.parse(source, msgs, false)) {
+            std::auto_ptr<Program> program = parser.releaseProgram();
+
+            Compiler compiler(typeReg);
+            
+            std::auto_ptr<BytecodeProgram> bc = compiler.compile(*program);
+
+            Interpreter interp(*bc, typeReg, opMap, traceStack);
+            
+            std::cout << "Result: " << interp.run()->debugStr() << "\n";
+        } else {
+            return 1;
+        }
+    } catch(const std::exception& e) {
+        std::cerr << "Exception caught: " << e.what() << std::endl;
+        return 2;
+    }
+
+    return 0;
+}
