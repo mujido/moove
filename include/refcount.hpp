@@ -28,7 +28,7 @@ template<class T>
 class RefCountPtr {
 private:
    struct Data {
-      std::auto_ptr<T> ptr;
+      std::unique_ptr<T> ptr;
       unsigned long    count;
 
       explicit Data(T* a_ptr) : ptr(a_ptr), count(1)

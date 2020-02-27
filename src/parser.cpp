@@ -5,7 +5,7 @@
 
 namespace Moove {
 
-void parseSource(ParserState& state);
+int parseSource(ParserState& state);
 
 Parser::Parser(const char* source, ParserMessages& msgs, bool objnums)
 {
@@ -36,9 +36,9 @@ bool Parser::hasErrors()const
    return m_state->hasErrors();
 }
 
-std::auto_ptr<Program> Parser::releaseProgram()
+std::unique_ptr<Program> Parser::releaseProgram()
 {
-   std::auto_ptr<Program> program;
+   std::unique_ptr<Program> program;
 
    if(!hasErrors()) {
       program = m_state->releaseProgram();

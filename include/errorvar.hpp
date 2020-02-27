@@ -13,7 +13,7 @@ namespace Moove {
 
 struct ErrorVar : public Variant {
     struct Factory : public VariantFactory {
-        virtual ErrorVar* create(std::auto_ptr<Variant> value) = 0;
+        virtual ErrorVar* create(std::unique_ptr<Variant> value) = 0;
     };
 
     virtual const Variant& value()const = 0;
@@ -22,11 +22,11 @@ struct ErrorVar : public Variant {
 class DefaultErrorVar : public ErrorVar {
 public:
     struct Factory : public ErrorVar::Factory {
-        DefaultErrorVar* create(std::auto_ptr<Variant> value);
+        DefaultErrorVar* create(std::unique_ptr<Variant> value);
     };
 
 private:
-    std::auto_ptr<Variant>      m_value;
+    std::unique_ptr<Variant>      m_value;
 
 public:
 #endif

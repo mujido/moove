@@ -3,7 +3,7 @@
 
 namespace Moove {
 
-Variant* VariantFactory::create(std::auto_ptr<Variant> value)
+Variant* VariantFactory::create(std::unique_ptr<Variant> value)
 {
    throw UnexpectedValue("Unexpected value initializer in Moove::VariantFactory::create()");
 }

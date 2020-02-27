@@ -36,18 +36,16 @@ private:
 
    typedef std::vector<BlockMarker> BlockList;
 
-   std::auto_ptr<Lexer>       m_lex;
+   std::unique_ptr<Lexer>       m_lex;
    MemoryPool<ASTPoolObject>  m_pool;
    BlockList                  m_blocks;
    unsigned                   m_switchDepth;
    unsigned                   m_dollarDepth;
    bool                       m_errorFlag;
-   std::auto_ptr<Program>     m_program;
+   std::unique_ptr<Program>     m_program;
 
 public:
    typedef std::logic_error UnmatchedBlock;
-
-   ParserState(const char* source, ParserMessages& msgs, bool objnums);
 
    ParserState(const std::string& source, ParserMessages& msgs, bool objnums);
 
@@ -68,16 +66,16 @@ public:
    const Program& program()const
    { return *m_program; }
 
-   std::auto_ptr<Program> releaseProgram()
-   { return m_program; }
+   std::unique_ptr<Program> releaseProgram()
+   { return std::move(m_program); }
    
-   void setProgram(std::auto_ptr<Stmt::Block> stmts);
+   void setProgram(std::unique_ptr<Stmt::Block> stmts);
 
    void error(const std::string& msg);
 
    void warning(const std::string& msg);
       
-   void addToPool(std::auto_ptr<ASTPoolObject> ptr);
+   void addToPool(std::unique_ptr<ASTPoolObject> ptr);
 
    void removeFromPool(const ASTPoolObject* ptr);
 

@@ -6,21 +6,12 @@
 
 namespace Moove {
 
-ParserState::ParserState(const char* source,
-			 ParserMessages& msgs,
-			 bool objnums) :
-   m_switchDepth(0), m_dollarDepth(0), m_errorFlag(false)
-{
-   m_lex.reset(new Lexer(source, msgs, objnums));
-   m_program.reset(new Program);
-}
-
 ParserState::ParserState(const std::string& source, 
 			 ParserMessages& msgs, 
 			 bool objnums) :
    m_switchDepth(0), m_dollarDepth(0), m_errorFlag(false)
 {
-   m_lex.reset(new Lexer(source, msgs, objnums));
+   m_lex.reset(new Lexer(*this, source, msgs, objnums));
    m_program.reset(new Program);
 }
 
@@ -38,16 +29,16 @@ void ParserState::warning(const std::string& msg)
    m_lex->warning(msg);
 }
 
-void ParserState::setProgram(std::auto_ptr<Stmt::Block> stmts)
+void ParserState::setProgram(std::unique_ptr<Stmt::Block> stmts)
 {
    if(!m_errorFlag)
-      m_program->setStmts(stmts);
+      m_program->setStmts(std::move(stmts));
 }
 
-void ParserState::addToPool(std::auto_ptr<ASTPoolObject> ptr)
+void ParserState::addToPool(std::unique_ptr<ASTPoolObject> ptr)
 {
    if(ptr.get())
-      m_pool.insert(ptr);
+      m_pool.insert(std::move(ptr));
 }
 
 void ParserState::removeFromPool(const ASTPoolObject* ptr)

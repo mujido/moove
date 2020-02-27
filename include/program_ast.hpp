@@ -22,7 +22,7 @@ namespace Moove {
  */
 class Program : boost::noncopyable {
 private:
-   std::auto_ptr<Stmt::Block> m_stmts;
+   std::unique_ptr<Stmt::Block> m_stmts;
    SymbolTable                m_varTable;
 
 public:
@@ -55,8 +55,8 @@ public:
     * \brief Assign the statements for this program
     * \param stmts Statements used in the program
     */
-   void setStmts(std::auto_ptr<Stmt::Block> stmts)
-   { m_stmts = stmts; }
+   void setStmts(std::unique_ptr<Stmt::Block> stmts)
+   { m_stmts = std::move(stmts); }
 };
 
 }   //namespace Moove

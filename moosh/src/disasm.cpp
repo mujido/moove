@@ -15,13 +15,13 @@
 
 extern "C" {
 
-#include <unistd.h>
+//#include <unistd.h>
 
 }
 
 using namespace Moove;
 
-std::auto_ptr<BytecodeProgram> compile(const Program& prog)
+std::unique_ptr<BytecodeProgram> compile(const Program& prog)
 {
     TypeRegistry typeReg;
     
@@ -35,7 +35,7 @@ std::auto_ptr<BytecodeProgram> compile(const Program& prog)
     return compiler.compile(prog);
 }
 
-std::auto_ptr<DebugBytecodeProgram> compileDebug(const Program& prog)
+std::unique_ptr<DebugBytecodeProgram> compileDebug(const Program& prog)
 {
     TypeRegistry typeReg;
     
@@ -98,14 +98,14 @@ int main(int argc, char **argv)
         MessageHandler msgs(lineOffset);
         Parser parser;
         if(parser.parse(source, msgs, false)) {
-            std::auto_ptr<Program> program = parser.releaseProgram();
+            std::unique_ptr<Program> program = parser.releaseProgram();
 
 	    if (debugOpt) {
-		std::auto_ptr<DebugBytecodeProgram> bc = compileDebug(*program);
+		std::unique_ptr<DebugBytecodeProgram> bc = compileDebug(*program);
 
 		disassemble(std::cout, *bc);
 	    } else {
-		std::auto_ptr<BytecodeProgram> bc = compile(*program);
+		std::unique_ptr<BytecodeProgram> bc = compile(*program);
 
 		disassemble(std::cout, *bc);
 	    }

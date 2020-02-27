@@ -12,60 +12,79 @@
 #include <string>
 #include <boost/utility.hpp>
 
+
 namespace Moove {
+    namespace BisonParser {
+        union YYSTYPE;
+    }
 
-class ParserMessages;
+    class ParserMessages;
+    class ParserState;
 
-class Lexer : boost::noncopyable {
-private:
-   std::string                 m_source;
-   std::string::const_iterator m_pos;
-   std::string::const_iterator m_end;
-   unsigned                    m_line;
-   ParserMessages&             m_messages;
-   bool                        m_enableObjnums;
-   
-   static bool isWS(char ch);
+    class Lexer {
+    private:
+        ParserState& m_parser;
+        std::string                 m_source;
+        std::string::const_iterator m_pos;
+        std::string::const_iterator m_end;
+        unsigned                    m_line;
+        ParserMessages& m_messages;
+        bool                        m_enableObjnums;
+        BisonParser::YYSTYPE* m_yylval;
 
-   static bool myIsDigit(char ch);
+        static bool isWS(char ch);
 
-   static bool isIDSuffixChar(char ch);
+        static bool myIsDigit(char ch);
 
-   void skipWS();
+        static bool isIDSuffixChar(char ch);
 
-   void skipDigits();
+        template<class T>
+        inline T* addToPool(T* ptr);
 
-   void skipID();
-   
-   int peekCur()const
-   { return (m_pos != m_end) ? *m_pos : -1; }
+        void skipWS();
 
-   int peekNext()const
-   { return (m_pos + 1 != m_end) ? *(m_pos + 1) : -1; }
+        void skipDigits();
 
-   int parseNumber(bool realOK);
+        void skipID();
 
-   int parseObjnum();
+        int peekCur()const
+        {
+            return (m_pos != m_end) ? *m_pos : -1;
+        }
 
-   int parseString();
+        int peekNext()const
+        {
+            return (m_pos + 1 != m_end) ? *(m_pos + 1) : -1;
+        }
 
-   void parseComment();
+        int parseNumber(bool realOK);
 
-   int parseID();
-   
-   int parseOp();
+        int parseObjnum();
 
-public:
-   Lexer(const std::string& str, ParserMessages& msgs, bool enableObjnums);
+        int parseString();
 
-   Lexer(const char* str, ParserMessages& msgs, bool enableObjnums);
+        void parseComment();
 
-   int nextToken();
+        int parseID();
 
-   void error(const std::string& msg);
+        int parseOp();
 
-   void warning(const std::string& msg);
-};
+        Lexer(const Lexer&) = delete;
+        Lexer(Lexer&&) = delete;
+
+    public:
+        Lexer(ParserState& parser, const std::string& str, ParserMessages& msgs, bool enableObjnums);
+
+        bool isYylvalSet() { return m_yylval != nullptr; }
+
+        void setYylval(BisonParser::YYSTYPE* yylval);
+
+        int nextToken();
+
+        void error(const std::string& msg);
+
+        void warning(const std::string& msg);
+    };
 
 }   //namespace Moove
 

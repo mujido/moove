@@ -3,7 +3,7 @@
 
 namespace Moove {
 
-std::auto_ptr<Variant> BytecodeTaskFrame::run(ExecutionState& execState,
+std::unique_ptr<Variant> BytecodeTaskFrame::run(ExecutionState& execState,
                                               Interpreter::VariableDefMap& varDefs,
                                               bool traceFlag)
 {

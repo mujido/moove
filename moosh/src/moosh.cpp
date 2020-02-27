@@ -101,12 +101,12 @@ DefaultIntVar::value_type mooshPow(DefaultIntVar::value_type x, DefaultIntVar::v
 }
 
 template<class LeftVariant, class RightVariant>
-Reply mooshBinaryComparisonDispatch(Opcode op, std::auto_ptr<Variant> leftVar, std::auto_ptr<Variant> rightVar)
+Reply mooshBinaryComparisonDispatch(Opcode op, std::unique_ptr<Variant> leftVar, std::unique_ptr<Variant> rightVar)
 {
 }
 
 template<class LeftVariant, class RightVariant>
-Reply mooshBinaryOpDispatch(Opcode op, std::auto_ptr<Variant> leftVar, std::auto_ptr<Variant> rightVar)
+Reply mooshBinaryOpDispatch(Opcode op, std::unique_ptr<Variant> leftVar, std::unique_ptr<Variant> rightVar)
 {
     typedef typename operator_traits<LeftVariant, RightVariant>::math_result_type MathResultVar;
     typedef typename operator_traits<LeftVariant, RightVariant>::comparison_result_type CmpResultVar;
@@ -172,7 +172,7 @@ Reply mooshBinaryOpDispatch(Opcode op, std::auto_ptr<Variant> leftVar, std::auto
     return reply;
 }
 
-Reply mooshStringOpDispatch(Opcode op, std::auto_ptr<Variant> leftVar, std::auto_ptr<Variant> rightVar)
+Reply mooshStringOpDispatch(Opcode op, std::unique_ptr<Variant> leftVar, std::unique_ptr<Variant> rightVar)
 {
     const StrVar::value_type& leftVal = static_cast<const StrVar&>(*leftVar).value();
     const StrVar::value_type& rightVal = static_cast<const StrVar&>(*rightVar).value();
@@ -213,21 +213,21 @@ void registerBuiltins(ExecutionState& execState)
     execState.builtinRegistry().registerFunction("chr", &builtin_chr);
 }
 
-std::auto_ptr<Variant> evalScript(ExecutionState& execState,
+std::unique_ptr<Variant> evalScript(ExecutionState& execState,
                                   const std::string& script,
                                   ListVar::Container& args,
                                   MessageHandler& msgs,
                                   bool traceFlag = false)
 {
-    std::auto_ptr<Variant> returnValue;
+    std::unique_ptr<Variant> returnValue;
 
     Parser parser;
     if(parser.parse(script, msgs, false)) {
-        std::auto_ptr<Program> program = parser.releaseProgram();
+        std::unique_ptr<Program> program = parser.releaseProgram();
 
         Compiler compiler(execState.typeRegistry());
 
-        std::auto_ptr<DebugBytecodeProgram> bc = compiler.compileDebug(*program);
+        std::unique_ptr<DebugBytecodeProgram> bc = compiler.compileDebug(*program);
 
         Interpreter::VariableDefMap varDefs;
         std::string key("args");
@@ -239,7 +239,7 @@ std::auto_ptr<Variant> evalScript(ExecutionState& execState,
     return returnValue;
 }
 
-std::auto_ptr<Variant> evalExpr(ExecutionState& execState,
+std::unique_ptr<Variant> evalExpr(ExecutionState& execState,
                                 const std::string& valueStr,
                                 MessageHandler& msgs,
                                 bool traceFlag = false)
@@ -258,14 +258,14 @@ void parseScriptArgs(ExecutionState& execState,
     MessageHandler msgs(0);
 
     for(int i = 0; i < argCount; ++i) {
-        std::auto_ptr<Variant> result = evalExpr(execState, args[i], msgs, traceFlag);
+        std::unique_ptr<Variant> result = evalExpr(execState, args[i], msgs, traceFlag);
 
         if (!result.get()) {
             std::cerr << "Invalid argument: " << args[i] << std::endl;
             exit(1);
         }
 
-        parsedList.push_back(boost::shared_ptr<Variant>(result));
+        parsedList.push_back(boost::shared_ptr<Variant>(result.release()));
     }
 }
 
@@ -325,7 +325,7 @@ int main(int argc, char **argv)
         }
 
         MessageHandler msgs(0);
-        std::auto_ptr<Variant> result = evalScript(execState, source, argContents, msgs, traceStack);
+        std::unique_ptr<Variant> result = evalScript(execState, source, argContents, msgs, traceStack);
         if(result.get()) {
             std::cout << "Result: " << result->debugStr() << "\n";
         } else {

@@ -12,7 +12,7 @@
 
 using namespace Moove;
 
-Reply builtin_input(ExecutionState& execState, std::auto_ptr<ListVar> args)
+Reply builtin_input(ExecutionState& execState, std::unique_ptr<ListVar> args)
 {
     MOOVE_ASSERT(args->contents()->size() == 1, "invald number of arguments to builtin 'input'");
     boost::shared_ptr<StrVar> inputType = boost::dynamic_pointer_cast<StrVar>((*args->contents())[0]);
@@ -25,18 +25,18 @@ Reply builtin_input(ExecutionState& execState, std::auto_ptr<ListVar> args)
             
         MOOVE_ASSERT(std::cin >> value, "unable to input value");
         std::cin.ignore();
-        return Reply(Reply::NORMAL, std::auto_ptr<Variant>(execState.intFactory().createValue(value)));
+        return Reply(Reply::NORMAL, std::unique_ptr<Variant>(execState.intFactory().createValue(value)));
     } else if(inputType->value() == "real") {
         double value;
             
         MOOVE_ASSERT(std::cin >> value, "unable to input value");
         std::cin.ignore();
-        return Reply(Reply::NORMAL, std::auto_ptr<Variant>(execState.realFactory().createValue(value)));
+        return Reply(Reply::NORMAL, std::unique_ptr<Variant>(execState.realFactory().createValue(value)));
     } else if(inputType->value() == "str") {
         std::string value;
 
         MOOVE_ASSERT(std::getline(std::cin, value), "unable to input value");
-        return Reply(Reply::NORMAL, std::auto_ptr<Variant>(execState.strFactory().createValue(value)));
+        return Reply(Reply::NORMAL, std::unique_ptr<Variant>(execState.strFactory().createValue(value)));
     }
 
     MOOVE_THROW("invalid input type");
@@ -44,7 +44,7 @@ Reply builtin_input(ExecutionState& execState, std::auto_ptr<ListVar> args)
 
 namespace {
 
-Reply builtin_print_or_println(ExecutionState& execState, std::auto_ptr<ListVar> args, bool lineFlag)
+Reply builtin_print_or_println(ExecutionState& execState, std::unique_ptr<ListVar> args, bool lineFlag)
 {
     ListVar::Container::const_iterator argsEnd = args->contents()->end();
     for(ListVar::Container::const_iterator arg = args->contents()->begin(); arg != argsEnd; ++arg) {
@@ -68,20 +68,20 @@ Reply builtin_print_or_println(ExecutionState& execState, std::auto_ptr<ListVar>
 
 }       // namespace
 
-Reply builtin_print(ExecutionState& execState, std::auto_ptr<ListVar> args)
+Reply builtin_print(ExecutionState& execState, std::unique_ptr<ListVar> args)
 {
-    return builtin_print_or_println(execState, args, false);
+    return builtin_print_or_println(execState, std::move(args), false);
 }
 
-Reply builtin_println(ExecutionState& execState, std::auto_ptr<ListVar> args)
+Reply builtin_println(ExecutionState& execState, std::unique_ptr<ListVar> args)
 {
-    return builtin_print_or_println(execState, args, true);
+    return builtin_print_or_println(execState, std::move(args), true);
 }
 
-Reply builtin_length(ExecutionState& execState, std::auto_ptr<ListVar> args)
+Reply builtin_length(ExecutionState& execState, std::unique_ptr<ListVar> args)
 {
     MOOVE_ASSERT(args->contents()->size() == 1, "invalid number of arguments");
-    std::auto_ptr<Variant> result;
+    std::unique_ptr<Variant> result;
 
     if(boost::shared_ptr<StrVar> strValue = boost::dynamic_pointer_cast<StrVar>((*args->contents())[0]))
         result.reset(execState.intFactory().createValue(strValue->value().size()));
@@ -90,16 +90,16 @@ Reply builtin_length(ExecutionState& execState, std::auto_ptr<ListVar> args)
     else
         MOOVE_THROW("invalid type: " + (*args->contents())[0]->factory().regEntry().name());
 
-    return Reply(Reply::NORMAL, result);
+    return Reply(Reply::NORMAL, std::move(result));
 }
 
-Reply builtin_chr(ExecutionState& execState, std::auto_ptr<ListVar> args)
+Reply builtin_chr(ExecutionState& execState, std::unique_ptr<ListVar> args)
 {
     MOOVE_ASSERT(args->contents()->size() == 1, "invalid number of arguments");
 
     if(boost::shared_ptr<IntVar> intValue = boost::dynamic_pointer_cast<IntVar>((*args->contents())[0])) {
         MOOVE_ASSERT(intValue->value() > 0 && intValue->value() <= 255, "chr() argument out of range");
-        return Reply(Reply::NORMAL, std::auto_ptr<Variant>(execState.strFactory().createValue(std::string(1,
+        return Reply(Reply::NORMAL, std::unique_ptr<Variant>(execState.strFactory().createValue(std::string(1,
                                                                                                           intValue->value()))));
         }
 

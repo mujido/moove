@@ -91,7 +91,7 @@ private:
 
     void incTemp(Temp tmp);
 
-    void pushLiteral(std::auto_ptr<Variant> literal);
+    void pushLiteral(std::unique_ptr<Variant> literal);
 
     void pushString(const std::string& str);
 
@@ -140,7 +140,7 @@ private:
     CodeVector::difference_type 
     sumImmByteDeltas(const ImmediateValue::Deltas& immCounts, const ImmediateValue::Deltas& immBytes);
 
-    std::auto_ptr<BytecodeProgram::ForkVector> link(const TempCodeVector& cv, ImmediateValue::Deltas& immBytes);
+    std::unique_ptr<BytecodeProgram::ForkVector> link(const TempCodeVector& cv, ImmediateValue::Deltas& immBytes);
 
     void reset();
 
@@ -149,9 +149,9 @@ public:
 
     Compiler(const TypeRegistry& typeReg);
 
-    std::auto_ptr<BytecodeProgram> compile(const Program& prog);
+    std::unique_ptr<BytecodeProgram> compile(const Program& prog);
 
-    std::auto_ptr<DebugBytecodeProgram> compileDebug(const Program &prog);
+    std::unique_ptr<DebugBytecodeProgram> compileDebug(const Program &prog);
 
 protected:
     void visit(const Program&);
@@ -280,7 +280,7 @@ protected:
 
     void visit(const Stmt::Break& breakStmt);
 
-    void visit(const Stmt::Expr& stmt);
+    void visit(const Stmt::ExprStmt& stmt);
 };
 
 }	//namespace Moove

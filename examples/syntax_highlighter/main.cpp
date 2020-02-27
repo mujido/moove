@@ -884,7 +884,7 @@ int main(int argc, char** argv)
    MyMessages msgs;
    Parser parser;
    if(parser.parse(source, msgs, true)) {
-      std::auto_ptr<Program> program = parser.releaseProgram();
+      std::unique_ptr<Program> program = parser.releaseProgram();
       TestVisitor visitor(cout, argc > 2);
       
       visitor.visit(*program);

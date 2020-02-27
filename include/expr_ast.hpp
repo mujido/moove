@@ -20,7 +20,7 @@ class ASTVisitor;
 ///Containts all AST classes used for representing expressions
 namespace Expr {
 
-class Expr;
+struct Expr;
 
 /**
  * \brief A container of Expr pointers
@@ -107,14 +107,14 @@ public:
  */
 class Str : public Expr {
 private:
-   std::auto_ptr<std::string> m_str;
+   std::unique_ptr<std::string> m_str;
 
 public:
    /** 
     * \brief Construct a new Str object with given value
     * \param str String value to represent
     */
-   Str(std::auto_ptr<std::string> str) : m_str(str)
+   Str(std::unique_ptr<std::string>&& str) : m_str(std::move(str))
    {}
 
    /**
@@ -134,14 +134,14 @@ public:
  */
 class Real : public Expr {
 private:
-   std::auto_ptr<double> m_value;
+   double m_value;
 
 public:
    /**
     * \brief Construct a new Real object with given value
     * \param value Value to represent
     */
-   Real(std::auto_ptr<double> value) : m_value(value)
+   Real(double value) : m_value(value)
    {}
 
    /**
@@ -149,7 +149,7 @@ public:
     * \return \c double value represented
     */
    const double& value()const
-   { return *m_value; }
+   { return m_value; }
 
    void accept(ASTVisitor& visitor)const;
 };
@@ -161,14 +161,14 @@ public:
  */
 class List : public Expr {
 private:
-   std::auto_ptr<ArgList> m_elements;
+   std::unique_ptr<ArgList> m_elements;
 
 public:
    /**
     * \brief Create an instance using an ArgList object
     * \param elements A vector of Expr pointers to assume ownership of
     */
-   List(std::auto_ptr<ArgList> elements) : m_elements(elements)
+   List(std::unique_ptr<ArgList> elements) : m_elements(std::move(elements))
    {}
 
    /**
@@ -228,7 +228,7 @@ public:
    private:
       Type                m_type;
       Symbol              m_id;
-      std::auto_ptr<Expr> m_expr;
+      std::unique_ptr<Expr> m_expr;
       
    public:
       /**
@@ -243,8 +243,8 @@ public:
        */
       Target(Type type, 
 	     Symbol id, 
-	     std::auto_ptr<Expr> expr = std::auto_ptr<Expr>()) : 
-	 m_type(type), m_id(id), m_expr(expr)
+	     std::unique_ptr<Expr> expr = std::unique_ptr<Expr>()) : 
+			 m_type(type), m_id(id), m_expr(std::move(expr))
       {}
       
       /**
@@ -296,14 +296,14 @@ public:
    typedef ASTAutoContainer<std::vector<Target*> > TargetList;
 
 private:
-   std::auto_ptr<TargetList> m_targets;
+   std::unique_ptr<TargetList> m_targets;
 
 public:
    /**
     * \brief Construct a Scatter object with given targets
     * \param targets TargetList of Target objects used in scatter
     */
-   Scatter(std::auto_ptr<TargetList> targets) : m_targets(targets)
+   Scatter(std::unique_ptr<TargetList> targets) : m_targets(std::move(targets))
    {}
 
    /**
@@ -319,14 +319,14 @@ public:
 ///Abstract base for unary operators
 class UnaryExpr : public Expr {
 private:
-   std::auto_ptr<Expr> m_operand;
+   std::unique_ptr<Expr> m_operand;
 
 public:
    /**
     * \brief Construct UnaryExpr object
     * \param operand Operand to the operation given as an Expr object
     */
-   UnaryExpr(std::auto_ptr<Expr> operand) : m_operand(operand)
+   UnaryExpr(std::unique_ptr<Expr> operand) : m_operand(std::move(operand))
    {}
 
    /**
@@ -343,7 +343,7 @@ struct Not : public UnaryExpr {
     * \brief Construct Not object
     * \param operand Operand to the operation given as an Expr object
     */
-   Not(std::auto_ptr<Expr> operand) : UnaryExpr(operand)
+   Not(std::unique_ptr<Expr> operand) : UnaryExpr(std::move(operand))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -355,7 +355,7 @@ struct Negate : public UnaryExpr {
     * \brief Construct Negate object
     * \param operand Operand to the operation given as an Expr object
     */
-   Negate(std::auto_ptr<Expr> operand) : UnaryExpr(operand)
+   Negate(std::unique_ptr<Expr> operand) : UnaryExpr(std::move(operand))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -367,7 +367,7 @@ struct Splice : public UnaryExpr {
     * \brief Construct Splice object
     * \param operand Operand to the operation given as an Expr object
     */
-   Splice(std::auto_ptr<Expr> operand) : UnaryExpr(operand)
+   Splice(std::unique_ptr<Expr> operand) : UnaryExpr(std::move(operand))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -379,7 +379,7 @@ struct PreInc : public UnaryExpr {
     * \brief Construct PreInc object
     * \param operand Operand to the operation given as an Expr object
     */
-   PreInc(std::auto_ptr<Expr> operand) : UnaryExpr(operand)
+   PreInc(std::unique_ptr<Expr> operand) : UnaryExpr(std::move(operand))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -391,7 +391,7 @@ struct PreDec : public UnaryExpr {
     * \brief Construct PreDec object
     * \param operand Operand to the operation given as an Expr object
     */
-   PreDec(std::auto_ptr<Expr> operand) : UnaryExpr(operand)
+   PreDec(std::unique_ptr<Expr> operand) : UnaryExpr(std::move(operand))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -403,7 +403,7 @@ struct PostInc : public UnaryExpr {
     * \brief Construct PostInc object
     * \param operand Operand to the operation given as an Expr object
     */
-   PostInc(std::auto_ptr<Expr> operand) : UnaryExpr(operand)
+   PostInc(std::unique_ptr<Expr> operand) : UnaryExpr(std::move(operand))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -415,7 +415,7 @@ struct PostDec : public UnaryExpr {
     * \brief Construct PostDec object
     * \param operand Operand to the operation given as an Expr object
     */
-   PostDec(std::auto_ptr<Expr> operand) : UnaryExpr(operand)
+   PostDec(std::unique_ptr<Expr> operand) : UnaryExpr(std::move(operand))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -424,8 +424,8 @@ struct PostDec : public UnaryExpr {
 ///Abstract base for binary operations
 class BinaryExpr : public Expr {
 private:
-   std::auto_ptr<Expr> m_left;
-   std::auto_ptr<Expr> m_right;
+   std::unique_ptr<Expr> m_left;
+   std::unique_ptr<Expr> m_right;
 
 public:
    /**
@@ -433,8 +433,8 @@ public:
     * \param left Left-hand Expr object for binary operation
     * \param right Right-hand Expr object for binary operation
     */
-   BinaryExpr(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) : 
-      m_left(left), m_right(right)
+   BinaryExpr(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) : 
+      m_left(std::move(left)), m_right(std::move(right))
    {}
 
    /**
@@ -459,8 +459,8 @@ struct Or : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   Or(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   Or(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -473,8 +473,8 @@ struct And : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   And(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   And(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -487,8 +487,8 @@ struct Equal : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   Equal(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   Equal(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -501,8 +501,8 @@ struct NotEqual : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   NotEqual(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   NotEqual(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -515,8 +515,8 @@ struct Less : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   Less(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   Less(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -529,8 +529,8 @@ struct LessEqual : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   LessEqual(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   LessEqual(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -543,8 +543,8 @@ struct GreaterEqual : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   GreaterEqual(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   GreaterEqual(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -557,8 +557,8 @@ struct Greater : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   Greater(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   Greater(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -571,8 +571,8 @@ struct In : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   In(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   In(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -585,8 +585,8 @@ struct Add : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   Add(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   Add(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -599,8 +599,8 @@ struct Sub : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   Sub(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   Sub(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -613,8 +613,8 @@ struct Mul : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   Mul(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   Mul(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -627,8 +627,8 @@ struct Div : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   Div(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   Div(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -641,8 +641,8 @@ struct Mod : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   Mod(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   Mod(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -655,8 +655,8 @@ struct Exp : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   Exp(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   Exp(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -669,8 +669,8 @@ struct Assign : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   Assign(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   Assign(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -683,8 +683,8 @@ struct AddEqual : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   AddEqual(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   AddEqual(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -697,8 +697,8 @@ struct SubEqual : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   SubEqual(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   SubEqual(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -711,8 +711,8 @@ struct MulEqual : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   MulEqual(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   MulEqual(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -725,8 +725,8 @@ struct DivEqual : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   DivEqual(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   DivEqual(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -739,8 +739,8 @@ struct ModEqual : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   ModEqual(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   ModEqual(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -753,8 +753,8 @@ struct ExpEqual : public BinaryExpr {
     * \param left Left-hand expression for binary operation
     * \param right Right-hand expression for binary operation
     */
-   ExpEqual(std::auto_ptr<Expr> left, std::auto_ptr<Expr> right) :
-      BinaryExpr(left, right)
+   ExpEqual(std::unique_ptr<Expr> left, std::unique_ptr<Expr> right) :
+      BinaryExpr(std::move(left), std::move(right))
    {}
 
    void accept(ASTVisitor& visitor)const;
@@ -763,9 +763,9 @@ struct ExpEqual : public BinaryExpr {
 ///Represent a conditional (x ? y : z) operation
 class Conditional : public Expr {
 private:
-   std::auto_ptr<Expr> m_test;
-   std::auto_ptr<Expr> m_trueExpr;
-   std::auto_ptr<Expr> m_falseExpr;
+   std::unique_ptr<Expr> m_test;
+   std::unique_ptr<Expr> m_trueExpr;
+   std::unique_ptr<Expr> m_falseExpr;
 
 public:
    /**
@@ -774,10 +774,10 @@ public:
     * \param trueExpr Value of operation if \a test evaluates \c true.
     * \param falseExpr Value of operation if \a test evaluates \c false.
     */
-   Conditional(std::auto_ptr<Expr> test, 
-	       std::auto_ptr<Expr> trueExpr, 
-	       std::auto_ptr<Expr> falseExpr) : 
-      m_test(test), m_trueExpr(trueExpr), m_falseExpr(falseExpr)
+   Conditional(std::unique_ptr<Expr> test, 
+	       std::unique_ptr<Expr> trueExpr, 
+	       std::unique_ptr<Expr> falseExpr) : 
+      m_test(std::move(test)), m_trueExpr(std::move(trueExpr)), m_falseExpr(std::move(falseExpr))
    {}
 
    /**
@@ -807,8 +807,8 @@ public:
 ///Represent a list indexing (x[y]) operation
 class Index : public Expr {
 private:
-   std::auto_ptr<Expr> m_expr;
-   std::auto_ptr<Expr> m_index;
+   std::unique_ptr<Expr> m_expr;
+   std::unique_ptr<Expr> m_index;
 
 public:
    /**
@@ -816,8 +816,8 @@ public:
     * \param expr Expression that evaluates to a list
     * \param index Expression whose value is an index into the list
     */
-   Index(std::auto_ptr<Expr> expr, std::auto_ptr<Expr> index) :
-      m_expr(expr), m_index(index)
+   Index(std::unique_ptr<Expr> expr, std::unique_ptr<Expr> index) :
+      m_expr(std::move(expr)), m_index(std::move(index))
    {}
 
    /**
@@ -843,9 +843,9 @@ public:
 ///Represent a list subset index (x[y..z]) operation
 class Range : public Expr {
 private:
-   std::auto_ptr<Expr> m_expr;
-   std::auto_ptr<Expr> m_start;
-   std::auto_ptr<Expr> m_end;
+   std::unique_ptr<Expr> m_expr;
+   std::unique_ptr<Expr> m_start;
+   std::unique_ptr<Expr> m_end;
 
 public:
    /**
@@ -854,9 +854,9 @@ public:
     * \param start Expression that indexes the first element to subset
     * \param end Expression that indexes the last element to subset
     */
-   Range(std::auto_ptr<Expr> expr, 
-	 std::auto_ptr<Expr> start, std::auto_ptr<Expr> end) : 
-      m_expr(expr), m_start(start), m_end(end)
+   Range(std::unique_ptr<Expr> expr, 
+	 std::unique_ptr<Expr> start, std::unique_ptr<Expr> end) : 
+      m_expr(std::move(expr)), m_start(std::move(start)), m_end(std::move(end))
    {}
 
    /**
@@ -889,9 +889,9 @@ public:
 ///Represent a try/catch (`x ! y => z') expression 
 class Catch : public Expr {
 private:
-   std::auto_ptr<Expr>    m_expr;
-   std::auto_ptr<ArgList> m_codes;
-   std::auto_ptr<Expr>    m_exceptValue;
+   std::unique_ptr<Expr>    m_expr;
+   std::unique_ptr<ArgList> m_codes;
+   std::unique_ptr<Expr>    m_exceptValue;
 
 public:
    /**
@@ -902,10 +902,10 @@ public:
     *        that appears inside codes is raised by \a expr. Can be 0 if
     *        the value of the exception should be returned instead.
     */
-   Catch(std::auto_ptr<Expr> expr, 
-	 std::auto_ptr<ArgList> codes, 
-	 std::auto_ptr<Expr> exceptValue) : 
-      m_expr(expr), m_codes(codes), m_exceptValue(exceptValue)
+   Catch(std::unique_ptr<Expr> expr, 
+	 std::unique_ptr<ArgList> codes, 
+	 std::unique_ptr<Expr> exceptValue) : 
+      m_expr(std::move(expr)), m_codes(std::move(codes)), m_exceptValue(std::move(exceptValue))
    {}
 
    /**
@@ -950,8 +950,8 @@ public:
 ///Represent a property (x.name) reference expression
 class Prop : public Expr {
 private:
-   std::auto_ptr<Expr> m_object;
-   std::auto_ptr<Expr> m_name;
+   std::unique_ptr<Expr> m_object;
+   std::unique_ptr<Expr> m_name;
 
 public:
    /**
@@ -959,8 +959,8 @@ public:
     * \param object Expression on which to access a property
     * \param name Expression that evaluates to property name
     */
-   Prop(std::auto_ptr<Expr> object, std::auto_ptr<Expr> name) :
-      m_object(object), m_name(name)
+   Prop(std::unique_ptr<Expr> object, std::unique_ptr<Expr> name) :
+      m_object(std::move(object)), m_name(std::move(name))
    {}
 
    /**
@@ -986,9 +986,9 @@ public:
 ///Represent verb call (x:name(...)) expression
 class VerbCall : public Expr {
 private:
-   std::auto_ptr<Expr>    m_object;
-   std::auto_ptr<Expr>    m_name;
-   std::auto_ptr<ArgList> m_args;
+   std::unique_ptr<Expr>    m_object;
+   std::unique_ptr<Expr>    m_name;
+   std::unique_ptr<ArgList> m_args;
 
 public:
    /**
@@ -997,10 +997,10 @@ public:
     * \param name Expression that evaluates to a verb name
     * \param args Argument list to verb
     */
-   VerbCall(std::auto_ptr<Expr> object, 
-	    std::auto_ptr<Expr> name, 
-	    std::auto_ptr<ArgList> args) : 
-      m_object(object), m_name(name), m_args(args)
+   VerbCall(std::unique_ptr<Expr> object, 
+	    std::unique_ptr<Expr> name, 
+	    std::unique_ptr<ArgList> args) : 
+      m_object(std::move(object)), m_name(std::move(name)), m_args(std::move(args))
    {}
 
    /**
@@ -1030,14 +1030,14 @@ public:
 ///Represent a system property reference ($name) expression
 class SystemProp : public Expr {
 private:
-   std::auto_ptr<std::string> m_name;
+   std::unique_ptr<std::string> m_name;
 
 public:
    /** 
     * \brief Construct SystemProp object
     * \param name Property name string
     */
-   SystemProp(std::auto_ptr<std::string> name) : m_name(name)
+   SystemProp(std::unique_ptr<std::string> name) : m_name(std::move(name))
    {}
 
    /**
@@ -1056,8 +1056,8 @@ public:
 ///Represent a system call ($name(...)) expression
 class SystemCall : public Expr {
 private:
-   std::auto_ptr<std::string> m_name;
-   std::auto_ptr<ArgList>     m_args;
+   std::unique_ptr<std::string> m_name;
+   std::unique_ptr<ArgList>     m_args;
 
 public:
    /**
@@ -1065,9 +1065,9 @@ public:
     * \param name Verb name string
     * \param args Argument list to verb
     */
-   SystemCall(std::auto_ptr<std::string> name, 
-	      std::auto_ptr<ArgList> args) : 
-      m_name(name), m_args(args)
+   SystemCall(std::unique_ptr<std::string> name, 
+	      std::unique_ptr<ArgList> args) : 
+      m_name(std::move(name)), m_args(std::move(args))
    {}
 
    /**
@@ -1090,8 +1090,8 @@ public:
 ///Represent Builtin function call (name(...)) expression
 class Builtin : public Expr {
 private:
-   std::auto_ptr<std::string> m_name;
-   std::auto_ptr<ArgList>     m_args;
+   std::unique_ptr<std::string> m_name;
+   std::unique_ptr<ArgList>     m_args;
 
 public:
    /**
@@ -1099,8 +1099,8 @@ public:
     * \param name Function name string,
     * \param args Argument list to function
     */
-   Builtin(std::auto_ptr<std::string> name, 
-	   std::auto_ptr<ArgList> args) : m_name(name), m_args(args)
+   Builtin(std::unique_ptr<std::string> name, 
+	   std::unique_ptr<ArgList> args) : m_name(std::move(name)), m_args(std::move(args))
    {}
 
    /**

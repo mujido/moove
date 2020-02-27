@@ -30,7 +30,7 @@ private:
    { return std::find(m_pool.begin(), m_pool.end(), obj); }
    
 public:
-   void insert(std::auto_ptr<BaseType> obj)
+   void insert(std::unique_ptr<BaseType> obj)
    {
       if(obj.get()) {
 	 m_pool.push_back(obj.get());

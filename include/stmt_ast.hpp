@@ -42,15 +42,15 @@ public:
    ///Represent an elseif/else clauses
    class ElseIf {
    private:
-      std::auto_ptr<Expr::Expr> m_test;
-      std::auto_ptr<Block>      m_body;
+      std::unique_ptr<Expr::Expr> m_test;
+      std::unique_ptr<Block>      m_body;
       
    public:
       /**
        * \brief Construct ElseIf object (for use as an else clause)
        * \param body Statements found within this section of the if statement
        */
-      ElseIf(std::auto_ptr<Block> body) : m_test(0), m_body(body)
+      ElseIf(std::unique_ptr<Block> body) : m_test(nullptr), m_body(std::move(body))
       {}
 
       /**
@@ -59,8 +59,8 @@ public:
        *             else clause
        * \param body Statements found within this section of the if statement
        */
-      ElseIf(std::auto_ptr<Expr::Expr> test, std::auto_ptr<Block> body) : 
-	 m_test(test), m_body(body)
+      ElseIf(std::unique_ptr<Expr::Expr> test, std::unique_ptr<Block> body) : 
+	      m_test(std::move(test)), m_body(std::move(body))
       {}
 
       /**
@@ -103,9 +103,9 @@ public:
    typedef ASTAutoContainer<std::vector<Else*> > ElseList;
 
 private:
-   std::auto_ptr<Expr::Expr> m_test;
-   std::auto_ptr<Block>      m_body;
-   std::auto_ptr<ElseList>   m_elseList;
+   std::unique_ptr<Expr::Expr> m_test;
+   std::unique_ptr<Block>      m_body;
+   std::unique_ptr<ElseList>   m_elseList;
 
 public:
    /**
@@ -114,10 +114,10 @@ public:
     * \param body Statement body for if clause
     * \param elseList Collection of elseif/else clauses attached to statement
     */
-   If(std::auto_ptr<Expr::Expr> test, 
-      std::auto_ptr<Block> body, 
-      std::auto_ptr<ElseList> elseList) :
-      m_test(test), m_body(body), m_elseList(elseList)
+   If(std::unique_ptr<Expr::Expr> test, 
+      std::unique_ptr<Block> body, 
+      std::unique_ptr<ElseList> elseList) :
+      m_test(std::move(test)), m_body(std::move(body)), m_elseList(std::move(elseList))
    {}
 
    /**
@@ -148,8 +148,8 @@ public:
 class While : public Stmt {
 private:
    Symbol                    m_id;
-   std::auto_ptr<Block>      m_body;
-   std::auto_ptr<Expr::Expr> m_test;
+   std::unique_ptr<Block>      m_body;
+   std::unique_ptr<Expr::Expr> m_test;
 
 public:
    /**
@@ -160,8 +160,8 @@ public:
     * \param body Statement body
     */
    While(Symbol id, 
-	 std::auto_ptr<Expr::Expr> test, 
-	 std::auto_ptr<Block> body) : m_id(id), m_body(body), m_test(test)
+	 std::unique_ptr<Expr::Expr> test, 
+	 std::unique_ptr<Block> body) : m_id(id), m_body(std::move(body)), m_test(std::move(test))
    {}
    
    /**
@@ -194,8 +194,8 @@ public:
 class ForList : public Stmt {
 private:
    Symbol                    m_id;
-   std::auto_ptr<Expr::Expr> m_expr;
-   std::auto_ptr<Block>      m_body;
+   std::unique_ptr<Expr::Expr> m_expr;
+   std::unique_ptr<Block>      m_body;
 
 public:
    /**
@@ -205,8 +205,8 @@ public:
     * \param body Statement body
     */
    ForList(Symbol id, 
-	   std::auto_ptr<Expr::Expr> expr, 
-	   std::auto_ptr<Block> body) : m_id(id), m_expr(expr), m_body(body)
+	   std::unique_ptr<Expr::Expr> expr, 
+	   std::unique_ptr<Block> body) : m_id(id), m_expr(std::move(expr)), m_body(std::move(body))
    {}
 
    /**
@@ -239,9 +239,9 @@ public:
 class ForRange : public Stmt {
 private:
    Symbol                    m_id;
-   std::auto_ptr<Expr::Expr> m_start;
-   std::auto_ptr<Expr::Expr> m_end;
-   std::auto_ptr<Block>      m_body;
+   std::unique_ptr<Expr::Expr> m_start;
+   std::unique_ptr<Expr::Expr> m_end;
+   std::unique_ptr<Block>      m_body;
 
 public:
    /**
@@ -252,10 +252,10 @@ public:
     * \param body Statement body
     */
    ForRange(Symbol id,
-	    std::auto_ptr<Expr::Expr> start, 
-	    std::auto_ptr<Expr::Expr> end, 
-	    std::auto_ptr<Block> body) :
-      m_id(id), m_start(start), m_end(end), m_body(body)
+	    std::unique_ptr<Expr::Expr> start, 
+	    std::unique_ptr<Expr::Expr> end, 
+	    std::unique_ptr<Block> body) :
+      m_id(id), m_start(std::move(start)), m_end(std::move(end)), m_body(std::move(body))
    {}
 
    /**
@@ -296,8 +296,8 @@ public:
    class Except {
    private:
       Symbol                       m_id;
-      std::auto_ptr<Expr::ArgList> m_codes;
-      std::auto_ptr<Block>         m_body;
+      std::unique_ptr<Expr::ArgList> m_codes;
+      std::unique_ptr<Block>         m_body;
       
    public:
       /**
@@ -308,9 +308,9 @@ public:
        * \param body Statement body
        */
       Except(Symbol id, 
-	     std::auto_ptr<Expr::ArgList> codes, 
-	     std::auto_ptr<Block> body) : 
-	     m_id(id), m_codes(codes), m_body(body)
+	     std::unique_ptr<Expr::ArgList> codes, 
+	     std::unique_ptr<Block> body) : 
+	     m_id(id), m_codes(std::move(codes)), m_body(std::move(body))
       {}
 
       /**
@@ -347,8 +347,8 @@ public:
    typedef ASTAutoContainer<std::vector<Except*> > ExceptList;
 
 private:
-   std::auto_ptr<Block>      m_body;
-   std::auto_ptr<ExceptList> m_excepts;
+   std::unique_ptr<Block>      m_body;
+   std::unique_ptr<ExceptList> m_excepts;
 
 public:
    /**
@@ -356,8 +356,8 @@ public:
     * \param body Try clause body to monitor for exceptions
     * \param excepts Collection of except clauses attached to statement
     */
-   TryExcept(std::auto_ptr<Block> body, std::auto_ptr<ExceptList> excepts) : 
-      m_body(body), m_excepts(excepts)
+   TryExcept(std::unique_ptr<Block> body, std::unique_ptr<ExceptList> excepts) : 
+      m_body(std::move(body)), m_excepts(std::move(excepts))
    {}
 
    /**
@@ -380,8 +380,8 @@ public:
 ///Represent try/finally statement
 class TryFinally : public Stmt {
 private:
-   std::auto_ptr<Block> m_body;
-   std::auto_ptr<Block> m_finally;
+   std::unique_ptr<Block> m_body;
+   std::unique_ptr<Block> m_finally;
 
 public:
    /**
@@ -389,8 +389,8 @@ public:
     * \param body Try clause body to monitor for exceptions
     * \param finally Finally clause body
     */
-   TryFinally(std::auto_ptr<Block> body, std::auto_ptr<Block> finally) :
-      m_body(body), m_finally(finally)
+   TryFinally(std::unique_ptr<Block> body, std::unique_ptr<Block> finally) :
+      m_body(std::move(body)), m_finally(std::move(finally))
    {}
 
    /**
@@ -414,8 +414,8 @@ public:
 class Fork : public Stmt {
 private:
    Symbol                    m_id;
-   std::auto_ptr<Expr::Expr> m_delay;
-   std::auto_ptr<Block>      m_body;
+   std::unique_ptr<Expr::Expr> m_delay;
+   std::unique_ptr<Block>      m_body;
 
 public:
    /**
@@ -426,8 +426,8 @@ public:
     * \param body Statement body
     */
    Fork(Symbol id, 
-	std::auto_ptr<Expr::Expr> delay, 
-	std::auto_ptr<Block> body) : m_id(id), m_delay(delay), m_body(body)
+	std::unique_ptr<Expr::Expr> delay, 
+	std::unique_ptr<Block> body) : m_id(id), m_delay(std::move(delay)), m_body(std::move(body))
    {}
 
 
@@ -463,15 +463,15 @@ public:
    ///Represent a case/default clause in a switch statement
    class Case {
    private:
-      std::auto_ptr<Expr::Expr> m_expr;
-      std::auto_ptr<Block>      m_body;
+      std::unique_ptr<Expr::Expr> m_expr;
+      std::unique_ptr<Block>      m_body;
       
    public:
       /**
        * \brief Construct Case object (for use as a default clause)
        * \param defaultBody Clause body
        */
-      Case(std::auto_ptr<Block> defaultBody) : m_body(defaultBody)
+      Case(std::unique_ptr<Block> defaultBody) : m_body(std::move(defaultBody))
       {}
 
       /**
@@ -479,8 +479,8 @@ public:
        * \param expr Case test expression. Can be 0 for default clause
        * \param body Clause body
        */
-      Case(std::auto_ptr<Expr::Expr> expr, std::auto_ptr<Block> body) : 
-	 m_expr(expr), m_body(body)
+      Case(std::unique_ptr<Expr::Expr> expr, std::unique_ptr<Block> body) : 
+		 m_expr(std::move(expr)), m_body(std::move(body))
       {}
 
       /**
@@ -521,8 +521,8 @@ public:
    typedef ASTAutoContainer<std::vector<Case*> > CaseList;
 
 private:
-   std::auto_ptr<Expr::Expr> m_expr;
-   std::auto_ptr<CaseList>   m_cases;
+   std::unique_ptr<Expr::Expr> m_expr;
+   std::unique_ptr<CaseList>   m_cases;
 
 public:
    /**
@@ -530,8 +530,8 @@ public:
     * \param expr Expression to compare to case clause test expressions
     * \param cases Collection of case/default clauses
     */
-   Switch(std::auto_ptr<Expr::Expr> expr, std::auto_ptr<CaseList> cases) :
-      m_expr(expr), m_cases(cases)
+   Switch(std::unique_ptr<Expr::Expr> expr, std::unique_ptr<CaseList> cases) :
+      m_expr(std::move(expr)), m_cases(std::move(cases))
    {}
 
    /**
@@ -554,18 +554,18 @@ public:
 ///Represent a return statement
 class Return : public Stmt {
 private:
-   std::auto_ptr<Expr::Expr> m_expr;
+   std::unique_ptr<Expr::Expr> m_expr;
 
 public:
    ///Construct Return object (with no return value)
-   Return() : m_expr(0)
+   Return() : m_expr(nullptr)
    {}
 
    /**
     * \brief Construct Return object
     * \param expr Expression to return. Can be 0 if no return value
     */
-   explicit Return(std::auto_ptr<Expr::Expr> expr) : m_expr(expr)
+   explicit Return(std::unique_ptr<Expr::Expr> expr) : m_expr(std::move(expr))
    {}
 
    /**
@@ -641,23 +641,23 @@ public:
 };
 
 ///Represent an expression statement
-class Expr : public Stmt {
+class ExprStmt : public Stmt {
 private:
-   std::auto_ptr<Moove::Expr::Expr> m_expr;
+   std::unique_ptr<Expr::Expr> m_expr;
 
 public:
    /**
     * \brief Construct Expr object
     * \param expr Expression to evaluate and discard value
     */
-   explicit Expr(std::auto_ptr<Moove::Expr::Expr> expr) : m_expr(expr)
+   explicit ExprStmt(std::unique_ptr<Moove::Expr::Expr> expr) : m_expr(std::move(expr))
    {}
 
    /**
     * \brief Retrieve expression to evaluate
     * \return Expr::Expr object to evaluate
     */
-   const Moove::Expr::Expr& expr()const
+   const Expr::Expr& expr()const
    { return *m_expr; }
 
    void accept(ASTVisitor& visitor)const;

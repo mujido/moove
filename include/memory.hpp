@@ -106,13 +106,13 @@ struct AutoContainer : public Container {
    ~AutoContainer()
    { freeRange(this->begin(), this->end()); }
 
-   void autoPushFront(std::auto_ptr<value_type> ptr)
+   void autoPushFront(std::unique_ptr<value_type> ptr)
    {
       this->push_front(ptr.get());
       ptr.release();
    }
 
-   void autoPushBack(std::auto_ptr<value_type> ptr)
+   void autoPushBack(std::unique_ptr<value_type> ptr)
    {
       this->push_back(ptr.get());
       ptr.release();

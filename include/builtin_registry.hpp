@@ -17,7 +17,7 @@ class ExecutionState;
 
 class BuiltinRegistry {
 public:
-    typedef Reply (*Function)(ExecutionState& execState, std::auto_ptr<ListVar> args);
+    typedef Reply (*Function)(ExecutionState& execState, std::unique_ptr<ListVar> args);
 
 private:
     typedef std::map<std::string, Function, iless> BuiltinMap;

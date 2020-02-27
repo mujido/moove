@@ -180,7 +180,7 @@ struct ASTVisitor {
 
    virtual void visit(const Stmt::Break&) = 0;
 
-   virtual void visit(const Stmt::Expr&) = 0;
+   virtual void visit(const Stmt::ExprStmt&) = 0;
    //@}
 };
   

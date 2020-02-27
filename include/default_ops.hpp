@@ -148,7 +148,7 @@ struct UnaryArithmeticOperatorDispatch : public UnaryOperatorDispatch<ResultVari
     typedef typename ResultVariant::value_type result_value_type;
 
     // called if LeftVariant and RightVariant are the same type
-    static Reply dispatch(Opcode op, std::auto_ptr<Variant> var)
+    static Reply dispatch(Opcode op, std::unique_ptr<Variant> var)
     {
         using namespace OperatorWrappers;
 
@@ -171,7 +171,7 @@ struct BinaryArithmeticOperatorDispatch : public BinaryOperatorDispatch<ResultVa
 
     typedef typename ResultVariant::value_type result_value_type;
 
-    static Reply dispatch(Opcode op, std::auto_ptr<Variant> leftVar, std::auto_ptr<Variant> rightVar)
+    static Reply dispatch(Opcode op, std::unique_ptr<Variant> leftVar, std::unique_ptr<Variant> rightVar)
     {
         using namespace OperatorWrappers;
 
@@ -270,12 +270,12 @@ private:
     using Base::castRight;
 
 public:
-    Reply doUnaryOp(Opcode op, std::auto_ptr<Variant> var)const
+    Reply doUnaryOp(Opcode op, std::unique_ptr<Variant> var)const
     {
         MOOVE_THROW("unexpected opcode");
     }
 
-    Reply doBinaryOp(Opcode op, std::auto_ptr<Variant> leftVar, std::auto_ptr<Variant> rightVar)const
+    Reply doBinaryOp(Opcode op, std::unique_ptr<Variant> leftVar, std::unique_ptr<Variant> rightVar)const
     {
         using namespace OperatorWrappers;
 
@@ -366,14 +366,14 @@ public:
 
 private:
     // called if LeftVariant is not same type as RightVariant
-    Reply doUnaryOp(Opcode op, std::auto_ptr<Variant> var, const boost::false_type&)const
+    Reply doUnaryOp(Opcode op, std::unique_ptr<Variant> var, const boost::false_type&)const
     {
         MOOVE_THROW("unexpected opcode");
         return Reply();
     }
 
     // called if LeftVariant and RightVariant are the same type
-    Reply doUnaryOp(Opcode op, std::auto_ptr<Variant> var, const boost::true_type&)const
+    Reply doUnaryOp(Opcode op, std::unique_ptr<Variant> var, const boost::true_type&)const
     {
         using namespace OperatorWrappers;
 
@@ -388,12 +388,12 @@ private:
     }
 
 public:
-    Reply doUnaryOp(Opcode op, std::auto_ptr<Variant> var)const
+    Reply doUnaryOp(Opcode op, std::unique_ptr<Variant> var)const
     {
         return doUnaryOp(op, var, typename boost::is_same<LeftVariant, RightVariant>());
     }
 
-    Reply doBinaryOp(Opcode op, std::auto_ptr<Variant> leftVar, std::auto_ptr<Variant> rightVar)const
+    Reply doBinaryOp(Opcode op, std::unique_ptr<Variant> leftVar, std::unique_ptr<Variant> rightVar)const
     {
         using namespace OperatorWrappers;
 
@@ -442,10 +442,10 @@ private:
 
     template<class T>
     struct ConditionalInstantiate<T, 0> {
-        Reply doUnaryOp(Opcode, std::auto_ptr<Variant>)const
+        Reply doUnaryOp(Opcode, std::unique_ptr<Variant>)const
         { MOOVE_THROW("unexpected opcode"); }
 
-        Reply doBinaryOp(Opcode, std::auto_ptr<Variant>, std::auto_ptr<Variant>)const
+        Reply doBinaryOp(Opcode, std::unique_ptr<Variant>, std::unique_ptr<Variant>)const
         { MOOVE_THROW("unexpected opcode"); }
     };
 
@@ -464,7 +464,7 @@ private:
                            opFGMask & OpcodeInfo::FG_LOGIC>             m_logic;
 
 public:
-    Reply doUnaryOp(Opcode op, std::auto_ptr<Variant> var)const
+    Reply doUnaryOp(Opcode op, std::unique_ptr<Variant> var)const
     {
         switch (OpcodeInfo::getOp(op).functionalGroup()) {
             case OpcodeInfo::FG_ARITHMETIC:
@@ -484,7 +484,7 @@ public:
         return Reply();
     }
 
-    Reply doBinaryOp(Opcode op, std::auto_ptr<Variant> leftVar, std::auto_ptr<Variant> rightVar)const
+    Reply doBinaryOp(Opcode op, std::unique_ptr<Variant> leftVar, std::unique_ptr<Variant> rightVar)const
     {
         switch (OpcodeInfo::getOp(op).functionalGroup()) {
             case OpcodeInfo::FG_ARITHMETIC:
@@ -602,15 +602,15 @@ DefaultIntVar::value_type variant_and(const StrVar& leftVar, const StrVar& right
 
 // specialize ArithmeticOperator methods for strings
 template<>
-Reply ArithmeticOperators<DefaultStrVar, StrVar, StrVar>::doUnaryOp(Opcode, std::auto_ptr<Variant>)const
+Reply ArithmeticOperators<DefaultStrVar, StrVar, StrVar>::doUnaryOp(Opcode, std::unique_ptr<Variant>)const
 {
     MOOVE_THROW("unexpected opcode");
 }
 
 template<>
 Reply ArithmeticOperators<DefaultStrVar, StrVar, StrVar>::doBinaryOp(Opcode op, 
-                                                                     std::auto_ptr<Variant> leftVar, 
-                                                                     std::auto_ptr<Variant> rightVar)const
+                                                                     std::unique_ptr<Variant> leftVar, 
+                                                                     std::unique_ptr<Variant> rightVar)const
 {
     using namespace OperatorWrappers;
 

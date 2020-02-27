@@ -80,15 +80,15 @@ void Compiler::putTemp(Temp tmp)
 
 void Compiler::incTemp(Temp tmp)
 {
-    std::auto_ptr<Variant> literal(m_intFactory->createValue(1));
+    std::unique_ptr<Variant> literal(m_intFactory->createValue(1));
    
     pushTemp(tmp);
-    pushLiteral(literal);
+    pushLiteral(std::move(literal));
     emitOp(OP_ADD);
     putTemp(tmp);
 }
 
-void Compiler::pushLiteral(std::auto_ptr<Variant> literal)
+void Compiler::pushLiteral(std::unique_ptr<Variant> literal)
 {
     m_literals.push_back(literal.release());
     
@@ -98,13 +98,13 @@ void Compiler::pushLiteral(std::auto_ptr<Variant> literal)
 
 void Compiler::pushString(const std::string& str)
 {
-    std::auto_ptr<Variant> var(m_strFactory->createValue(str));
-    pushLiteral(var);
+    std::unique_ptr<Variant> var(m_strFactory->createValue(str));
+    pushLiteral(std::move(var));
 }
 
 void Compiler::pushList(const Expr::ArgList& arglist)
 {
-    pushLiteral(std::auto_ptr<Variant>(m_listFactory->create()));
+    pushLiteral(std::unique_ptr<Variant>(m_listFactory->create()));
 
     m_didSplice = false;
 
@@ -285,11 +285,11 @@ Compiler::sumImmByteDeltas(const ImmediateValue::Deltas& immCounts, const Immedi
             immCounts[ImmediateValue::FORK]     * immBytes[ImmediateValue::FORK]);
 }   
 
-std::auto_ptr<BytecodeProgram::ForkVector> Compiler::link(const TempCodeVector& cv, ImmediateValue::Deltas& immBytes)
+std::unique_ptr<BytecodeProgram::ForkVector> Compiler::link(const TempCodeVector& cv, ImmediateValue::Deltas& immBytes)
 {
     Word newCVSize = calcImmSizes(cv.size(), immBytes);
    
-    std::auto_ptr<BytecodeProgram::ForkVector> forkVect(new BytecodeProgram::ForkVector(1));
+    std::unique_ptr<BytecodeProgram::ForkVector> forkVect(new BytecodeProgram::ForkVector(1));
     (*forkVect)[0].resize(newCVSize);
 
     // set all previous immediate value counters to 0
@@ -392,7 +392,7 @@ Compiler::Compiler(const TypeRegistry& typeReg) : m_typeReg(&typeReg)
         throw CompileError("Compiler", "Compiler", std::string("Required type not descended from correct parent: ") + missingType);
 }
 
-std::auto_ptr<BytecodeProgram> Compiler::compile(const Program& prog)
+std::unique_ptr<BytecodeProgram> Compiler::compile(const Program& prog)
 {
     reset();
 
@@ -402,14 +402,14 @@ std::auto_ptr<BytecodeProgram> Compiler::compile(const Program& prog)
 
     ImmediateValue::Deltas immBytes;
 
-    return std::auto_ptr<BytecodeProgram>(new BytecodeProgram(link(m_codeVect, immBytes),
+    return std::unique_ptr<BytecodeProgram>(new BytecodeProgram(link(m_codeVect, immBytes),
                                                               m_literals,
                                                               immBytes[ImmediateValue::TEMP],
                                                               immBytes[ImmediateValue::LITERAL],
                                                               immBytes[ImmediateValue::FORK]));
 }
 
-std::auto_ptr<DebugBytecodeProgram> Compiler::compileDebug(const Program& prog)
+std::unique_ptr<DebugBytecodeProgram> Compiler::compileDebug(const Program& prog)
 {
     reset();
    
@@ -426,7 +426,7 @@ std::auto_ptr<DebugBytecodeProgram> Compiler::compileDebug(const Program& prog)
     
     ImmediateValue::Deltas immBytes;
 
-    return std::auto_ptr<DebugBytecodeProgram>(new DebugBytecodeProgram(link(m_codeVect, immBytes),
+    return std::unique_ptr<DebugBytecodeProgram>(new DebugBytecodeProgram(link(m_codeVect, immBytes),
                                                                         m_literals,
                                                                         prog.varTable(),
                                                                         varIDMap,
@@ -442,8 +442,8 @@ void Compiler::visit(const Program&)
    
 void Compiler::visit(const Expr::Integer& intExpr)
 {
-    std::auto_ptr<Variant> var(m_intFactory->createValue(intExpr.value()));
-    pushLiteral(var);
+    std::unique_ptr<Variant> var(m_intFactory->createValue(intExpr.value()));
+    pushLiteral(std::move(var));
 }
 
 void Compiler::visit(const Expr::Objnum& objnumExpr)
@@ -453,14 +453,14 @@ void Compiler::visit(const Expr::Objnum& objnumExpr)
 
 void Compiler::visit(const Expr::Str& strExpr)
 {
-    std::auto_ptr<Variant> var(m_strFactory->createValue(strExpr.str()));
-    pushLiteral(var);
+    std::unique_ptr<Variant> var(m_strFactory->createValue(strExpr.str()));
+    pushLiteral(std::move(var));
 }
 
 void Compiler::visit(const Expr::Real& realExpr)
 {
-    std::auto_ptr<Variant> var(m_realFactory->createValue(realExpr.value()));
-    pushLiteral(var);
+    std::unique_ptr<Variant> var(m_realFactory->createValue(realExpr.value()));
+    pushLiteral(std::move(var));
 }
 
 void Compiler::visit(const Expr::List& listExpr)
@@ -501,22 +501,22 @@ void Compiler::visit(const Expr::Splice& expr)
 
 void Compiler::visit(const Expr::PreInc& expr)
 {
-    std::auto_ptr<Variant> literal(m_intFactory->createValue(1));
+    std::unique_ptr<Variant> literal(m_intFactory->createValue(1));
 
     preAssign(expr.operand());
     expr.operand().accept(*this);
-    pushLiteral(literal);
+    pushLiteral(std::move(literal));
     emitOp(OP_ADD);
     assignTo(expr.operand());
 }
 
 void Compiler::visit(const Expr::PreDec& expr)
 {
-    std::auto_ptr<Variant> literal(m_intFactory->createValue(1));
+    std::unique_ptr<Variant> literal(m_intFactory->createValue(1));
 
     preAssign(expr.operand());
     expr.operand().accept(*this);
-    pushLiteral(literal);
+    pushLiteral(std::move(literal));
     emitOp(OP_SUB);
     assignTo(expr.operand());
 }
@@ -524,12 +524,12 @@ void Compiler::visit(const Expr::PreDec& expr)
 void Compiler::visit(const Expr::PostInc& expr)
 {
     Temp origTemp = createTemp();
-    std::auto_ptr<Variant> literal(m_intFactory->createValue(1));
+    std::unique_ptr<Variant> literal(m_intFactory->createValue(1));
 
     preAssign(expr.operand());
     expr.operand().accept(*this);
     putTemp(origTemp);
-    pushLiteral(literal);
+    pushLiteral(std::move(literal));
     emitOp(OP_ADD);
     assignTo(expr.operand());
     emitOp(OP_POP);
@@ -539,12 +539,12 @@ void Compiler::visit(const Expr::PostInc& expr)
 void Compiler::visit(const Expr::PostDec& expr)
 {
     Temp origTemp = createTemp();
-    std::auto_ptr<Variant> literal(m_intFactory->createValue(1));
+    std::unique_ptr<Variant> literal(m_intFactory->createValue(1));
 
     preAssign(expr.operand());
     expr.operand().accept(*this);
     putTemp(origTemp);
-    pushLiteral(literal);
+    pushLiteral(std::move(literal));
     emitOp(OP_SUB);
     assignTo(expr.operand());
     emitOp(OP_POP);
@@ -797,8 +797,8 @@ void Compiler::visit(const Stmt::ForList& forStmt)
     Temp lengthTmp = createTemp();
 
     // Start indexing list at 1. Store into indexTmp
-    std::auto_ptr<Variant> indexLiteral(m_intFactory->createValue(1));
-    pushLiteral(indexLiteral);
+    std::unique_ptr<Variant> indexLiteral(m_intFactory->createValue(1));
+    pushLiteral(std::move(indexLiteral));
     putTemp(indexTmp);
 
     // push list onto stack and store into listTmp
@@ -904,8 +904,8 @@ void Compiler::visit(const Stmt::Return& returnStmt)
     if (returnStmt.hasExpr()) {
         returnStmt.expr().accept(*this);
     } else {
-        std::auto_ptr<Variant> retval(m_intFactory->createValue(0));
-        pushLiteral(retval);
+        std::unique_ptr<Variant> retval(m_intFactory->createValue(0));
+        pushLiteral(std::move(retval));
     }
 
     emitOp(OP_RETURN);
@@ -921,7 +921,7 @@ void Compiler::visit(const Stmt::Break& breakStmt)
     jumpLoopEnd(breakStmt.id());
 }
 
-void Compiler::visit(const Stmt::Expr& stmt)
+void Compiler::visit(const Stmt::ExprStmt& stmt)
 {
     stmt.expr().accept(*this);
     emitOp(OP_POP);

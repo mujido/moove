@@ -24,32 +24,33 @@ struct ASTAutoContainer : public ASTPoolObject,
 };
 
 template<class T>
-struct ASTPoolPtr : public ASTPoolObject, public std::auto_ptr<T> {
-   explicit ASTPoolPtr(T* ptr = 0) : std::auto_ptr<T>(ptr)
+struct ASTPoolPtr : public ASTPoolObject, public std::unique_ptr<T> {
+   explicit ASTPoolPtr(T* ptr = 0) : std::unique_ptr<T>(ptr)
    {}
 
-   ASTPoolPtr(ASTPoolPtr<T>& ptr) : std::auto_ptr<T>(ptr)
+   ASTPoolPtr(ASTPoolPtr<T>& ptr) : std::unique_ptr<T>(ptr)
    {}
 
    template<class X>
-   ASTPoolPtr(std::auto_ptr<X>& ptr) : std::auto_ptr<T>(ptr)
+   ASTPoolPtr(std::unique_ptr<X> ptr) : std::unique_ptr<T>(std::move(ptr))
    {}
 
-   ASTPoolPtr<T>& operator = (std::auto_ptr<T>& ptr)
+   ASTPoolPtr<T>& operator = (std::unique_ptr<T>& ptr)
    {
-      std::auto_ptr<T>::operator = (ptr);
+      std::unique_ptr<T>::operator = (ptr);
       return *this;
    }
 
    template<class X>
-   ASTPoolPtr<T>& operator = (std::auto_ptr<X>& ptr)
+   ASTPoolPtr<T>& operator = (std::unique_ptr<X>& ptr)
    {
-      std::auto_ptr<T>::operator = (ptr);
+      std::unique_ptr<T>::operator = (ptr);
       return *this;
    }
 };
 
 typedef MemoryPool<ASTPoolObject> ASTMemPool;
+
 
 }   //namespace Moove
 

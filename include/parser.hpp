@@ -30,7 +30,7 @@ class ParserMessages;
  */
 class Parser {
 private:      
-   std::auto_ptr<ParserState> m_state;
+   std::unique_ptr<ParserState> m_state;
 
 public:
 #if 0
@@ -105,7 +105,7 @@ public:
 
    bool hasErrors()const;
 
-   std::auto_ptr<Program> releaseProgram();
+   std::unique_ptr<Program> releaseProgram();
 };
 
 }   //namespace Moove

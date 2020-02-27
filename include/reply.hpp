@@ -54,7 +54,7 @@ public:
     * \param type Type of reply
     * \param value Variant object
     */
-   Reply(Type type, std::auto_ptr<Variant> value);
+   Reply(Type type, std::unique_ptr<Variant> value);
 
    /**
     * \brief Retrieve type of reply
@@ -82,7 +82,7 @@ public:
     * \param type Type of reply
     * \param value Pointer to value object assigned to this object
     */
-   void reset(Type type, std::auto_ptr<Variant> value);
+   void reset(Type type, std::unique_ptr<Variant> value);
 
    /**
     * \brief Check if this Reply object is a normal return value

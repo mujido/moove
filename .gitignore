@@ -5,3 +5,5 @@
 src/lexer_symbols.hpp
 *.a
 src/moove.tab.cpp
+build
+.vscode
