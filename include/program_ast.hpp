@@ -20,18 +20,25 @@ namespace Moove {
  * objects. The SymbolTable is also stores within this class so that the
  * Symbol values found in the AST objects can be used.
  */
-class Program : boost::noncopyable {
+class Program {
 private:
-   std::unique_ptr<Stmt::Block> m_stmts;
-   SymbolTable                m_varTable;
+   Stmt::Block m_stmts;
+   SymbolTable m_varTable;
+
+   Program(const Program&) = delete;
+   Program& operator= (const Program&) = delete;
 
 public:
+    Program() = default;
+    Program(Program&&) = default;
+    Program& operator= (Program&&) = default;
+
    /**
     * \brief Retrieve the collection of statements found in the program
     * \return Stmt::Block object containing the Stmt::Stmt objects
     */
    const Stmt::Block& stmts()const
-   { return *m_stmts; }
+   { return m_stmts; }
 
    /**
     * \brief Retrieve the symbol table used for variables
@@ -55,7 +62,7 @@ public:
     * \brief Assign the statements for this program
     * \param stmts Statements used in the program
     */
-   void setStmts(std::unique_ptr<Stmt::Block> stmts)
+   void setStmts(Stmt::Block&& stmts)
    { m_stmts = std::move(stmts); }
 };
 

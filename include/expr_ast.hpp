@@ -15,7 +15,7 @@
 
 namespace Moove {
 
-class ASTVisitor;
+struct ASTVisitor;
 
 ///Containts all AST classes used for representing expressions
 namespace Expr {
@@ -74,7 +74,7 @@ public:
    int value()const
    { return m_value; }
 
-   void accept(ASTVisitor& visitor)const;
+   virtual void accept(ASTVisitor& visitor)const override;
 };
 
 ///Represent an objnum value, i.e. #1234 (uses the C++ \c int type for storage)

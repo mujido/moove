@@ -10,6 +10,7 @@
 #include "program_ast.hpp"
 #include "stmt_ast.hpp"
 #include "symbol_table.hpp"
+#include "parser_msgs.hpp"
 
 #include <string>
 #include <stdexcept>
@@ -42,7 +43,8 @@ private:
    unsigned                   m_switchDepth;
    unsigned                   m_dollarDepth;
    bool                       m_errorFlag;
-   std::unique_ptr<Program>     m_program;
+   Program     m_program;
+   ParserMessages& m_msgs;
 
 public:
    typedef std::logic_error UnmatchedBlock;
@@ -64,12 +66,14 @@ public:
    { return m_errorFlag; }
 
    const Program& program()const
-   { return *m_program; }
+   { return m_program; }
 
-   std::unique_ptr<Program> releaseProgram()
-   { return std::move(m_program); }
+   Program& program()
+   {
+       return m_program;
+   }
    
-   void setProgram(std::unique_ptr<Stmt::Block> stmts);
+   void setProgram(Stmt::Block&& stmts);
 
    void error(const std::string& msg);
 

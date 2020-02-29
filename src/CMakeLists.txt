@@ -1,6 +1,9 @@
 project(moove)
 
-bison_target(parser moove.y ${CMAKE_CURRENT_BINARY_DIR}/moove.tab.cpp DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/moove.tab.h)
+bison_target(
+	parser moove.y 
+	${CMAKE_CURRENT_BINARY_DIR}/moove.tab.cpp 
+	DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/moove.tab.h)
 
 set(INCLUDE_FILES
 	ast_base.hpp

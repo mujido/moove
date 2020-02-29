@@ -9,20 +9,12 @@
 
 namespace Moove {
 
-class ASTVisitor;
+struct ASTVisitor;
 
 ///Contains all AST classes used for representing statements
 namespace Stmt {
 
 class Stmt;
-
-/**
- * \brief Contains a collection of Stmt objects
- * 
- * This container will hold Stmt objects in sequential order as the original
- * source code presented them.
- */
-typedef ASTAutoContainer<std::vector<Stmt*> > Block;
 
 ///Abstract base for all statement AST classes
 struct Stmt : public ASTPoolObject {
@@ -36,6 +28,14 @@ struct Stmt : public ASTPoolObject {
    virtual void accept(ASTVisitor& visitor)const = 0;
 };
 
+/**
+ * \brief Contains a collection of Stmt objects
+ * 
+ * This container will hold Stmt objects in sequential order as the original
+ * source code presented them.
+ */
+using Block = std::vector<std::unique_ptr<Stmt>>;
+
 ///Represent an if statement
 class If : public Stmt {
 public:
@@ -43,14 +43,17 @@ public:
    class ElseIf {
    private:
       std::unique_ptr<Expr::Expr> m_test;
-      std::unique_ptr<Block>      m_body;
+      Block m_body;
+
+      ElseIf(const ElseIf&) = delete;
+      ElseIf& operator= (const ElseIf&) = delete;
       
    public:
       /**
        * \brief Construct ElseIf object (for use as an else clause)
        * \param body Statements found within this section of the if statement
        */
-      ElseIf(std::unique_ptr<Block> body) : m_test(nullptr), m_body(std::move(body))
+      ElseIf(Block&& body) : m_body(std::move(body))
       {}
 
       /**
@@ -59,9 +62,13 @@ public:
        *             else clause
        * \param body Statements found within this section of the if statement
        */
-      ElseIf(std::unique_ptr<Expr::Expr> test, std::unique_ptr<Block> body) : 
+      ElseIf(std::unique_ptr<Expr::Expr> test, Block&& body) : 
 	      m_test(std::move(test)), m_body(std::move(body))
       {}
+
+      ElseIf() = default;
+      ElseIf(ElseIf&&) = default;
+      ElseIf& operator= (ElseIf&&) = default;
 
       /**
        * \brief Determine if a test condition was supplied
@@ -87,7 +94,7 @@ public:
        * \return Block of Stmt objects
        */
       const Block& body()const
-      { return *m_body; }
+      { return m_body; }
 
       /**
        * \brief Visit an elseif/else clause
@@ -100,12 +107,15 @@ public:
    typedef ElseIf Else;
 
    ///Contains a collection of ElseIf objects for elseif/else clauses
-   typedef ASTAutoContainer<std::vector<Else*> > ElseList;
+   typedef std::vector<ElseIf> ElseList;
 
 private:
    std::unique_ptr<Expr::Expr> m_test;
-   std::unique_ptr<Block>      m_body;
-   std::unique_ptr<ElseList>   m_elseList;
+   Block      m_body;
+   ElseList   m_elseList;
+
+   If(const If&) = delete;
+   If& operator= (const If&) = delete;
 
 public:
    /**
@@ -115,10 +125,13 @@ public:
     * \param elseList Collection of elseif/else clauses attached to statement
     */
    If(std::unique_ptr<Expr::Expr> test, 
-      std::unique_ptr<Block> body, 
-      std::unique_ptr<ElseList> elseList) :
+      Block&& body, 
+      ElseList&& elseList) :
       m_test(std::move(test)), m_body(std::move(body)), m_elseList(std::move(elseList))
    {}
+
+   If(If&&) = default;
+   If& operator= (If&&) = default;
 
    /**
     * \brief Retrieve test condition
@@ -132,14 +145,14 @@ public:
     * \return Block of statements
     */
    const Block& body()const
-   { return *m_body; }
+   { return m_body; }
 
    /**
     * \brief Retrieve collection of elseif/else clauses for statement
     * \return ElseList containing elseif/else clauses
     */
    const ElseList& elseList()const
-   { return *m_elseList; }
+   { return m_elseList; }
 
    void accept(ASTVisitor& visitor)const;
 };
@@ -451,7 +464,7 @@ public:
     * \brief Retrieve statement body
     * \return Block of statements
     */
-   const Block body()const
+   const Block& body()const
    { return *m_body; }
 
    void accept(ASTVisitor& visitor)const;

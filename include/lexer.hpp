@@ -8,38 +8,32 @@
 #define MOOVE_LEXER_HPP
 
 #include "mem_pool.hpp"
+#include "moove.tab.h"
 
 #include <string>
 #include <boost/utility.hpp>
 
 
 namespace Moove {
-    namespace BisonParser {
-        union YYSTYPE;
-    }
-
     class ParserMessages;
     class ParserState;
 
     class Lexer {
     private:
+        using parser = BisonParser::parser;
+
         ParserState& m_parser;
         std::string                 m_source;
         std::string::const_iterator m_pos;
         std::string::const_iterator m_end;
         unsigned                    m_line;
-        ParserMessages& m_messages;
         bool                        m_enableObjnums;
-        BisonParser::YYSTYPE* m_yylval;
 
         static bool isWS(char ch);
 
         static bool myIsDigit(char ch);
 
         static bool isIDSuffixChar(char ch);
-
-        template<class T>
-        inline T* addToPool(T* ptr);
 
         void skipWS();
 
@@ -57,17 +51,17 @@ namespace Moove {
             return (m_pos + 1 != m_end) ? *(m_pos + 1) : -1;
         }
 
-        int parseNumber(bool realOK);
+        parser::symbol_type parseNumber(bool realOK);
 
-        int parseObjnum();
+        parser::symbol_type parseObjnum();
 
-        int parseString();
+        parser::symbol_type parseString();
 
         void parseComment();
 
-        int parseID();
+        parser::symbol_type parseID();
 
-        int parseOp();
+        parser::symbol_type parseOp();
 
         Lexer(const Lexer&) = delete;
         Lexer(Lexer&&) = delete;
@@ -75,15 +69,9 @@ namespace Moove {
     public:
         Lexer(ParserState& parser, const std::string& str, ParserMessages& msgs, bool enableObjnums);
 
-        bool isYylvalSet() { return m_yylval != nullptr; }
+        parser::symbol_type nextToken();
 
-        void setYylval(BisonParser::YYSTYPE* yylval);
-
-        int nextToken();
-
-        void error(const std::string& msg);
-
-        void warning(const std::string& msg);
+        unsigned currentLineNumber() const { return m_line; }
     };
 
 }   //namespace Moove

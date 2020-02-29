@@ -9,6 +9,13 @@ else()
 endif()
 conan_basic_setup(TARGETS)
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "/Zc:__cplusplus /EHsc")
+endif()
+
 find_package(BISON REQUIRED)
 
 add_subdirectory(src)

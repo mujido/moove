@@ -749,19 +749,18 @@ void Compiler::visit(const Stmt::If& ifStmt)
 
     setAddr(ifFalseLbl);
 
-    Stmt::If::ElseList::const_iterator elseEnd = ifStmt.elseList().end();
-    for(Stmt::If::ElseList::const_iterator elseClause = ifStmt.elseList().begin(); elseClause != elseEnd; ++elseClause) {
+    for(const auto& elseClause : ifStmt.elseList()) {
         LabelLinker elseFalseLbl;
 
-        if((*elseClause)->hasTest()) {
+        if(elseClause.hasTest()) {
             // elseif
-            ifElse((*elseClause)->test(), (*elseClause)->body(), elseFalseLbl);
+            ifElse(elseClause.test(), elseClause.body(), elseFalseLbl);
         } else {
             // else
-            acceptAll((*elseClause)->body());
+            acceptAll(elseClause.body());
         }
 
-        if(elseClause + 1 < elseEnd) {
+        if(&elseClause != &ifStmt.elseList().back()) {
             // this is not the last else(if) clause, so jump to end of if statement
             jump(ifEndLbl);
         }
