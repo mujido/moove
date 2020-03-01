@@ -1,5 +1,5 @@
 project(moove_top)
-cmake_minimum_required(VERSION 3.10.0)
+cmake_minimum_required(VERSION 3.12.0)
 
 
 if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
