@@ -1,9 +1,0 @@
-[generators]
-cmake
-
-[requires]
-boost/1.69.0@conan/stable
-winflexbison/2.5.21@bincrafters/stable
-
-[options]
-boost:header_only=True
