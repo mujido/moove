@@ -5,8 +5,10 @@
 #include "parser_state.hpp"
 #include "moove.tab.h"
 #include <unordered_map>
+#include <boost/format.hpp>
 
 using namespace std;
+using boost::format;
 
 namespace Moove {
 
@@ -96,6 +98,9 @@ namespace Moove {
 
     parser::symbol_type Lexer::parseObjnum()
     {
+        if (!m_enableObjnums)
+            throw parser::syntax_error(str(format("invalid character '%c'") % *m_pos));
+
         bool negative = false;
 
         ++m_pos;
@@ -209,30 +214,42 @@ namespace Moove {
         using token = parser::token;
         using symbol_type = parser::symbol_type;
 
-        if (m_end - m_pos >= 2) {
-            switch (opToInt(m_pos[0], m_pos[1])) {
-            case opToInt('+', '='): return symbol_type(token::tADD_EQ);
-            case opToInt('-', '='): return symbol_type(token::tSUB_EQ);
-            case opToInt('*', '='): return symbol_type(token::tMUL_EQ);
-            case opToInt('/', '='): return symbol_type(token::tDIV_EQ);
-            case opToInt('%', '='): return symbol_type(token::tMOD_EQ);
-            case opToInt('^', '='): return symbol_type(token::tEXP_EQ);
-            case opToInt('|', '|'): return symbol_type(token::tOR);
-            case opToInt('&', '&'): return symbol_type(token::tAND);
-            case opToInt('=', '='): return symbol_type(token::tEQ);
-            case opToInt('!', '='): return symbol_type(token::tNE);
-            case opToInt('<', '='): return symbol_type(token::tLE);
-            case opToInt('>', '='): return symbol_type(token::tGE);
-            case opToInt('+', '+'): return symbol_type(token::tINCREMENT);
-            case opToInt('-', '-'): return symbol_type(token::tDECREMENT);
-            case opToInt('=', '>'): return symbol_type(token::tARROW);
-            case opToInt('.', '.'): return symbol_type(token::tTO);
-            default: break;
-            }
-        }
+        char ch = *m_pos++;
 
-        //Assume character is a 1-char operator
-        return parser::symbol_type(*m_pos++);
+        if (m_end - m_pos >= 1) {
+            auto possOp = opToInt(ch, *m_pos++);
+
+            switch (possOp) {
+                case opToInt('+', '='): return symbol_type(token::tADD_EQ);
+                case opToInt('-', '='): return symbol_type(token::tSUB_EQ);
+                case opToInt('*', '='): return symbol_type(token::tMUL_EQ);
+                case opToInt('/', '='): return symbol_type(token::tDIV_EQ);
+                case opToInt('%', '='): return symbol_type(token::tMOD_EQ);
+                case opToInt('^', '='): return symbol_type(token::tEXP_EQ);
+                case opToInt('|', '|'): return symbol_type(token::tOR);
+                case opToInt('&', '&'): return symbol_type(token::tAND);
+                case opToInt('=', '='): return symbol_type(token::tEQ);
+                case opToInt('!', '='): return symbol_type(token::tNE);
+                case opToInt('<', '='): return symbol_type(token::tLE);
+                case opToInt('>', '='): return symbol_type(token::tGE);
+                case opToInt('+', '+'): return symbol_type(token::tINCREMENT);
+                case opToInt('-', '-'): return symbol_type(token::tDECREMENT);
+                case opToInt('=', '>'): return symbol_type(token::tARROW);
+                case opToInt('.', '.'): return symbol_type(token::tTO);
+                default: break;
+            }
+
+            // Did not match multi-char ops so rewind m_pos
+            --m_pos;
+        }
+         
+        static const char singleCharOps[] = "=?|`'<>+-*/%^!.:[]$;";
+        auto scOpsEnd = singleCharOps + sizeof(singleCharOps) - 1;
+        auto scOpPos = std::find(singleCharOps, scOpsEnd, ch);
+        if (scOpPos == scOpsEnd)
+            throw parser::syntax_error(str(format("invalid character '%c'") % ch));
+
+        return parser::symbol_type(ch);
     }
 
     Lexer::Lexer(ParserState& parser, const std::string& str, ParserMessages& msgs, bool enableObjnums) :
