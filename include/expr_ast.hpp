@@ -30,7 +30,7 @@ struct Expr;
  * original MOO parser. It is a managed AutoContainer with memory pooling
  * features as well.
  */
-typedef ASTAutoContainer<std::vector<Expr*> > ArgList;
+typedef std::vector<std::unique_ptr<Expr>> ArgList;
 
 ///Abstract base for AST expression types
 struct Expr : public ASTPoolObject {
@@ -161,14 +161,14 @@ public:
  */
 class List : public Expr {
 private:
-   std::unique_ptr<ArgList> m_elements;
+   ArgList m_elements;
 
 public:
    /**
     * \brief Create an instance using an ArgList object
     * \param elements A vector of Expr pointers to assume ownership of
     */
-   List(std::unique_ptr<ArgList> elements) : m_elements(std::move(elements))
+   List(ArgList&& elements) : m_elements(std::move(elements))
    {}
 
    /**
@@ -176,7 +176,7 @@ public:
     * \return Elements contained by the list expression
     */
    const ArgList& elements()const
-   { return *m_elements; }
+   { return m_elements; }
 
    void accept(ASTVisitor& visitor)const;
 };

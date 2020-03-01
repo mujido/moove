@@ -47,7 +47,7 @@ namespace Moove {
             m_pool.remove(ptr);
     }
 
-    void ParserState::beginLoop(const std::string* name)
+    void ParserState::beginLoop(const boost::optional<std::string>& name)
     {
         m_blocks.push_back(BlockMarker(BlockMarker::LOOP,
             name ? addVar(*name) : Symbol()));

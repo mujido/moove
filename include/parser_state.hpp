@@ -15,6 +15,7 @@
 #include <string>
 #include <stdexcept>
 #include <vector>
+#include <boost/optional.hpp>
 #include <boost/utility.hpp>
 
 namespace Moove {
@@ -83,7 +84,7 @@ public:
 
    void removeFromPool(const ASTPoolObject* ptr);
 
-   void beginLoop(const std::string* name);
+   void beginLoop(const boost::optional<std::string>& name);
 
    void endLoop();
 

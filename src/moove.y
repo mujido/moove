@@ -6,8 +6,7 @@
 %define api.value.type variant
 %define parse.assert
 %skeleton "lalr1.cc"
-%parse-param { ParserState& parserState }
-%lex-param { ParserState& parserState }
+%param { ParserState& parserState }
 
 %code requires {
 
@@ -95,18 +94,113 @@ stmts:              %empty
      ;
 
 %nterm <std::unique_ptr<Stmt::Stmt>> stmt;
-stmt:               if_stmt { $$ = std::move($1); }
-                |   expr_stmt { $$ = std::move($1); }
-    ;
-
-
-%nterm <std::unique_ptr<Stmt::Stmt>> if_stmt;
-if_stmt:            tIF '(' expr ')' stmts elseifs else_block tENDIF
+stmt:               tIF '(' expr ')' stmts elseifs else_block tENDIF
                     {
                         if($7)
                             $6.push_back(std::move(*$7));
 
                         $$ = std::make_unique<Stmt::If>(std::move($3), std::move($5), std::move($6));
+                    }
+               |    tWHILE opt_id '(' expr ')'
+                    {
+                        parserState.beginLoop($2);
+                    }
+                        stmts tENDWHILE
+                        {
+                            $$ = std::make_unique<Stmt::While>(parserState.loopID(), std::move($4), std::move($7));
+                            parserState.endLoop();
+                        }
+               |    tFOR tID tIN '(' expr ')'
+                    {
+                        parserState.beginLoop($2);
+                    }
+                        stmts tENDFOR
+                        {
+                            $$ = std::make_unique<Stmt::ForList>(parserState.loopID(), std::move($5), std::move($8)); 
+                            parserState.endLoop();
+                        }
+                |   tFOR tID tIN '[' expr tTO expr ']'
+                    {
+                        parserState.beginLoop($2);
+                    }
+                        stmts tENDFOR
+                        {
+                            $$ = std::make_unique<Stmt::ForRange>(
+                                parserState.loopID(), std::move($5), std::move($7), std::move($10)
+                            );
+                            parserState.endLoop();
+                        }
+                |   tTRY stmts excepts tENDTRY
+                    {
+                        $$ = std::make_unique<Stmt::TryExcept>(std::move($2), std::move($3));
+                    }
+                |   tTRY stmts tFINALLY stmts tENDTRY
+                    {
+                        $$ = std::make_unique<Stmt::TryFinally>(std::move($2), std::move($4));
+                    }
+                |   tFORK opt_id '(' expr ')'
+                    {
+                        parserState.beginFork();
+
+                        if($2)
+                            parserState.addVar(*$2);
+                    }   
+                        stmts tENDFORK
+                        {
+                            Symbol forkVar = $2 ? parserState.findVar(*$2) : Symbol();
+                            $$ = std::make_unique<Stmt::Fork>(forkVar, std::move($4), std::move($7));
+                            parserState.endFork();
+                   }
+                |  tSWITCH '(' expr ')' 
+                   {
+                       parserState.beginSwitch();
+                   }
+                        switch_cases tENDSWITCH
+                        {
+                            $$ = std::make_unique<Stmt::Switch>(std::move($3), std::move($6));
+                            parserState.endSwitch();
+                        }
+                |   tRETURN ';'
+                    {
+                        $$ = std::make_unique<Stmt::Return>();
+                    }
+                |   tRETURN expr ';'
+                    {
+                        $$ = std::make_unique<Stmt::Return>(std::move($2));
+                    }
+                |   tCONTINUE opt_id ';'
+                    {
+                        Symbol sym = $2 ? parserState.findVar(*$2) : Symbol();
+
+                        if(!parserState.checkLoopID(sym) && !parserState.switchDepth()) {
+                            if($2)
+                                throw parser::syntax_error("Invalid loop name in `continue' statement: " + *$2);
+                            else
+                                throw parser::syntax_error("No enclosing loop or switch for `continue' statement");
+                        }
+
+                        $$ = std::make_unique<Stmt::Continue>(sym);
+                    }
+                |   tBREAK opt_id ';'
+                    {
+                        Symbol sym = $2 ? parserState.findVar(*$2) : Symbol();
+
+                        if(!parserState.checkLoopID(sym) && !parserState.switchDepth()) {
+                            if($2)
+                                throw parser::syntax_error("Invalid loop name in `break' statement: " + *$2);
+                            else
+                                throw parser::syntax_error("No enclosing loop or switch for `break' statement");
+                        }
+
+                        $$ = std::make_unique<Stmt::Break>(sym);
+                    }
+                |   expr ';'
+                    {
+                        $$ = std::make_unique<Stmt::ExprStmt>(std::move($1));
+                    }
+                |   ';'
+                    {
+                        /* null ptr */
                     }
     ;
 
@@ -133,37 +227,168 @@ else_block:         %empty
 					}
      ;
 
-%nterm <std::unique_ptr<Stmt::Stmt>> expr_stmt;
-expr_stmt:          expr ';'
-                    {
-                        $$ = std::make_unique<Stmt::ExprStmt>(std::move($1));
-                    }
+%nterm <boost::optional<std::string>> opt_id;
+opt_id:              %empty
+                     {
+                        $$ = boost::none;
+                     }
+                |    tID
+                     {
+                        $$ = std::move($1);
+                     }
     ;
 
-%nterm <std::unique_ptr<Expr::Expr>> numeric_expr;
-numeric_expr:       tINT
+%nterm <Stmt::TryExcept::ExceptList> excepts;
+excepts:            tEXCEPT opt_id '(' except_codes ')' stmts
+                    {
+                        Symbol var = $2 ? parserState.addVar(*$2) : Symbol();
+                        $$.emplace_back(var, std::move($4), std::move($6));
+                    }
+                |   excepts tEXCEPT opt_id '(' except_codes ')' stmts
+                    {
+                        if($1.back().codes().empty())
+                            throw parser::syntax_error("Unreachable EXCEPT clause");
+                           
+                        $$ = std::move($1);
+                        Symbol var = $3 ? parserState.addVar(*$3) : Symbol();
+                        $$.emplace_back(var, std::move($5), std::move($7));
+                    }
+     ;
+
+%nterm <Stmt::Switch::CaseList> switch_cases;
+switch_cases:       %empty
+                    {
+                       // empty list 
+                    }
+                |   switch_cases tCASE '(' expr ')' stmts
+                    {
+                        $$ = std::move($1);
+                        $$.emplace_back(std::move($4), std::move($6));
+                    }
+                |   switch_cases tDEFAULT 
+                    {
+                        auto defaultCase = std::find_if($1.begin(), $1.end(), [](const auto& caseStmt) 
+                        { 
+                            return caseStmt.isDefault(); 
+                        });
+                        if (defaultCase != $1.end())
+                            throw parser::syntax_error("Multiple default clauses in switch statement");
+                    }
+                        stmts
+                        {
+                            $$ = std::move($1);
+                            $$.emplace_back(std::move($4));
+                        }
+     ;
+
+%nterm <Expr::ArgList> except_codes;
+except_codes:       tANY
+                    {
+                        /* empty list */
+                    }
+                |   ne_arglist
+                    {
+                        $$ = std::move($1);
+                    }
+     ;
+
+%nterm <Expr::ArgList> arglist;
+arglist:            %empty
+                    {
+                        // empty list
+                    }
+                |   ne_arglist
+                    {
+                        $$ = std::move($1);
+                    }
+     ;
+     
+%nterm <Expr::ArgList> ne_arglist;
+ne_arglist:         argument
+                    {
+                        $$.push_back(std::move($1));
+                    }
+                |   ne_arglist ',' argument
+                    {
+                        $$ = std::move($1);
+                        $$.push_back(std::move($3));
+                    }
+     ;
+
+%nterm <std::unique_ptr<Expr::Expr>> argument;
+argument:           expr
+                    {
+                        $$ = std::move($1);
+                    }
+                |   '@' expr
+                    {
+                        $$ = std::make_unique<Expr::Splice>(std::move($2));
+                    }
+     ;
+
+
+%nterm <std::unique_ptr<Expr::Expr>> expr;
+expr:               tINT
                     {
                         $$ = std::make_unique<Expr::Integer>($1);
                     }
-                
-                |   '-' tINT %prec tNEGATE
+                |   tOBJNUM
                     {
-                        $$ = std::make_unique<Expr::Integer>(-$2);
+                        $$ = std::make_unique<Expr::Objnum>($1);
+                    }
+                |   tSTR
+                    {
+                        $$ = std::make_unique<Expr::Str>(std::move($1));
                     }
                 |   tREAL
                     {
                         $$ = std::make_unique<Expr::Real>($1);
                     }
-                |   '-' tREAL %prec tNEGATE
+                |   '{' arglist '}'
                     {
-                        $$ = std::make_unique<Expr::Real>(-$2);
+                        $$ = std::make_unique<Expr::List>(std::move($2));
                     }
-    ;
-
-%nterm <std::unique_ptr<Expr::Expr>> expr;
-expr:               numeric_expr
+                |   tID
                     {
-                        $$ = std::move($1);
+                        Symbol var = parserState.addVar($1);
+                        $$ = std::make_unique<Expr::Variable>(var);
+                    }
+                |   '!' expr
+                    {
+                        $$ = std::make_unique<Expr::Not>(std::move($2));
+                    }
+                |   '-' expr   %prec tNEGATE
+                    {
+                        $$ = std::make_unique<Expr::Negate>(std::move($2));
+                    }
+                |   tINCREMENT expr
+                    {
+                        if(!$2->assignable())
+                           throw parser::syntax_error("Invalid operand to ++ operator");
+
+                        $$ = std::make_unique<Expr::PreInc>(std::move($2));
+                    }
+                |   tDECREMENT expr
+                    {
+                        if(!$2->assignable())
+                            throw parser::syntax_error("Invalid operand to -- operator");
+
+                        $$ = std::make_unique<Expr::PreDec>(std::move($2));
+                    }
+                |   expr tINCREMENT
+                    {
+                        if(!$1->assignable())
+                            throw parser::syntax_error("Invalid operand to ++ operator");
+
+                        $$ = std::make_unique<Expr::PostInc>(std::move($1));
+                    }
+                |   expr tDECREMENT
+                    {
+                        if(!$1->assignable())
+                            throw parser::syntax_error("Invalid operand to -- operator");
+
+                        $$ = std::make_unique<Expr::PostDec>(std::move($1));
+
                     }
     ;
 
