@@ -107,14 +107,14 @@ public:
  */
 class Str : public Expr {
 private:
-   std::unique_ptr<std::string> m_str;
+   std::string m_str;
 
 public:
    /** 
     * \brief Construct a new Str object with given value
     * \param str String value to represent
     */
-   Str(std::unique_ptr<std::string>&& str) : m_str(std::move(str))
+   Str(std::string&& str) : m_str(std::move(str))
    {}
 
    /**
@@ -122,7 +122,7 @@ public:
     * \return String value represented by the object
     */
    const std::string& str()const
-   { return *m_str; }
+   { return m_str; }
 
    void accept(ASTVisitor& visitor)const;
 };
