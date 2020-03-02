@@ -9,81 +9,110 @@
 
 using namespace std;
 using boost::format;
+using namespace Moove::BisonParser;
 
 namespace Moove {
-
-    using namespace BisonParser;
-    
-    bool Lexer::isWS(char ch)
+    bool Lexer::isWS(int ch)
     {
         return ch == ' ' || ch == '\t' || ch == '\r';
     }
 
-    bool Lexer::myIsDigit(char ch)
-    {
-        return isdigit(ch);
-    }
-
-    bool Lexer::isIDSuffixChar(char ch)
+    bool Lexer::isIDSuffixChar(int ch)
     {
         return isalnum(ch) || ch == '_';
     }
 
     void Lexer::skipWS()
     {
-        m_pos = find_if(m_pos, m_end, not1(ptr_fun(&isWS)));
+        m_pos = std::find_if(m_pos, m_end, [](char ch) { return !isWS(ch); });
     }
 
     void Lexer::skipDigits()
     {
-        m_pos = find_if(m_pos, m_end, not1(ptr_fun(&myIsDigit)));
+        m_pos = find_if(m_pos, m_end, [](char ch) { return !std::isdigit(ch); });
     }
 
     void Lexer::skipID()
     {
-        m_pos = find_if(m_pos, m_end, not1(ptr_fun(&isIDSuffixChar)));
+        m_pos = find_if(m_pos, m_end, [](char ch) { return !isIDSuffixChar(ch); });
     }
 
-    parser::symbol_type Lexer::parseNumber(bool realOK)
+    bool Lexer::findEndOfReal()
+    {
+        bool isReal = false;
+
+        char ch = peekCur();
+        if (ch == '.') {
+            if (peekNext() == '.')
+                return false;
+
+            ++m_pos;
+            skipDigits();
+            isReal = true;
+
+            ch = peekCur();
+        }
+
+        if (ch == 'e' || ch == 'E') {
+            //exponent portion
+            ++m_pos;
+            ch = peekCur();
+            if (ch == '-' || ch == '+')
+                ++m_pos;
+
+            if (isdigit(peekCur())) {
+                skipDigits();
+                isReal = true;
+            }
+            else 
+                throw parser::syntax_error("Malformed floating-point literal");
+        }
+    }
+
+    boost::optional<parser::symbol_type> Lexer::tryParseNumber(bool realOK)
     {
         string::const_iterator start = m_pos;
 
+        if (*m_pos == '-')
+            ++m_pos;
+
         //integer portion
+        auto intStart = m_pos;
         skipDigits();
 
-        char ch = peekCur();
-        if (realOK &&
-            ((ch == '.' && peekNext() != '.') || ch == 'e' || ch == 'E')) {
-            //fractional portion
-            if (ch == '.') {
-                ++m_pos;
-                skipDigits();
-                ch = peekCur();
+        if (intStart == m_pos) {
+            // no digits were parsed
+            if (*m_pos != '.')
+                return boost::none;
+        }
+
+        if (realOK && findEndOfReal()) {
+            try
+            {
+                std::size_t end = 0;
+                double value = std::stod(std::string(start, m_pos), &end);
+                if (end != m_pos - start)
+                    throw parser::syntax_error("invalid real literal");
+                else
+                    return parser::make_tREAL(value);
             }
-
-            //exponent portion
-            if (ch == 'e' || ch == 'E') {
-                ++m_pos;
-                ch = peekCur();
-                if (ch == '-' || ch == '+')
-                    ++m_pos;
-
-                if (isdigit(peekCur()))
-                    skipDigits();
-                else 
-                    throw parser::syntax_error("Malformed floating-point literal");
+            catch (std::invalid_argument&) 
+            {
+                throw parser::syntax_error("invalid real literal");
             }
-
-            double value = strtod(string(start, m_pos).c_str(), 0);
-            if (errno == ERANGE)
-                throw parser::syntax_error("Real value out of range");
-
-            return parser::make_tREAL(value);
+            catch (std::range_error&)
+            {
+                throw parser::syntax_error("real value out of range");
+            }
         } else {
             try 
             {
-                int value = std::stoi(string(start, m_pos), 0, 10);
-                return parser::make_tINT(value);
+                std::size_t end = 0;
+                int value = std::stoi(string(start, m_pos), &end, 10);
+                if (end != m_pos - start)
+                    throw parser::syntax_error("invalid integer literal");
+                else
+                    return parser::make_tINT(value);
             }
             catch (std::invalid_argument&) 
             {
@@ -91,7 +120,7 @@ namespace Moove {
             }
             catch (std::range_error&)
             {
-                throw parser::syntax_error("Intger value out of range");
+                throw parser::syntax_error("integer value out of range");
             }
         }
     }
@@ -101,19 +130,11 @@ namespace Moove {
         if (!m_enableObjnums)
             throw parser::syntax_error(str(format("invalid character '%c'") % *m_pos));
 
-        bool negative = false;
+        auto number = tryParseNumber(false);
+        if (!number)
+            throw parser::syntax_error("invalid objnum literal");
 
-        ++m_pos;
-        if (peekCur() == '-') {
-            negative = true;
-            ++m_pos;
-        }
-
-        auto number = parseNumber(false);
-        int value = number.value.as<int>();
-        if (negative)
-            value = -value;
-
+        int value = number->value.as<int>();
         return parser::make_tOBJNUM(value);
     }
 
@@ -260,36 +281,33 @@ namespace Moove {
 
     parser::symbol_type Lexer::nextToken()
     {
-        skipWS();
-
         while (m_pos != m_end) {
+            skipWS();
+
             char ch = *m_pos;
 
             if (ch == '\n') {
                 ++m_line;
                 ++m_pos;
-                skipWS();
             }
-            else if (ch == '/' && peekNext() == '*') {
+            else if (ch == '/' && peekNext() == '*')
                 parseComment();
-            }
-            else if (ch == '"') {
+            else if (ch == '"') 
                 return parseString();
-            }
-            else if (isdigit(ch) || (ch == '.' && isdigit(peekNext()))) {
-                return parseNumber(true);
-            }
-            else if (m_enableObjnums && ch == '#') {
-                return parseObjnum();
-            }
-            else if (isalpha(ch) || ch == '_') {
+            else if (isalpha(ch) || ch == '_') 
                 return parseID();
+            else if (ch == '#') 
+                return parseObjnum();
+            else 
+            {
+                auto sym = tryParseNumber(true);
+                if (sym)
+                    return std::move(*sym);
+                else
+                    return parseOp();
             }
-            else
-                return parseOp();
         }
 
         return parser::make_END();
     }
-
 }

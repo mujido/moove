@@ -12,6 +12,7 @@
 
 #include <string>
 #include <boost/utility.hpp>
+#include <boost/optional/optional.hpp>
 
 
 namespace Moove {
@@ -29,11 +30,9 @@ namespace Moove {
         unsigned                    m_line;
         bool                        m_enableObjnums;
 
-        static bool isWS(char ch);
+        static bool isWS(int ch);
 
-        static bool myIsDigit(char ch);
-
-        static bool isIDSuffixChar(char ch);
+        static bool isIDSuffixChar(int ch);
 
         void skipWS();
 
@@ -46,12 +45,14 @@ namespace Moove {
             return (m_pos != m_end) ? *m_pos : -1;
         }
 
-        int peekNext()const
+        int peekNext(unsigned idx = 1)const
         {
-            return (m_pos + 1 != m_end) ? *(m_pos + 1) : -1;
+            return (std::distance(m_pos, m_end) >= idx) ? *(m_pos + idx) : -1;
         }
 
-        parser::symbol_type parseNumber(bool realOK);
+        bool findEndOfReal();
+
+        boost::optional<parser::symbol_type> tryParseNumber(bool realOK);
 
         parser::symbol_type parseObjnum();
 
