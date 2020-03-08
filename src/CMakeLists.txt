@@ -30,9 +30,7 @@ set(INCLUDE_FILES
 	interpreter.hpp
 	intvar.hpp
 	label_linker.hpp
-	lexer.hpp
 	listvar.hpp
-	Makefile
 	marray.hpp
 	mem_pool.hpp
 	memory.hpp
