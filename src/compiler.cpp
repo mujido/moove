@@ -155,7 +155,7 @@ void Compiler::assignTo(const Expr::Expr& dest)
 {
     if (const Expr::Variable* varExpr = dynamic_cast<const Expr::Variable*>(&dest)) {
         putVar(varExpr->id());
-    } else if (const Expr::Prop* propExpr = dynamic_cast<const Expr::Prop*>(&dest)) {
+    } else if (dynamic_cast<const Expr::Prop*>(&dest) != nullptr) {
         emitOp(OP_PUT_PROP);
     } else if (const Expr::Index* indexExpr = dynamic_cast<const Expr::Index*>(&dest)) {
         // Must store calculated value into a temporary so that if there are chained assignments such as x = y[3] = z,

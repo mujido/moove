@@ -88,7 +88,7 @@ DefaultIntVar::value_type mooshPow(DefaultIntVar::value_type x, DefaultIntVar::v
         }
     } else {
         while(n > 0) {
-            if(n & 1 != 0) {
+            if((n & 1) != 0) {
                 result *= x;
             }
 
@@ -98,11 +98,6 @@ DefaultIntVar::value_type mooshPow(DefaultIntVar::value_type x, DefaultIntVar::v
     }
 
     return result;
-}
-
-template<class LeftVariant, class RightVariant>
-Reply mooshBinaryComparisonDispatch(Opcode op, std::unique_ptr<Variant> leftVar, std::unique_ptr<Variant> rightVar)
-{
 }
 
 template<class LeftVariant, class RightVariant>
@@ -191,7 +186,6 @@ void registerTypes(ExecutionState& execState)
     const TypeRegistry::TypeEntry& intType = execState.typeRegistry().registerType("int", DefaultIntVar::classFactory());
     const TypeRegistry::TypeEntry& realType = execState.typeRegistry().registerType("real", DefaultRealVar::classFactory());
     const TypeRegistry::TypeEntry& strType = execState.typeRegistry().registerType("str", DefaultStrVar::classFactory());
-    const TypeRegistry::TypeEntry& listType = execState.typeRegistry().registerType("list", DefaultListVar::classFactory());
 
     //execState.operatorMap().registerUnary(intType, &mooshBinaryOpDispatch<DefaultIntVar, IntVar, IntVar>);
     //execState.operatorMap().registerUnary(realType, &mooshBinaryOpDispatch<DefaultRealVar, RealVar, RealVar>);

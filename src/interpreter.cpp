@@ -206,7 +206,7 @@ void Interpreter::stepInstruction()
                             break;
                         }
 
-                        // value is false, fall throuth to jump case
+                        [[fallthrough]];
                     }
 
                     case OP_JUMP:
