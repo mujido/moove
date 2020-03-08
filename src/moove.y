@@ -24,8 +24,6 @@ namespace Moove
 
 %code {
 
-#include "lexer.hpp"
-#include "parser_msgs.hpp"
 #include "parser_state.hpp"
 
 #include <algorithm>
@@ -458,7 +456,7 @@ void checkAssignable(const Expr::Expr& expr, const char* assignType)
 
 		parser::symbol_type yylex(ParserState& parserState)
 		{
-			return parserState.lexer().nextToken();
+			return parserState.nextToken();
 		}
 
 	}    //namespace BisonParser

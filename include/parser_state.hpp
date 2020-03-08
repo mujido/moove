@@ -5,12 +5,12 @@
 #ifndef MOOVE_PARSER_STATE_HPP
 #define MOOVE_PARSER_STATE_HPP
 
-#include "ast_base.hpp"
-#include "mem_pool.hpp"
 #include "program_ast.hpp"
 #include "stmt_ast.hpp"
 #include "symbol_table.hpp"
 #include "parser_msgs.hpp"
+#include "iterator_lexer_source.hpp"
+#include "moove.tab.h"
 
 #include <string>
 #include <stdexcept>
@@ -20,14 +20,13 @@
 
 namespace Moove {
 
-class Lexer;
 class ParserMessages;
 
-class ParserState : boost::noncopyable {
+class ParserState {
 private:
    struct BlockMarker {
       enum BlockType {
-	 LOOP, SWITCH, FORK
+	      LOOP, SWITCH, FORK
       } type;
 
       Symbol id;
@@ -38,14 +37,22 @@ private:
 
    typedef std::vector<BlockMarker> BlockList;
 
-   std::unique_ptr<Lexer>       m_lex;
-   MemoryPool<ASTPoolObject>  m_pool;
-   BlockList                  m_blocks;
-   unsigned                   m_switchDepth;
-   unsigned                   m_dollarDepth;
-   bool                       m_errorFlag;
-   Program     m_program;
+   struct ParserDetails;
+
+   BlockList m_blocks;
+   unsigned m_switchDepth;
+   unsigned m_dollarDepth;
+   bool m_errorFlag;
    ParserMessages& m_msgs;
+   std::string m_source;
+   IteratorLexerSource<std::string::const_iterator> m_lexerSource;
+   std::unique_ptr<ParserDetails> m_details;
+   Program m_program;
+
+   ParserState(const ParserState&) = delete;
+   ParserState(ParserState&&) = delete;
+   ParserState& operator= (const ParserState&) = delete;
+   ParserState& operator= (ParserState&&) = delete;
 
 public:
    typedef std::logic_error UnmatchedBlock;
@@ -53,9 +60,6 @@ public:
    ParserState(const std::string& source, ParserMessages& msgs, bool objnums);
 
    ~ParserState();
-
-   Lexer& lexer()
-   { return *m_lex; }
 
    unsigned switchDepth()const
    { return m_switchDepth; }
@@ -109,6 +113,8 @@ public:
 
    void decDollarDepth()
    { --m_dollarDepth; }
+
+   BisonParser::parser::symbol_type nextToken();
 
    void parseFinished();
 };

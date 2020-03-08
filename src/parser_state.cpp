@@ -1,50 +1,51 @@
 //Copyright (c) 2004 Kurt Stutsman. All rights reserved.
 #include "parser_state.hpp"
-
-#include "lexer.hpp"
 #include "parser_msgs.hpp"
+#include "moove_lexer.l.h"
 
 namespace Moove {
 
-    ParserState::ParserState(const std::string& source,
-        ParserMessages& msgs,
-        bool objnums) :
-        m_switchDepth(0), m_dollarDepth(0), m_errorFlag(false),
-        m_msgs(msgs)
+    struct ParserState::ParserDetails
     {
-        m_lex.reset(new Lexer(*this, source, msgs, objnums));
+        yyscan_t m_scanner;
+
+        ParserDetails(ParserState* pstate)
+        {
+            Moove_lex_init_extra(&pstate->m_lexerSource, &m_scanner);
+        }
+
+        ~ParserDetails()
+        {
+            Moove_lex_destroy(m_scanner);
+        }
+    };
+
+    ParserState::ParserState(const std::string& source, ParserMessages& msgs, bool objnums) :
+        m_switchDepth(0), m_dollarDepth(0), m_errorFlag(false),
+        m_msgs(msgs), 
+        m_source(source),
+        m_lexerSource(m_source.cbegin(), m_source.cend()),
+        m_details(std::make_unique<ParserDetails>(this))
+    {
     }
 
-    ParserState::~ParserState()
-    {}
+    ParserState::~ParserState() = default;
 
     void ParserState::error(const std::string& msg)
     {
         m_errorFlag = true;
-        m_msgs.error(msg, m_lex->currentLineNumber());
+        m_msgs.error(msg, Moove_get_lineno(m_details->m_scanner));
     }
 
     void ParserState::warning(const std::string& msg)
     {
-        m_msgs.warning(msg, m_lex->currentLineNumber());
+        m_msgs.warning(msg, Moove_get_lineno(m_details->m_scanner));
     }
 
     void ParserState::setProgram(Stmt::Block&& stmts)
     {
         if (!m_errorFlag)
             m_program.setStmts(std::move(stmts));
-    }
-
-    void ParserState::addToPool(std::unique_ptr<ASTPoolObject> ptr)
-    {
-        if (ptr.get())
-            m_pool.insert(std::move(ptr));
-    }
-
-    void ParserState::removeFromPool(const ASTPoolObject* ptr)
-    {
-        if (ptr)
-            m_pool.remove(ptr);
     }
 
     void ParserState::beginLoop(const boost::optional<std::string>& name)
@@ -122,11 +123,14 @@ namespace Moove {
         return m_program.varTable().findSymbol(name);
     }
 
+    BisonParser::parser::symbol_type ParserState::nextToken()
+    {
+        return Moove_lex(m_details->m_scanner);
+    }
+
     void ParserState::parseFinished()
     {
-        m_lex.reset();
         m_blocks.clear();
-        m_pool.clear(hasErrors());
     }
 
 }   //namespace Moove

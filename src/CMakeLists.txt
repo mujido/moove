@@ -3,7 +3,16 @@ project(moove)
 bison_target(
 	parser moove.y 
 	${CMAKE_CURRENT_BINARY_DIR}/moove.tab.cpp 
-	DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/moove.tab.h)
+	DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/moove.tab.h
+)
+
+FLEX_TARGET(lexer
+	moove_lexer.l
+	${CMAKE_CURRENT_BINARY_DIR}/moove_lexer.l.cpp
+	DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/moove_lexer.l.h
+)
+
+ADD_FLEX_BISON_DEPENDENCY(lexer parser)
 
 set(INCLUDE_FILES
 	ast_base.hpp
@@ -88,13 +97,20 @@ set(SOURCE_FILES
     parser_state.cpp 
     expr_ast.cpp 
     stmt_ast.cpp 
-    parser.cpp   
-	lexer.cpp
+	parser.cpp   
+	lexer_helpers.cpp
 )
 
-add_library(moove ${INCLUDE_FILES} ${SOURCE_FILES} moove.y ${BISON_parser_OUTPUTS})
+add_library(moove 
+	${INCLUDE_FILES} 
+	${SOURCE_FILES} 
+	moove.y 
+	moove_lexer.l 
+	${BISON_parser_OUTPUTS} 
+	${FLEX_lexer_OUTPUTS}
+)
 
-source_group("schema" FILES moove.y)
+source_group("schema" FILES moove.y moove_lexer.l)
 
 target_include_directories(moove PUBLIC ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(moove CONAN_PKG::boost)
