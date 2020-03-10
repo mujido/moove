@@ -54,8 +54,8 @@ private:
 
 public:
    typedef Table::const_iterator const_iterator;
-   typedef const_iterator        iterator;
-   typedef  Table::size_type     size_type;
+   typedef const_iterator iterator;
+   typedef Table::size_type size_type;
 
 public:
    SymbolTable();

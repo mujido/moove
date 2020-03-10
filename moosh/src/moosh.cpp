@@ -217,10 +217,8 @@ std::unique_ptr<Variant> evalScript(ExecutionState& execState,
 {
     std::unique_ptr<Variant> returnValue;
 
-    Parser parser;
-    if(parser.parse(script, msgs, false)) {
-        std::unique_ptr<Program> program = parser.releaseProgram();
-
+    auto program = parse(script, msgs, false);
+    if(program) {
         Compiler compiler(execState.typeRegistry());
 
         std::unique_ptr<DebugBytecodeProgram> bc = compiler.compileDebug(*program);

@@ -96,10 +96,8 @@ int main(int argc, char** argv)
         }
 
         MessageHandler msgs(lineOffset);
-        Parser parser;
-        if (parser.parse(source, msgs, false)) {
-            std::unique_ptr<Program> program = parser.releaseProgram();
-
+        auto program = parse(source, msgs, false);
+        if (program) {
             if (debugOpt) {
                 std::unique_ptr<DebugBytecodeProgram> bc = compileDebug(*program);
 

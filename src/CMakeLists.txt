@@ -110,5 +110,8 @@ add_library(moove
 
 source_group("schema" FILES moove.y moove_lexer.l)
 
-target_include_directories(moove PUBLIC ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(moove 
+	PUBLIC ${CMAKE_SOURCE_DIR}/include 
+	PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+)
 target_link_libraries(moove CONAN_PKG::boost)
