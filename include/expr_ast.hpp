@@ -6,7 +6,6 @@
 #ifndef MOOVE_EXPR_AST_HPP
 #define MOOVE_EXPR_AST_HPP
 
-#include "ast_base.hpp"
 #include "symbol_table.hpp"
 
 #include <memory>
@@ -33,7 +32,7 @@ struct Expr;
 typedef std::vector<std::unique_ptr<Expr>> ArgList;
 
 ///Abstract base for AST expression types
-struct Expr : public ASTPoolObject {
+struct Expr {
    virtual ~Expr()
    {}
 
@@ -215,14 +214,13 @@ public:
 class Scatter : public Expr {
 public:
    ///Represents a destination target in a scatter expression
-   class Target : public ASTPoolObject {
+   class Target {
    public:
       ///Type of scatter target
       enum Type {
-	 REQUIRED,       ///< Target requires a value
-	 OPTIONAL,       ///< Target optionally has a value (also maybe 
-	                 ///< default value)
-	 REST            ///< Target will be a list of all remaining values
+          REQUIRED,       ///< Target requires a value
+          OPTIONAL,       ///< Target optionally has a value (also maybe default value)
+          REST            ///< Target will be a list of all remaining values
       };
       
    private:
@@ -293,17 +291,17 @@ public:
    };
 
    ///Contain a list of Target objects for a Scatter
-   typedef ASTAutoContainer<std::vector<Target*> > TargetList;
+   typedef std::vector<Target> TargetList;
 
 private:
-   std::unique_ptr<TargetList> m_targets;
+   TargetList m_targets;
 
 public:
    /**
     * \brief Construct a Scatter object with given targets
     * \param targets TargetList of Target objects used in scatter
     */
-   Scatter(std::unique_ptr<TargetList> targets) : m_targets(std::move(targets))
+   Scatter(TargetList&& targets) : m_targets(std::move(targets))
    {}
 
    /**
@@ -311,7 +309,7 @@ public:
     * \return TargetList of Target objects
     */
    const TargetList& targets()const
-   { return *m_targets; }
+   { return m_targets; }
 
    void accept(ASTVisitor& visitor)const;
 };

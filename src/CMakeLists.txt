@@ -15,7 +15,6 @@ FLEX_TARGET(lexer
 ADD_FLEX_BISON_DEPENDENCY(lexer parser)
 
 set(INCLUDE_FILES
-	ast_base.hpp
 	ast_visitor.hpp
 	basic_op_pkgs.hpp
 	bc_program.hpp
@@ -41,7 +40,6 @@ set(INCLUDE_FILES
 	label_linker.hpp
 	listvar.hpp
 	marray.hpp
-	mem_pool.hpp
 	memory.hpp
 	op_map.hpp
 	op_package.hpp

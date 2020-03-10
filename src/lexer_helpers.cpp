@@ -1,5 +1,6 @@
 #include "lexer_helpers.hpp"
 #include <cerrno>
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <limits>

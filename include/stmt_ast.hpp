@@ -17,7 +17,7 @@ namespace Stmt {
 class Stmt;
 
 ///Abstract base for all statement AST classes
-struct Stmt : public ASTPoolObject {
+struct Stmt {
    virtual ~Stmt()
    {}
 

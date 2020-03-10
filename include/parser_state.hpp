@@ -84,10 +84,6 @@ public:
 
    void warning(const std::string& msg);
       
-   void addToPool(std::unique_ptr<ASTPoolObject> ptr);
-
-   void removeFromPool(const ASTPoolObject* ptr);
-
    void beginLoop(const boost::optional<std::string>& name);
 
    void endLoop();
