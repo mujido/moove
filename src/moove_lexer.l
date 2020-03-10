@@ -1,6 +1,9 @@
 %top {
 #include "ilexer_source.hpp"
 #include "moove.tab.h"
+
+#define YY_DECL Moove::BisonParser::parser::symbol_type Moove_lex(yyscan_t yyscanner)
+
 }
 
 %option noyywrap nounput noinput yylineno reentrant batch
@@ -9,11 +12,12 @@
 
 %{
 #include "lexer_helpers.hpp"
+#include <boost/format.hpp>
+
+using boost::format;
 
 using namespace Moove;
 using namespace Moove::BisonParser;
-
-#define YY_DECL parser::symbol_type Moove_lex(void* yyscanner)
 
 #define YY_INPUT(buf, result, max_size) \
     { \

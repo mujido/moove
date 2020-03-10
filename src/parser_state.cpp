@@ -3,6 +3,8 @@
 #include "parser_msgs.hpp"
 #include "moove_lexer.l.h"
 
+YY_DECL;
+
 namespace Moove {
 
     struct ParserState::ParserDetails
