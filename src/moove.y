@@ -5,6 +5,8 @@
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
+%verbose
+%define parse.trace
 %skeleton "lalr1.cc"
 %param { ParserState& parserState }
 
@@ -67,6 +69,9 @@ namespace Moove {
 %right    '^'
 %left     '!' tNEGATE tINCREMENT tDECREMENT
 %nonassoc '.' ':' '[' '$'
+
+%printer { yyo << $$; } tINT tREAL
+%printer { yyo << '"' << $$ << '"'; } tSTR
 
 %%
 

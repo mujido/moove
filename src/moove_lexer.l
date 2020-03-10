@@ -93,7 +93,13 @@ str         \"([^\"\\\n]|(\\[^\n]))*\"
 
 {str}           return parseStr(yytext);
 
-[-=?|`'<>+*/%^!.:[\]$;]     return parser::symbol_type(*yytext);    // single character operators
+[-=?|`'<>+*/%^!,.:[\]$;{}]     return parser::symbol_type(*yytext);    // single character operators
+
+[[:space:]]     /* ignore spaces */
+
+<<EOF>>         return parser::make_END();
+
+.               throw parser::syntax_error(str(format("Invalid character: '%c'") % yytext[0]));
 
 
 %%
