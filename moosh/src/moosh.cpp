@@ -16,6 +16,7 @@
 #include <fstream>
 #include <memory>
 #include <cmath>
+#include <sstream>
 
 using namespace Moove;
 namespace mpl = boost::mpl;
@@ -186,6 +187,7 @@ void registerTypes(ExecutionState& execState)
     const TypeRegistry::TypeEntry& intType = execState.typeRegistry().registerType("int", DefaultIntVar::classFactory());
     const TypeRegistry::TypeEntry& realType = execState.typeRegistry().registerType("real", DefaultRealVar::classFactory());
     const TypeRegistry::TypeEntry& strType = execState.typeRegistry().registerType("str", DefaultStrVar::classFactory());
+    execState.typeRegistry().registerType("list", DefaultListVar::classFactory());
 
     //execState.operatorMap().registerUnary(intType, &mooshBinaryOpDispatch<DefaultIntVar, IntVar, IntVar>);
     //execState.operatorMap().registerUnary(realType, &mooshBinaryOpDispatch<DefaultRealVar, RealVar, RealVar>);
@@ -299,14 +301,16 @@ int main(int argc, char **argv)
         registerTypes(execState);
         registerBuiltins(execState);
 
-        while(std::getline(*inStream, line)) {
-            if(source.empty() && line.length() > 2 && line[0] == '#' && line[1] == '!') {
-                // ignore executable line. Increase lineOffset to keep line numbers correct
-                ++lineOffset;
-                continue;
-            }
+        std::ostringstream inBuf;
+        inBuf << inStream->rdbuf();
+        source = inBuf.str();
 
-            source += line + '\n';
+        if(source.length() > 2 && source[0] == '#' && source[1] == '!') {
+            // ignore executable line. Increase lineOffset to keep line numbers correct
+            ++lineOffset;
+            auto lineEnd = std::find(source.begin() + 2, source.end(), '\n');
+            if (lineEnd != source.end())
+                source.erase(source.begin(), lineEnd + 1);
         }
 
         // clear EOF state so that executing code can input from stdin
