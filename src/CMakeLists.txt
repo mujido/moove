@@ -1,5 +1,11 @@
 project(moove)
 
+if(MSVC)
+	set(FLEX_FLAGS "--wincompat")
+else()
+	set(FLEX_FLAGS "")
+endif()
+
 bison_target(
 	parser moove.y 
 	${CMAKE_CURRENT_BINARY_DIR}/moove.tab.cpp 
@@ -10,7 +16,7 @@ FLEX_TARGET(lexer
 	moove_lexer.l
 	${CMAKE_CURRENT_BINARY_DIR}/moove_lexer.l.cpp
 	DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/moove_lexer.l.h
-	COMPILE_FLAGS --wincompat
+	COMPILE_FLAGS ${FLEX_FLAGS}
 )
 
 ADD_FLEX_BISON_DEPENDENCY(lexer parser)
