@@ -229,6 +229,8 @@ public:
       std::unique_ptr<Expr> m_expr;
       
    public:
+      Target() = default;
+
       /**
        * \brief Construct a new Target object
        * \param type Type of target
@@ -244,7 +246,7 @@ public:
 	     std::unique_ptr<Expr> expr = std::unique_ptr<Expr>()) : 
 			 m_type(type), m_id(id), m_expr(std::move(expr))
       {}
-      
+
       /**
        * \brief Determine if target has a default value
        * \return Boolean value specifying if a valid Expr object was given

@@ -108,4 +108,14 @@ namespace Moove {
         expr.accept(converter);
         return std::move(converter.m_targets);
     }
+
+    Expr::Scatter::TargetList ScatterAssignmentConverter::convert(const Expr::ArgList& argList)
+    {
+        ScatterAssignmentConverter converter;
+        converter.m_state = IN_LIST;
+        for (const auto& elem : argList)
+            elem->accept(converter);
+
+        return std::move(converter.m_targets);
+    }
 }

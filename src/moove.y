@@ -37,8 +37,6 @@ namespace Moove {
 	typedef Stmt::TryExcept::Except     Except;
 	typedef Stmt::TryExcept::ExceptList ExceptList;
 
-	bool listToScatter(ScatterTargetList& targets, const Expr::ArgList& list);
-
     namespace BisonParser {
 		parser::symbol_type yylex(ParserState& parserState);
     }
@@ -402,11 +400,74 @@ expr:               tINT
                         else
                             $$ = std::make_unique<Expr::Assign>(std::move($1), std::move($3));
                     }
+                |   '{' scatter '}' '=' expr
+                     {
+                         auto scatter = std::make_unique<Expr::Scatter>(std::move($2));
+                         $$ = std::make_unique<Expr::Assign>(std::move(scatter), std::move($5));
+                     }
                 |   tID '(' arglist ')'
                     {
                         $$ = std::make_unique<Expr::Builtin>(std::move($1), std::move($3));
                     }
     ;
+
+%nterm <Expr::Scatter::TargetList> scatter;
+scatter:        opt_target
+                {
+                    $$.push_back(std::move($1));
+                }
+           |    scatter ',' opt_target
+                {
+                    $$ = std::move($1);
+                    $$.push_back(std::move($3));
+                }
+           |    scatter ',' tID
+                {
+                    $$ = std::move($1);
+                    Symbol var = parserState.addVar($3);
+                    $$.emplace_back(ScatterTarget::REQUIRED, var);
+                }
+           |    scatter ',' '@' tID
+                {
+                    $$ = std::move($1);
+                    Symbol var = parserState.addVar($4);
+                    $$.emplace_back(ScatterTarget::REST, var);
+                }
+           |    ne_arglist ',' opt_target
+                {
+                    $$ = ScatterAssignmentConverter::convert($1);
+                    $$.push_back(std::move($3));
+                }
+     ;
+
+%nterm <Expr::Scatter::Target> opt_target;
+opt_target:     '?' tID
+                 {
+                     Symbol var = parserState.addVar($2);
+                     $$ = ScatterTarget(ScatterTarget::OPTIONAL, var);
+                 }
+           |     '?' tID '=' expr
+                {
+                    Symbol var = parserState.addVar($2);
+                    $$ = ScatterTarget(ScatterTarget::OPTIONAL, var, std::move($4));
+                }
+     ;
+
+dollars_up:     %empty
+                {
+                    parserState.incDollarDepth();
+                }
+     ;
+
+%nterm <std::unique_ptr<Expr::Expr>> catch_result;
+catch_result:   %empty
+                {
+                    /* null */
+                }
+            |   tARROW expr
+                {
+                    $$ = $2;
+                }
 
 %%
 

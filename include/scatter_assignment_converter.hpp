@@ -138,6 +138,8 @@ namespace Moove {
         virtual void visit(const Stmt::ExprStmt&) override;
 
         static Expr::Scatter::TargetList convert(const Expr::Expr& expr);
+
+        static Expr::Scatter::TargetList convert(const Expr::ArgList& argList);
        
     private:
         enum State
