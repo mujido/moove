@@ -10,6 +10,7 @@ FLEX_TARGET(lexer
 	moove_lexer.l
 	${CMAKE_CURRENT_BINARY_DIR}/moove_lexer.l.cpp
 	DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/moove_lexer.l.h
+	COMPILE_FLAGS --wincompat
 )
 
 ADD_FLEX_BISON_DEPENDENCY(lexer parser)
@@ -53,6 +54,7 @@ set(INCLUDE_FILES
 	realvar.hpp
 	refcount.hpp
 	reply.hpp
+	scatter_assignment_converter.hpp
 	stmt_ast.hpp
 	string_utils.hpp
 	strvar.hpp
@@ -97,6 +99,7 @@ set(SOURCE_FILES
     stmt_ast.cpp 
 	parser.cpp   
 	lexer_helpers.cpp
+	scatter_assignment_converter.cpp
 )
 
 add_library(moove 

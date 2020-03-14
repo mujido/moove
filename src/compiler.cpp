@@ -3,6 +3,7 @@
 #include "label_linker.hpp"
 #include "program_ast.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <iomanip>
 
@@ -257,8 +258,8 @@ Compiler::Word Compiler::calcImmSizes(Word cvSize, ImmediateValue::Deltas& immBy
 {
     // calculate sizes of various immediate values. for labels, assume 1 byte for now and later recalculate
     immBytes[ImmediateValue::LABEL] =   0;
-    immBytes[ImmediateValue::TEMP] =    CodeVector::packedWordSize(m_nextTempValue - 1);
-    immBytes[ImmediateValue::LITERAL] = CodeVector::packedWordSize(m_literals.size() - 1);
+    immBytes[ImmediateValue::TEMP] = CodeVector::packedWordSize(std::max<Word>(m_nextTempValue, 1) - 1);
+    immBytes[ImmediateValue::LITERAL] = CodeVector::packedWordSize(std::max<Word>(m_literals.size(), 1) - 1);
     immBytes[ImmediateValue::FORK] =    CodeVector::packedWordSize(1);
 
     // calculate effective code size including immediate values
@@ -294,7 +295,7 @@ std::unique_ptr<BytecodeProgram::ForkVector> Compiler::link(const TempCodeVector
 
     // set all previous immediate value counters to 0
     ImmediateValue::Deltas prevCounts;
-    prevCounts.assign(0);
+    prevCounts = {};
 
     Word oldCVSize = cv.size();
     CodeVector::iterator out = (*forkVect)[0].begin();
@@ -402,11 +403,13 @@ std::unique_ptr<BytecodeProgram> Compiler::compile(const Program& prog)
 
     ImmediateValue::Deltas immBytes;
 
-    return std::unique_ptr<BytecodeProgram>(new BytecodeProgram(link(m_codeVect, immBytes),
-                                                              m_literals,
-                                                              immBytes[ImmediateValue::TEMP],
-                                                              immBytes[ImmediateValue::LITERAL],
-                                                              immBytes[ImmediateValue::FORK]));
+    auto code = link(m_codeVect, immBytes);
+    return std::make_unique<BytecodeProgram>(
+        std::move(code),
+        m_literals,
+        immBytes[ImmediateValue::TEMP],
+        immBytes[ImmediateValue::LITERAL],
+        immBytes[ImmediateValue::FORK]);
 }
 
 std::unique_ptr<DebugBytecodeProgram> Compiler::compileDebug(const Program& prog)
