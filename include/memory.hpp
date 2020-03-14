@@ -14,13 +14,13 @@
 namespace Moove {
 
 template<class T>
-struct UnaryCloner : public std::unary_function<const T*, T*> {
+struct UnaryCloner {
    T* operator () (const T* ptr)const
    { return ptr->clone(); }
 };
 
 template<class T>
-struct UnaryDeleter : public std::unary_function<T*, void> {
+struct UnaryDeleter {
    void operator () (T* ptr)const
    { delete ptr; }
 };
