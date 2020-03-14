@@ -405,10 +405,94 @@ expr:               tINT
                          auto scatter = std::make_unique<Expr::Scatter>(std::move($2));
                          $$ = std::make_unique<Expr::Assign>(std::move(scatter), std::move($5));
                      }
-                |   tID '(' arglist ')'
+                |   expr tOR expr
                     {
-                        $$ = std::make_unique<Expr::Builtin>(std::move($1), std::move($3));
+                        $$ = std::make_unique<Expr::Or>(std::move($1), std::move($3));
                     }
+                |   expr tAND expr
+                    {
+                        $$ = std::make_unique<Expr::And>(std::move($1), std::move($3));
+                    }
+                |   expr tEQ expr
+                    {
+                       $$ = std::make_unique<Expr::Equal>(std::move($1), std::move($3));
+                    }
+                |   expr tNE expr
+                    {
+                        $$ = std::make_unique<Expr::NotEqual>(std::move($1), std::move($3));
+                    }
+                |   expr '<' expr
+                    {
+                        $$ = std::make_unique<Expr::Less>(std::move($1), std::move($3));
+                    }
+                |   expr tLE expr
+                    {
+                        $$ = std::make_unique<Expr::LessEqual>(std::move($1), std::move($3));
+                    }
+                |   expr '>' expr
+                    {
+                        $$ = std::make_unique<Expr::Greater>(std::move($1), std::move($3));
+                    }
+                |   expr tGE expr
+                    {
+                        $$ = std::make_unique<Expr::GreaterEqual>(std::move($1), std::move($3));
+                    }
+                |   expr tIN expr
+                    {
+                        $$ = std::make_unique<Expr::In>(std::move($1), std::move($3));
+                    }
+                |   expr '+' expr
+                    {
+                        $$ = std::make_unique<Expr::Add>(std::move($1), std::move($3));
+                    }
+                |   expr '-' expr
+                    {
+                        $$ = std::make_unique<Expr::Sub>(std::move($1), std::move($3));
+                    }
+                |   expr '*' expr
+                    {
+                        $$ = std::make_unique<Expr::Mul>(std::move($1), std::move($3));
+                    }
+                |   expr '/' expr
+                    {
+                        $$ = std::make_unique<Expr::Div>(std::move($1), std::move($3));
+                    }
+                |   expr '%' expr
+                    {
+                        $$ = std::make_unique<Expr::Mod>(std::move($1), std::move($3));
+                    }
+                |   expr '^' expr
+                    {
+                        $$ = std::make_unique<Expr::Exp>(std::move($1), std::move($3));
+                    }
+                |   expr tADD_EQ expr
+                    {
+                        $$ = std::make_unique<Expr::AddEqual>(std::move($1), std::move($3));
+                    }
+                |   expr tSUB_EQ expr
+                    {
+                        $$ = std::make_unique<Expr::SubEqual>(std::move($1), std::move($3));
+                    }
+                |   expr tMUL_EQ expr
+                    {
+                        $$ = std::make_unique<Expr::MulEqual>(std::move($1), std::move($3));
+                    }
+                |   expr tDIV_EQ expr
+                    {
+                        $$ = std::make_unique<Expr::DivEqual>(std::move($1), std::move($3));
+                    }
+                |   expr tMOD_EQ expr
+                    {
+                        $$ = std::make_unique<Expr::ModEqual>(std::move($1), std::move($3));
+                    }
+                |   expr tEXP_EQ expr
+                    {
+                        $$ = std::make_unique<Expr::ExpEqual>(std::move($1), std::move($3));
+                    }
+                |  tID '(' arglist ')'
+                   {
+                       $$ = std::make_unique<Expr::Builtin>(std::move($1), std::move($3));
+                   }
     ;
 
 %nterm <Expr::Scatter::TargetList> scatter;
