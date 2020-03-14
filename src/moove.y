@@ -476,6 +476,7 @@ void checkAssignable(const Expr::Expr& expr, const char* assignType)
 	int parseSource(ParserState& parserState)
 	{
         BisonParser::parser parser(parserState);
+        // parser.set_debug_level(1);
         int ret = parser();
 		parserState.parseFinished();
 		return ret;
