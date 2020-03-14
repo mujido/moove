@@ -489,10 +489,57 @@ expr:               tINT
                     {
                         $$ = std::make_unique<Expr::ExpEqual>(std::move($1), std::move($3));
                     }
-                |  tID '(' arglist ')'
-                   {
+                |   expr '?' expr '|' expr
+                    {
+                        $$ = std::make_unique<Expr::Conditional>(std::move($1), std::move($3), std::move($5));
+                    }
+                |   expr '.' tID
+                    {
+                        auto name = std::make_unique<Expr::Str>(std::move($3));
+                        $$ = std::make_unique<Expr::Prop>(std::move($1), std::move(name));
+                    }
+                |   expr '.' '(' expr ')'
+                    {
+                        $$ = std::make_unique<Expr::Prop>(std::move($1), std::move($4));
+                    }
+                |   expr ':' tID '(' arglist ')'
+                    {
+                        auto name = std::make_unique<Expr::Str>(std::move($3));
+                        $$ = std::make_unique<Expr::VerbCall>(std::move($1), std::move(name), std::move($5));
+                    }
+                |   expr ':' '(' expr ')' '(' arglist ')'
+                    {
+                        $$ = std::make_unique<Expr::VerbCall>(std::move($1), std::move($4), std::move($7));
+                    }
+                |   expr '[' dollars_up expr ']'
+                    {
+                        parserState.decDollarDepth();
+                        $$ = std::make_unique<Expr::Index>(std::move($1), std::move($4));
+                    }
+                |   expr '[' dollars_up expr tTO expr ']'
+                    {
+                        parserState.decDollarDepth();
+                        $$ = std::make_unique<Expr::Range>(std::move($1), std::move($4), std::move($6));
+                    }
+                |   '$'
+                    {
+                        if(!parserState.dollarDepth())
+                            throw syntax_error("Illegal context for `$' expression");
+
+                        $$ = std::make_unique<Expr::Length>();
+                    }
+                |   '$' tID
+                    {
+                        $$ = std::make_unique<Expr::SystemProp>(std::move($2));
+                    }
+                |   '$' tID '(' arglist ')'
+                    {
+                        $$ = std::make_unique<Expr::SystemCall>(std::move($2), std::move($4));
+                    }
+                |   tID '(' arglist ')'
+                    {
                        $$ = std::make_unique<Expr::Builtin>(std::move($1), std::move($3));
-                   }
+                    }
     ;
 
 %nterm <Expr::Scatter::TargetList> scatter;

@@ -988,7 +988,7 @@ class VerbCall : public Expr {
 private:
    std::unique_ptr<Expr>    m_object;
    std::unique_ptr<Expr>    m_name;
-   std::unique_ptr<ArgList> m_args;
+   ArgList m_args;
 
 public:
    /**
@@ -997,9 +997,7 @@ public:
     * \param name Expression that evaluates to a verb name
     * \param args Argument list to verb
     */
-   VerbCall(std::unique_ptr<Expr> object, 
-	    std::unique_ptr<Expr> name, 
-	    std::unique_ptr<ArgList> args) : 
+   VerbCall(std::unique_ptr<Expr> object, std::unique_ptr<Expr> name, ArgList&& args) : 
       m_object(std::move(object)), m_name(std::move(name)), m_args(std::move(args))
    {}
 
@@ -1022,7 +1020,7 @@ public:
     * \return ArgList object containing each argument to the verb
     */
    const ArgList& args()const
-   { return *m_args; }
+   { return m_args; }
 
    void accept(ASTVisitor& visitor)const;
 };
@@ -1030,14 +1028,14 @@ public:
 ///Represent a system property reference ($name) expression
 class SystemProp : public Expr {
 private:
-   std::unique_ptr<std::string> m_name;
+   std::string m_name;
 
 public:
    /** 
     * \brief Construct SystemProp object
     * \param name Property name string
     */
-   SystemProp(std::unique_ptr<std::string> name) : m_name(std::move(name))
+   SystemProp(std::string&& name) : m_name(std::move(name))
    {}
 
    /**
@@ -1045,7 +1043,7 @@ public:
     * \return Property name string
     */
    const std::string& name()const
-   { return *m_name; }
+   { return m_name; }
 
    bool assignable()const
    { return true; }
@@ -1056,8 +1054,8 @@ public:
 ///Represent a system call ($name(...)) expression
 class SystemCall : public Expr {
 private:
-   std::unique_ptr<std::string> m_name;
-   std::unique_ptr<ArgList>     m_args;
+   std::string m_name;
+   ArgList m_args;
 
 public:
    /**
@@ -1065,8 +1063,7 @@ public:
     * \param name Verb name string
     * \param args Argument list to verb
     */
-   SystemCall(std::unique_ptr<std::string> name, 
-	      std::unique_ptr<ArgList> args) : 
+   SystemCall(std::string&& name, ArgList&& args) : 
       m_name(std::move(name)), m_args(std::move(args))
    {}
 
@@ -1075,14 +1072,14 @@ public:
     * \return Verb name string
     */
    const std::string& name()const
-   { return *m_name; }
+   { return m_name; }
 
    /**
     * \brief Retrieve verb call arguments
     * \return ArgList object containing all verb call arguments
     */
    const ArgList& args()const
-   { return *m_args; }
+   { return m_args; }
 
    void accept(ASTVisitor& visitor)const;
 };
