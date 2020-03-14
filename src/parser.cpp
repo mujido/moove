@@ -1,6 +1,5 @@
 //Copyright (c) 2004 Kurt Stutsman. All rights reserved.
 #include "parser.hpp"
-
 #include "parser_state.hpp"
 
 namespace Moove {
