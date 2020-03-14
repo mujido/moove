@@ -27,6 +27,7 @@ namespace Moove
 %code {
 
 #include "parser_state.hpp"
+#include "scatter_assignment_converter.hpp"
 
 #include <algorithm>
 
@@ -48,7 +49,7 @@ namespace Moove {
 %token END 0 "end of input"
 
 %token <int> tINT tOBJNUM
-%token <::std::string>     tSTR tID
+%token <std::string>     tSTR tID
 %token <double>    tREAL
 
 %token tIF tELSEIF tELSE tENDIF
@@ -391,67 +392,25 @@ expr:               tINT
                             throw parser::syntax_error("Invalid operand to -- operator");
 
                         $$ = std::make_unique<Expr::PostDec>(std::move($1));
-
+                    }
+                |   expr '=' expr
+                    {
+                        if(!$1->assignable()) {
+                            auto targets = ScatterAssignmentConverter::convert(*$1);
+                            $$ = std::make_unique<Expr::Scatter>(std::move(targets));
+                        }
+                        else
+                            $$ = std::make_unique<Expr::Assign>(std::move($1), std::move($3));
+                    }
+                |   tID '(' arglist ')'
+                    {
+                        $$ = std::make_unique<Expr::Builtin>(std::move($1), std::move($3));
                     }
     ;
 
 %%
 
 namespace Moove { 
-
-#if 0
-Symbol isRestTarget(const Expr::Expr* expr)
-{
-    const Expr::Splice* splice;
-    const Expr::Variable* var;
-
-    if((splice = dynamic_cast<const Expr::Splice*>(expr)) &&
-        (var = dynamic_cast<const Expr::Variable*>(&splice->operand())))
-        return var->id();
-    else
-        return Symbol();
-}
-    
-bool listToScatter(ScatterTargetList& targets, const Expr::ArgList& list)
-{
-    typedef Expr::ArgList ArgList;
-    typedef Expr::Variable Variable;
-    typedef Expr::Splice Splice;
-    typedef ScatterTarget Target;
-
-    bool success = true;
-
-    ArgList::const_iterator end = list.end();
-    for(ArgList::const_iterator item = list.begin(); item != end; ++item) {
-        Symbol id;
-
-        if(const Variable* var = dynamic_cast<const Variable*>(*item)) {
-            std::unique_ptr<Target> target(new ScatterTarget(Target::REQUIRED,
-                                                                          var->id()));
-            targets.push_back(target.get());
-            target.release();
-        } else if((id = isRestTarget(*item))) {
-            std::unique_ptr<Target> target(new ScatterTarget(Target::REST,
-                                                                          id));
-            targets.push_back(target.get());
-            target.release();
-        } else {
-            yyerror("Scattering assignment targets must be simple variables.");
-            success = false;
-        }
-    }
-
-    return success;
-}
-
-void checkAssignable(const Expr::Expr& expr, const char* assignType)
-{
-    if(!expr.assignable())
-        yyerror(string("Illegal expression on left side of ") +
-                  assignType + '.');
-}
-
-#endif
 
     namespace BisonParser {
 		void parser::error(const std::string& msg) 

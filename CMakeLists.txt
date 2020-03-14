@@ -13,10 +13,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "/Zc:__cplusplus /EHsc")
+    set(CMAKE_CXX_FLAGS "/Zc:__cplusplus /EHsc /std:c++17")
+else()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAS} -Wall")
 endif()
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAS} -Wall")
 
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)

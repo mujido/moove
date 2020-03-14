@@ -7,7 +7,7 @@
 
 #include "codevect.hpp"
 
-#include <boost/array.hpp>
+#include <array>
 
 namespace Moove {
 
@@ -32,7 +32,7 @@ public:
    static const unsigned NUM_TYPES = 5;
 
    /// Stores an array of deltas indexed by ImmediateValue::Type for label computation.
-   typedef boost::array<CodeVector::difference_type, NUM_TYPES>		Deltas;
+   typedef std::array<CodeVector::difference_type, NUM_TYPES>		Deltas;
 
 private:
    CodeVector::Word m_pos;

@@ -1,3 +1,7 @@
+%option noyywrap nounput noinput yylineno reentrant batch never-interactive 
+%option prefix="Moove_"
+%option extra-type="::Moove::ILexerSource*"
+
 %top {
 #include "ilexer_source.hpp"
 #include "moove.tab.h"
@@ -5,10 +9,6 @@
 #define YY_DECL Moove::BisonParser::parser::symbol_type Moove_lex(yyscan_t yyscanner)
 
 }
-
-%option noyywrap nounput noinput yylineno reentrant batch
-%option prefix="Moove_"
-%option extra-type="::Moove::ILexerSource*"
 
 %{
 #include "lexer_helpers.hpp"

@@ -194,7 +194,7 @@ public:
     * \brief Create a Variable with given symbol
     * \param id Symbol of variable name (as created by SymbolTable)
     */
-   Variable(const Symbol id) : m_id(id)
+   Variable(const Symbol& id) : m_id(id)
    {}
 
    /**
@@ -1088,8 +1088,8 @@ public:
 ///Represent Builtin function call (name(...)) expression
 class Builtin : public Expr {
 private:
-   std::unique_ptr<std::string> m_name;
-   std::unique_ptr<ArgList>     m_args;
+   std::string m_name;
+   ArgList     m_args;
 
 public:
    /**
@@ -1097,8 +1097,7 @@ public:
     * \param name Function name string,
     * \param args Argument list to function
     */
-   Builtin(std::unique_ptr<std::string> name, 
-	   std::unique_ptr<ArgList> args) : m_name(std::move(name)), m_args(std::move(args))
+   Builtin(std::string&& name, ArgList&& args) : m_name(std::move(name)), m_args(std::move(args))
    {}
 
    /**
@@ -1106,21 +1105,21 @@ public:
     * \return Function name string
     */
    const std::string& name()const
-   { return *m_name; }
+   { return m_name; }
 
    /**
     * \brief Retrieve argument list
     * \return ArgList object containing all function call arguments
     */
    const ArgList& args()const
-   { return *m_args; }
+   { return m_args; }
 
    void accept(ASTVisitor& visitor)const;
 };
 
 ///Represent a list length ($) expression
 struct Length : public Expr {
-   void accept(ASTVisitor& visitor)const;
+    void accept(ASTVisitor& visitor)const;
 };
 
 }   //namespace Expr

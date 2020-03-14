@@ -238,99 +238,75 @@ argument:            expr
 
      */
 
-    /*
-                     |    tOBJNUM
-                            {
-                                $$ = addToPool(new Expr::Objnum($1));
-                            }
-                     |    tSTR
-                            {
-                                $$ = addToPool(new Expr::Str(poolPtrToAuto($1)));
-                            }
-                     |    tREAL
-                            {
-                                $$ = addToPool(new Expr::Real(*poolPtrToAuto($1)));
-                            }
-                     |    '{' arglist '}'
-                            {
-                                $$ = addToPool(new Expr::List(poolToAuto($2)));
-                            }
-                     |    tID
-                            {
-                                BEGIN_BLOCK();
-                                Symbol var = parser->addVar(*poolPtrToAuto($1));
-                                $$ = addToPool(new Expr::Variable(var));
-                                END_BLOCK();
-                            }
-                     |    '!' expr
-                            {
-                                $$ = addToPool(new Expr::Not(poolToAuto($2)));
-                            }
-                     |    '-' expr   %prec tNEGATE
-                            {
-                                $$ = addToPool(new Expr::Negate(poolToAuto($2)));
-                            }
-                     |    tINCREMENT expr
-                            {
-                                if(!$2->assignable())
-                                    yyerror("Invalid operand to ++ operator");
+                |   '!' expr
+                    {
+                        $$ = std::make_unique<Expr::Not>(std::move($2);
+                    }
+                |    '-' expr   %prec tNEGATE
+                       {
+                           $$ = addToPool(new Expr::Negate(poolToAuto($2)));
+                       }
+                |    tINCREMENT expr
+                       {
+                           if(!$2->assignable())
+                               yyerror("Invalid operand to ++ operator");
 
-                                $$ = addToPool(new Expr::PreInc(poolToAuto($2)));
-                            }
-                     |    tDECREMENT expr
-                            {
-                                if(!$2->assignable())
-                                    yyerror("Invalid operand to -- operator");
+                           $$ = addToPool(new Expr::PreInc(poolToAuto($2)));
+                       }
+                |    tDECREMENT expr
+                       {
+                           if(!$2->assignable())
+                               yyerror("Invalid operand to -- operator");
 
-                                $$ = addToPool(new Expr::PreDec(poolToAuto($2)));
-                            }
-                     |    expr tINCREMENT
-                            {
-                                if(!$1->assignable())
-                                    yyerror("Invalid operand to ++ operator");
+                           $$ = addToPool(new Expr::PreDec(poolToAuto($2)));
+                       }
+                |    expr tINCREMENT
+                       {
+                           if(!$1->assignable())
+                               yyerror("Invalid operand to ++ operator");
 
-                                $$ = addToPool(new Expr::PostInc(poolToAuto($1)));
-                            }
-                     |    expr tDECREMENT
-                            
-                            {
-                                if(!$1->assignable())
-                                    yyerror("Invalid operand to -- operator");
+                           $$ = addToPool(new Expr::PostInc(poolToAuto($1)));
+                       }
+                |    expr tDECREMENT
+                       
+                       {
+                           if(!$1->assignable())
+                               yyerror("Invalid operand to -- operator");
 
-                                $$ = addToPool(new Expr::PostDec(poolToAuto($1)));
+                           $$ = addToPool(new Expr::PostDec(poolToAuto($1)));
 
-                            }
-                     |    expr '=' expr
-                            {
-                                BEGIN_BLOCK();
-                                std::unique_ptr<Expr::Expr> dest = poolToAuto($1);
+                       }
+                |    expr '=' expr
+                       {
+                           BEGIN_BLOCK();
+                           std::unique_ptr<Expr::Expr> dest = poolToAuto($1);
 
-                                if(!dest->assignable()) {
-                                    bool converted = false;
-                                    Expr::List* list;
+                           if(!dest->assignable()) {
+                               bool converted = false;
+                               Expr::List* list;
 
-                                    if((list = dynamic_cast<Expr::List*>(dest.get()))) {
-                                        std::unique_ptr<ScatterTargetList> targets(new ScatterTargetList);
-                                        converted = listToScatter(*targets, 
-                                                                          list->elements());
-                                        dest.reset(new Expr::Scatter(std::move(targets)));
-                                    } 
-                                    
-                                    if(!converted)
-                                        yyerror("Invalid expression on left side of assignment");
-                                }
+                               if((list = dynamic_cast<Expr::List*>(dest.get()))) {
+                                   std::unique_ptr<ScatterTargetList> targets(new ScatterTargetList);
+                                   converted = listToScatter(*targets, 
+                                                                     list->elements());
+                                   dest.reset(new Expr::Scatter(std::move(targets)));
+                               } 
+                               
+                               if(!converted)
+                                   yyerror("Invalid expression on left side of assignment");
+                           }
 
-                                $$ = addToPool(new Expr::Assign(std::move(dest), poolToAuto($3)));
-                                END_BLOCK();
-                            }
-                     |    '{' scatter '}' '=' expr
-                            {
-                                BEGIN_BLOCK();
-                                unique_ptr<Expr::Expr> scatter(new Expr::Scatter(poolToAuto($2)));
-                                $$ = addToPool(new Expr::Assign(std::move(scatter),
-                                                                          poolToAuto($5)));
-                                END_BLOCK();
-                            }
+                           $$ = addToPool(new Expr::Assign(std::move(dest), poolToAuto($3)));
+                           END_BLOCK();
+                       }
+                |    '{' scatter '}' '=' expr
+                       {
+                           BEGIN_BLOCK();
+                           unique_ptr<Expr::Expr> scatter(new Expr::Scatter(poolToAuto($2)));
+                           $$ = addToPool(new Expr::Assign(std::move(scatter),
+                                                                     poolToAuto($5)));
+                           END_BLOCK();
+                       }
                      |    expr tOR expr
                             {
                                 $$ = MAKE_BINARY_EXPR(Or, $1, $3);

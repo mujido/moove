@@ -19,7 +19,7 @@ private:
    const std::string* m_name;
 
 public:
-   Symbol() : m_name(0)
+   Symbol() : m_name(nullptr)
    {}
 
    explicit Symbol(const std::string* name) : m_name(name)
