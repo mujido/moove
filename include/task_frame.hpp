@@ -16,7 +16,7 @@ namespace Moove {
 class ExecutionState;
 
 struct TaskFrame {
-    virtual std::auto_ptr<Variant> run(ExecutionState& execState,
+    virtual std::unique_ptr<Variant> run(ExecutionState& execState,
                                        Interpreter::VariableDefMap& varDefMap, 
                                        bool traceFlag = false) = 0;
 };
@@ -29,7 +29,7 @@ public:
     BytecodeTaskFrame(const DebugBytecodeProgram& bc) : m_interp(bc)
     {}
 
-    std::auto_ptr<Variant> run(ExecutionState& execState,
+    std::unique_ptr<Variant> run(ExecutionState& execState,
                                Interpreter::VariableDefMap& varDefs, 
                                bool traceFlag = false);
 };

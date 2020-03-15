@@ -1,148 +1,54 @@
-%{
+%require "3.4"
+%language "c++"
+%defines
+%define api.namespace {Moove::BisonParser}
+%define api.token.constructor
+%define api.value.type variant
+%define parse.assert
+%verbose
+%define parse.trace
+%skeleton "lalr1.cc"
+%param { ParserState& parserState }
+
+%code requires {
 
 #include "expr_ast.hpp"
-#include "lexer.hpp"
-#include "parser_msgs.hpp"
-#include "parser_state.hpp"
 #include "stmt_ast.hpp"
 
+#include <boost/optional.hpp>
+
+namespace Moove
+{
+    class ParserState;
+}
+
+}
+
+%code {
+
+#include "parser_state.hpp"
+#include "scatter_assignment_converter.hpp"
+
 #include <algorithm>
-#include <cctype>
-#include <cerrno>
-#include <cstdlib>
-#include <functional>
-#include <string>
 
-#define MAKE_BINARY_EXPR(T, left, right) \
-   addToPool(new Expr::T(poolToAuto(left), \
-			 poolToAuto(right)))
+namespace Moove {
+	typedef Expr::Scatter::Target       ScatterTarget;
+	typedef Expr::Scatter::TargetList   ScatterTargetList;
+	typedef Stmt::TryExcept::Except     Except;
+	typedef Stmt::TryExcept::ExceptList ExceptList;
 
-#define BEGIN_BLOCK() do {
-#define END_BLOCK() } while(0)
-
-namespace {
-
-using namespace std;
-using namespace Moove;
-
-ParserState* parser;
-
-/**
- * \internal
- * \brief Simplifies adding allocated objects to memory pool
- * \param ptr Pointer to add to pool and return
- *
- * Allows assigning to $$ and adding to memory pool in one line. Only
- * used for objects descended from MemoryPoolObject.
- */
-template<class T>
-inline T* addToPool(T* ptr)
-{
-   parser->addToPool(auto_ptr<ASTPoolObject>(ptr));
-   return ptr;
+    namespace BisonParser {
+		parser::symbol_type yylex(ParserState& parserState);
+    }
 }
 
-/*
-template<class T>
-MemoryPoolPointer<T>* addPtrToPool(T* ptr)
-{
-   MemoryPoolPointer<T>* mpPtr = new MemoryPoolPointer<T>(auto_ptr<T>(ptr));
-   parser->addToPool(auto_ptr<MemoryPoolObject>(mpPtr));
-   return mpPtr;
-}
-*/
+} // code
 
-template<class T>
-inline auto_ptr<T> poolToAuto(T* ptr)
-{
-   parser->removeFromPool(ptr);
-   return auto_ptr<T>(ptr);
-}
+%token END 0 "end of input"
 
-template<class T>
-auto_ptr<T> poolPtrToAuto(ASTPoolPtr<T>* ptr)
-{
-   if(ptr) {
-      parser->removeFromPool(ptr);
-      auto_ptr<T> tmp(*ptr);
-      delete ptr;
-      return tmp;
-   } else
-      return auto_ptr<T>(0);
-}
-
-/**
- * \internal
- * \brief Calls cont.push_back(ptr) with exception safety
- * \param cont Container to insert into
- * \param ptr Pointer to a deletable object
- * 
- * If an exception is thrown while inserting \a ptr into \a cont, \a ptr
- * is deleted.
- */
-template<class Container, class T>
-void safePushBack(ASTAutoContainer<Container>& cont, T* ptr)
-{
-   auto_ptr<T> tmp(ptr);
-   cont.push_back(ptr);
-   tmp.release();
-}
-
-template<class Container, class T>
-void safePushBack(ASTAutoContainer<Container>& cont, auto_ptr<T> ptr)
-{
-   cont.push_back(ptr.get());
-   ptr.release();
-}
-
-inline void yyerror(const std::string& msg)
-{
-   parser->error(msg);
-}
-
-int yylex();
-
-typedef Expr::Scatter::Target       ScatterTarget;
-typedef Expr::Scatter::TargetList   ScatterTargetList;
-typedef Stmt::TryExcept::Except     Except;
-typedef Stmt::TryExcept::ExceptList ExceptList;
-
-bool listToScatter(ScatterTargetList& targets, const Expr::ArgList& list);
-
-%}
-
-%union
-{
-   int                                    integer;
-   Moove::ASTPoolPtr<std::string>* str;
-   Moove::ASTPoolPtr<double>*      real;
-
-   Moove::Expr::ArgList*                  list;
-   Moove::Expr::Expr*                     expr;
-   Moove::Expr::Scatter::Target*          target;
-   Moove::Expr::Scatter::TargetList*      targetList;
-
-   Moove::Stmt::Stmt*                     stmt;
-   Moove::Stmt::Block*                    stmts;
-   Moove::Stmt::If::ElseList*             elseList;
-   Moove::Stmt::TryExcept::ExceptList*    exceptList;
-   Moove::Stmt::Switch::CaseList*         caseList;
-}
-
-%type <stmts>      stmts else_block
-%type <stmt>       stmt 
-%type <expr>       expr dollars_up catch_result argument
-%type <elseList>      elseifs
-%type <str>         opt_id
-%type <list>       arglist ne_arglist except_codes
-%type <targetList> scatter
-%type <target>     opt_target
-%type <exceptList>    excepts
-%type <caseList>      switch_cases
-
-%token <integer> tINT tOBJNUM
-%token <str>     tSTR tID
-%token <real>    tREAL
+%token <int> tINT tOBJNUM
+%token <std::string>     tSTR tID
+%token <double>    tREAL
 
 %token tIF tELSEIF tELSE tENDIF
 %token tWHILE tENDWHILE
@@ -163,933 +69,576 @@ bool listToScatter(ScatterTargetList& targets, const Expr::ArgList& list);
 %left     '!' tNEGATE tINCREMENT tDECREMENT
 %nonassoc '.' ':' '[' '$'
 
+%printer { yyo << $$; } tINT tREAL
+%printer { yyo << '"' << $$ << '"'; } tSTR
+
 %%
 
-program:             stmts
-                     {
-			parser->setProgram(poolToAuto($1));
-                     }
+%start program;
+program:            stmts
+                    {
+                        parserState.setProgram(std::move($1));
+                    }
+     ;
+
+%nterm <Stmt::Block> stmts;
+stmts:              %empty
+                    {
+                        // empty block
+                    }
+               |    stmts stmt
+                    {
+                        $$ = std::move($1);
+
+                        if($2)
+                            $$.push_back(std::move($2));
+                    }
+     ;
+
+%nterm <std::unique_ptr<Stmt::Stmt>> stmt;
+stmt:               tIF '(' expr ')' stmts elseifs else_block tENDIF
+                    {
+                        if($7)
+                            $6.push_back(std::move(*$7));
+
+                        $$ = std::make_unique<Stmt::If>(std::move($3), std::move($5), std::move($6));
+                    }
+               |    tWHILE opt_id '(' expr ')'
+                    {
+                        parserState.beginLoop($2);
+                    }
+                        stmts tENDWHILE
+                        {
+                            $$ = std::make_unique<Stmt::While>(parserState.loopID(), std::move($4), std::move($7));
+                            parserState.endLoop();
+                        }
+               |    tFOR tID tIN '(' expr ')'
+                    {
+                        parserState.beginLoop($2);
+                    }
+                        stmts tENDFOR
+                        {
+                            $$ = std::make_unique<Stmt::ForList>(parserState.loopID(), std::move($5), std::move($8)); 
+                            parserState.endLoop();
+                        }
+                |   tFOR tID tIN '[' expr tTO expr ']'
+                    {
+                        parserState.beginLoop($2);
+                    }
+                        stmts tENDFOR
+                        {
+                            $$ = std::make_unique<Stmt::ForRange>(
+                                parserState.loopID(), std::move($5), std::move($7), std::move($10)
+                            );
+                            parserState.endLoop();
+                        }
+                |   tTRY stmts excepts tENDTRY
+                    {
+                        $$ = std::make_unique<Stmt::TryExcept>(std::move($2), std::move($3));
+                    }
+                |   tTRY stmts tFINALLY stmts tENDTRY
+                    {
+                        $$ = std::make_unique<Stmt::TryFinally>(std::move($2), std::move($4));
+                    }
+                |   tFORK opt_id '(' expr ')'
+                    {
+                        parserState.beginFork();
+
+                        if($2)
+                            parserState.addVar(*$2);
+                    }   
+                        stmts tENDFORK
+                        {
+                            Symbol forkVar = $2 ? parserState.findVar(*$2) : Symbol();
+                            $$ = std::make_unique<Stmt::Fork>(forkVar, std::move($4), std::move($7));
+                            parserState.endFork();
+                   }
+                |  tSWITCH '(' expr ')' 
+                   {
+                       parserState.beginSwitch();
+                   }
+                        switch_cases tENDSWITCH
+                        {
+                            $$ = std::make_unique<Stmt::Switch>(std::move($3), std::move($6));
+                            parserState.endSwitch();
+                        }
+                |   tRETURN ';'
+                    {
+                        $$ = std::make_unique<Stmt::Return>();
+                    }
+                |   tRETURN expr ';'
+                    {
+                        $$ = std::make_unique<Stmt::Return>(std::move($2));
+                    }
+                |   tCONTINUE opt_id ';'
+                    {
+                        Symbol sym = $2 ? parserState.findVar(*$2) : Symbol();
+
+                        if(!parserState.checkLoopID(sym) && !parserState.switchDepth()) {
+                            if($2)
+                                throw parser::syntax_error("Invalid loop name in `continue' statement: " + *$2);
+                            else
+                                throw parser::syntax_error("No enclosing loop or switch for `continue' statement");
+                        }
+
+                        $$ = std::make_unique<Stmt::Continue>(sym);
+                    }
+                |   tBREAK opt_id ';'
+                    {
+                        Symbol sym = $2 ? parserState.findVar(*$2) : Symbol();
+
+                        if(!parserState.checkLoopID(sym) && !parserState.switchDepth()) {
+                            if($2)
+                                throw parser::syntax_error("Invalid loop name in `break' statement: " + *$2);
+                            else
+                                throw parser::syntax_error("No enclosing loop or switch for `break' statement");
+                        }
+
+                        $$ = std::make_unique<Stmt::Break>(sym);
+                    }
+                |   expr ';'
+                    {
+                        $$ = std::make_unique<Stmt::ExprStmt>(std::move($1));
+                    }
+                |   ';'
+                    {
+                        /* null ptr */
+                    }
     ;
 
-stmts:               /* nothing */
-                     {
-			$$ = addToPool(new Stmt::Block);
-                     }
-                |    stmts stmt
-                     {
-			$$ = $1;
+%nterm <Stmt::If::ElseList> elseifs;
+elseifs:            %empty
+                    {
+                        // empty elseif block
+                    }
+               |    elseifs tELSEIF '(' expr ')' stmts
+                    {
+                        $$ = std::move($1);
+                        $$.push_back(Stmt::If::ElseIf{ std::move($4), std::move($6) });
+                    }
+ ;
 
-			if($2)
-			   safePushBack(*$$, poolToAuto($2));
+%nterm <boost::optional<Stmt::If::Else>> else_block;
+else_block:         %empty
+                    {
+                        $$ = boost::none;
+                    }
+               |    tELSE stmts
+					{
+						$$ = std::move($2);
+					}
+     ;
 
-                     }
-    ;
-
-stmt:                tIF '(' expr ')' stmts elseifs else_block tENDIF
+%nterm <boost::optional<std::string>> opt_id;
+opt_id:              %empty
                      {
-			if($7)
-			   safePushBack(*$6, new Stmt::If::Else(poolToAuto($7)));
-
-                        $$ = addToPool(new Stmt::If(poolToAuto($3), 
-						    poolToAuto($5), 
-						    poolToAuto($6)));
-                     }
-                |    tWHILE opt_id '(' expr ')'
-                     {
-                        parser->beginLoop(poolPtrToAuto($2).get());
-                     }
-                         stmts tENDWHILE
-                         {
-                            $$ = addToPool(new Stmt::While(parser->loopID(), 
-							   poolToAuto($4), 
-							   poolToAuto($7)));
-                            parser->endLoop();
-                         }
-                |    tFOR tID tIN '(' expr ')'
-                     {
-			parser->beginLoop(poolPtrToAuto($2).get());
-                     }
-                         stmts tENDFOR
-                         {
-			    $$ = addToPool(new Stmt::ForList(parser->loopID(), 
-							     poolToAuto($5), 
-							     poolToAuto($8)));
-			    parser->endLoop();
-                         }
-                |    tFOR tID tIN '[' expr tTO expr ']'
-                     {
-                        parser->beginLoop(poolPtrToAuto($2).get());
-                     }
-                         stmts tENDFOR
-                         {
-			    $$ = addToPool(new Stmt::ForRange(parser->loopID(),
-							      poolToAuto($5), 
-							      poolToAuto($7), 
-							      poolToAuto($10)));
-			    parser->endLoop();
-                         }
-                |    tTRY stmts excepts tENDTRY
-                     {
-			$$ = addToPool(new Stmt::TryExcept(poolToAuto($2), 
-							   poolToAuto($3)));
-                     }
-                |    tTRY stmts tFINALLY stmts tENDTRY
-                     {
-			$$ = addToPool(new Stmt::TryFinally(poolToAuto($2), 
-							    poolToAuto($4)));
-                     }
-                |    tFORK opt_id '(' expr ')'
-		     {
-			parser->beginFork();
-
-			if($2)
-			   parser->addVar(**$2);
-		     }   
-			 stmts tENDFORK
-			 {
-			    BEGIN_BLOCK();
-			    auto_ptr<string> id = poolPtrToAuto($2);
-			    Symbol forkVar = (id.get() ? 
-					      parser->findVar(*id) : 
-					      Symbol());
-			    $$ = addToPool(new Stmt::Fork(forkVar,
-							  poolToAuto($4), 
-							  poolToAuto($7)));
-			    parser->endFork();
-			    END_BLOCK();
-			 }
-                |    tSWITCH '(' expr ')' 
-                     {
-			parser->beginSwitch();
-		     }
-			 switch_cases tENDSWITCH
-			 {
-			    $$ = addToPool(new Stmt::Switch(poolToAuto($3), 
-							    poolToAuto($6)));
-			    parser->endSwitch();
-			 }
-                |    tRETURN ';'
-                     {
-			$$ = addToPool(new Stmt::Return);
-		     }
-                |    tRETURN expr ';'
-                     {
-                        $$ = addToPool(new Stmt::Return(poolToAuto($2)));
-                     }
-                |    tCONTINUE opt_id ';'
-                     {
-			BEGIN_BLOCK();
-			std::auto_ptr<std::string> id = poolPtrToAuto($2);
-			Symbol sym = id.get() ? parser->findVar(*id) : Symbol();
-
-			if(!parser->checkLoopID(sym) && !parser->switchDepth()) {
-			   if(id.get())
-			      yyerror("Invalid loop name in `continue' "
-				      "statement: " + *id);
-			   else
-			      yyerror("No enclosing loop or switch for "
-				      "`continue' statement");
-			}
-
-			$$ = addToPool(new Stmt::Continue(sym));
-			END_BLOCK();
-                     }
-                |    tBREAK opt_id ';'
-                     {
-			BEGIN_BLOCK();
-			std::auto_ptr<std::string> id = poolPtrToAuto($2);
-			Symbol sym = id.get() ? parser->findVar(*id) : Symbol();
-
-			if(!parser->checkLoopID(sym) && !parser->switchDepth()) {
-			   if(id.get())
-			      yyerror("Invalid loop name in `break' "
-				      "statement: " + *id);
-			   else
-			      yyerror("No enclosing loop or switch for "
-				      "`break' statement");
-			}
-
-			$$ = addToPool(new Stmt::Break(sym));
-			END_BLOCK();
-                     }
-                |    expr ';' 
-                     {
-			$$ = addToPool(new Stmt::Expr(poolToAuto($1)));
-                     }
-                |    ';'
-                     {
-                        $$ = 0;
-                     }
-    ;
-
-elseifs:             /* nothing */
-                     {
-                        $$ = addToPool(new Stmt::If::ElseList);
-                     }
-                |    elseifs tELSEIF '(' expr ')' stmts
-                     {
-			$$ = $1;
-			safePushBack(*$$, new Stmt::If::ElseIf(poolToAuto($4), 
-							       poolToAuto($6)));
-                     }
-    ;
-
-else_block:          /* nothing */
-                     {
-                        $$ = 0;
-                     }
-                |    tELSE stmts
-                     {
-                        $$ = $2;
-                     }
-    ;
-
-opt_id:              /* nothing */
-                     {
-                        $$ = 0;
+                        $$ = boost::none;
                      }
                 |    tID
                      {
-                        $$ = $1;
+                        $$ = std::move($1);
                      }
     ;
 
-excepts:             tEXCEPT opt_id '(' except_codes ')' stmts
+%nterm <Stmt::TryExcept::ExceptList> excepts;
+excepts:            tEXCEPT opt_id '(' except_codes ')' stmts
+                    {
+                        Symbol var = $2 ? parserState.addVar(*$2) : Symbol();
+                        $$.emplace_back(var, std::move($4), std::move($6));
+                    }
+                |   excepts tEXCEPT opt_id '(' except_codes ')' stmts
+                    {
+                        if($1.back().codes().empty())
+                            throw parser::syntax_error("Unreachable EXCEPT clause");
+                           
+                        $$ = std::move($1);
+                        Symbol var = $3 ? parserState.addVar(*$3) : Symbol();
+                        $$.emplace_back(var, std::move($5), std::move($7));
+                    }
+     ;
+
+%nterm <Stmt::Switch::CaseList> switch_cases;
+switch_cases:       %empty
+                    {
+                       // empty list 
+                    }
+                |   switch_cases tCASE '(' expr ')' stmts
+                    {
+                        $$ = std::move($1);
+                        $$.emplace_back(std::move($4), std::move($6));
+                    }
+                |   switch_cases tDEFAULT 
+                    {
+                        auto defaultCase = std::find_if($1.begin(), $1.end(), [](const auto& caseStmt) 
+                        { 
+                            return caseStmt.isDefault(); 
+                        });
+                        if (defaultCase != $1.end())
+                            throw parser::syntax_error("Multiple default clauses in switch statement");
+                    }
+                        stmts
+                        {
+                            $$ = std::move($1);
+                            $$.emplace_back(std::move($4));
+                        }
+     ;
+
+%nterm <Expr::ArgList> except_codes;
+except_codes:       tANY
+                    {
+                        /* empty list */
+                    }
+                |   ne_arglist
+                    {
+                        $$ = std::move($1);
+                    }
+     ;
+
+%nterm <Expr::ArgList> arglist;
+arglist:            %empty
+                    {
+                        // empty list
+                    }
+                |   ne_arglist
+                    {
+                        $$ = std::move($1);
+                    }
+     ;
+     
+%nterm <Expr::ArgList> ne_arglist;
+ne_arglist:         argument
+                    {
+                        $$.push_back(std::move($1));
+                    }
+                |   ne_arglist ',' argument
+                    {
+                        $$ = std::move($1);
+                        $$.push_back(std::move($3));
+                    }
+     ;
+
+%nterm <std::unique_ptr<Expr::Expr>> argument;
+argument:           expr
+                    {
+                        $$ = std::move($1);
+                    }
+                |   '@' expr
+                    {
+                        $$ = std::make_unique<Expr::Splice>(std::move($2));
+                    }
+     ;
+
+
+%nterm <std::unique_ptr<Expr::Expr>> expr;
+expr:               tINT
+                    {
+                        $$ = std::make_unique<Expr::Integer>($1);
+                    }
+                |   tOBJNUM
+                    {
+                        $$ = std::make_unique<Expr::Objnum>($1);
+                    }
+                |   tSTR
+                    {
+                        $$ = std::make_unique<Expr::Str>(std::move($1));
+                    }
+                |   tREAL
+                    {
+                        $$ = std::make_unique<Expr::Real>($1);
+                    }
+                |   '{' arglist '}'
+                    {
+                        $$ = std::make_unique<Expr::List>(std::move($2));
+                    }
+                |   tID
+                    {
+                        Symbol var = parserState.addVar($1);
+                        $$ = std::make_unique<Expr::Variable>(var);
+                    }
+                |   '!' expr
+                    {
+                        $$ = std::make_unique<Expr::Not>(std::move($2));
+                    }
+                |   '-' expr   %prec tNEGATE
+                    {
+                        $$ = std::make_unique<Expr::Negate>(std::move($2));
+                    }
+                |   tINCREMENT expr
+                    {
+                        if(!$2->assignable())
+                           throw parser::syntax_error("Invalid operand to ++ operator");
+
+                        $$ = std::make_unique<Expr::PreInc>(std::move($2));
+                    }
+                |   tDECREMENT expr
+                    {
+                        if(!$2->assignable())
+                            throw parser::syntax_error("Invalid operand to -- operator");
+
+                        $$ = std::make_unique<Expr::PreDec>(std::move($2));
+                    }
+                |   expr tINCREMENT
+                    {
+                        if(!$1->assignable())
+                            throw parser::syntax_error("Invalid operand to ++ operator");
+
+                        $$ = std::make_unique<Expr::PostInc>(std::move($1));
+                    }
+                |   expr tDECREMENT
+                    {
+                        if(!$1->assignable())
+                            throw parser::syntax_error("Invalid operand to -- operator");
+
+                        $$ = std::make_unique<Expr::PostDec>(std::move($1));
+                    }
+                |   expr '=' expr
+                    {
+                        if(!$1->assignable()) {
+                            auto targets = ScatterAssignmentConverter::convert(*$1);
+                            $$ = std::make_unique<Expr::Scatter>(std::move(targets));
+                        }
+                        else
+                            $$ = std::make_unique<Expr::Assign>(std::move($1), std::move($3));
+                    }
+                |   '{' scatter '}' '=' expr
                      {
-			BEGIN_BLOCK();
-                        $$ = addToPool(new ExceptList);
-			Symbol var = ($2 ? 
-				      parser->addVar(*poolPtrToAuto($2)) : 
-				      Symbol());
-			safePushBack(*$$, new Except(var,
-						     poolToAuto($4),
-						     poolToAuto($6)));
-			END_BLOCK();
+                         auto scatter = std::make_unique<Expr::Scatter>(std::move($2));
+                         $$ = std::make_unique<Expr::Assign>(std::move(scatter), std::move($5));
                      }
-                |    excepts tEXCEPT opt_id '(' except_codes ')' stmts
-                     {
-			BEGIN_BLOCK();
-			if($1->back()->codes().empty())
-                           yyerror("Unreachable EXCEPT clause");
-			
-			$$ = $1;
-			Symbol var = ($3 ? 
-				      parser->addVar(*poolPtrToAuto($3)) :
-				      Symbol());
-			safePushBack(*$$, new Except(var,
-						     poolToAuto($5),
-						     poolToAuto($7)));
-			END_BLOCK();
-		     }
+                |   expr tOR expr
+                    {
+                        $$ = std::make_unique<Expr::Or>(std::move($1), std::move($3));
+                    }
+                |   expr tAND expr
+                    {
+                        $$ = std::make_unique<Expr::And>(std::move($1), std::move($3));
+                    }
+                |   expr tEQ expr
+                    {
+                       $$ = std::make_unique<Expr::Equal>(std::move($1), std::move($3));
+                    }
+                |   expr tNE expr
+                    {
+                        $$ = std::make_unique<Expr::NotEqual>(std::move($1), std::move($3));
+                    }
+                |   expr '<' expr
+                    {
+                        $$ = std::make_unique<Expr::Less>(std::move($1), std::move($3));
+                    }
+                |   expr tLE expr
+                    {
+                        $$ = std::make_unique<Expr::LessEqual>(std::move($1), std::move($3));
+                    }
+                |   expr '>' expr
+                    {
+                        $$ = std::make_unique<Expr::Greater>(std::move($1), std::move($3));
+                    }
+                |   expr tGE expr
+                    {
+                        $$ = std::make_unique<Expr::GreaterEqual>(std::move($1), std::move($3));
+                    }
+                |   expr tIN expr
+                    {
+                        $$ = std::make_unique<Expr::In>(std::move($1), std::move($3));
+                    }
+                |   expr '+' expr
+                    {
+                        $$ = std::make_unique<Expr::Add>(std::move($1), std::move($3));
+                    }
+                |   expr '-' expr
+                    {
+                        $$ = std::make_unique<Expr::Sub>(std::move($1), std::move($3));
+                    }
+                |   expr '*' expr
+                    {
+                        $$ = std::make_unique<Expr::Mul>(std::move($1), std::move($3));
+                    }
+                |   expr '/' expr
+                    {
+                        $$ = std::make_unique<Expr::Div>(std::move($1), std::move($3));
+                    }
+                |   expr '%' expr
+                    {
+                        $$ = std::make_unique<Expr::Mod>(std::move($1), std::move($3));
+                    }
+                |   expr '^' expr
+                    {
+                        $$ = std::make_unique<Expr::Exp>(std::move($1), std::move($3));
+                    }
+                |   expr tADD_EQ expr
+                    {
+                        $$ = std::make_unique<Expr::AddEqual>(std::move($1), std::move($3));
+                    }
+                |   expr tSUB_EQ expr
+                    {
+                        $$ = std::make_unique<Expr::SubEqual>(std::move($1), std::move($3));
+                    }
+                |   expr tMUL_EQ expr
+                    {
+                        $$ = std::make_unique<Expr::MulEqual>(std::move($1), std::move($3));
+                    }
+                |   expr tDIV_EQ expr
+                    {
+                        $$ = std::make_unique<Expr::DivEqual>(std::move($1), std::move($3));
+                    }
+                |   expr tMOD_EQ expr
+                    {
+                        $$ = std::make_unique<Expr::ModEqual>(std::move($1), std::move($3));
+                    }
+                |   expr tEXP_EQ expr
+                    {
+                        $$ = std::make_unique<Expr::ExpEqual>(std::move($1), std::move($3));
+                    }
+                |   expr '?' expr '|' expr
+                    {
+                        $$ = std::make_unique<Expr::Conditional>(std::move($1), std::move($3), std::move($5));
+                    }
+                |   expr '.' tID
+                    {
+                        auto name = std::make_unique<Expr::Str>(std::move($3));
+                        $$ = std::make_unique<Expr::Prop>(std::move($1), std::move(name));
+                    }
+                |   expr '.' '(' expr ')'
+                    {
+                        $$ = std::make_unique<Expr::Prop>(std::move($1), std::move($4));
+                    }
+                |   expr ':' tID '(' arglist ')'
+                    {
+                        auto name = std::make_unique<Expr::Str>(std::move($3));
+                        $$ = std::make_unique<Expr::VerbCall>(std::move($1), std::move(name), std::move($5));
+                    }
+                |   expr ':' '(' expr ')' '(' arglist ')'
+                    {
+                        $$ = std::make_unique<Expr::VerbCall>(std::move($1), std::move($4), std::move($7));
+                    }
+                |   expr '[' dollars_up expr ']'
+                    {
+                        parserState.decDollarDepth();
+                        $$ = std::make_unique<Expr::Index>(std::move($1), std::move($4));
+                    }
+                |   expr '[' dollars_up expr tTO expr ']'
+                    {
+                        parserState.decDollarDepth();
+                        $$ = std::make_unique<Expr::Range>(std::move($1), std::move($4), std::move($6));
+                    }
+                |   '$'
+                    {
+                        if(!parserState.dollarDepth())
+                            throw syntax_error("Illegal context for `$' expression");
+
+                        $$ = std::make_unique<Expr::Length>();
+                    }
+                |   '$' tID
+                    {
+                        $$ = std::make_unique<Expr::SystemProp>(std::move($2));
+                    }
+                |   '$' tID '(' arglist ')'
+                    {
+                        $$ = std::make_unique<Expr::SystemCall>(std::move($2), std::move($4));
+                    }
+                |   tID '(' arglist ')'
+                    {
+                       $$ = std::make_unique<Expr::Builtin>(std::move($1), std::move($3));
+                    }
+                |   '`' expr '!' except_codes catch_result '\''
+                    {
+                        $$ = std::make_unique<Expr::Catch>(std::move($2), std::move($4), std::move($5));
+                    }
+                |   '(' expr ')'
+                    {
+                        $$ = std::move($2);
+                    }
     ;
 
-except_codes:        tANY
-                     {
-                        $$ = addToPool(new Expr::ArgList);
-                     }
-                |    ne_arglist
-                     {
-                        $$ = $1;
-                     }
-    ;
+%nterm <Expr::Scatter::TargetList> scatter;
+scatter:        opt_target
+                {
+                    $$.push_back(std::move($1));
+                }
+           |    scatter ',' opt_target
+                {
+                    $$ = std::move($1);
+                    $$.push_back(std::move($3));
+                }
+           |    scatter ',' tID
+                {
+                    $$ = std::move($1);
+                    Symbol var = parserState.addVar($3);
+                    $$.emplace_back(ScatterTarget::REQUIRED, var);
+                }
+           |    scatter ',' '@' tID
+                {
+                    $$ = std::move($1);
+                    Symbol var = parserState.addVar($4);
+                    $$.emplace_back(ScatterTarget::REST, var);
+                }
+           |    ne_arglist ',' opt_target
+                {
+                    $$ = ScatterAssignmentConverter::convert($1);
+                    $$.push_back(std::move($3));
+                }
+     ;
 
-switch_cases:        /* nothing */
-                     {
-			$$ = addToPool(new Stmt::Switch::CaseList);
-		     }
-                |    switch_cases tCASE '(' expr ')' stmts
-		     {
-			$$ = $1;
-			safePushBack(*$$, 
-				     new Stmt::Switch::Case(poolToAuto($4), 
-							    poolToAuto($6)));
-		     }
-                |    switch_cases tDEFAULT 
-		     {
-			if(find_if($1->begin(), $1->end(),
-				   mem_fun(&Stmt::Switch::Case::isDefault)) != $1->end())
-			   yyerror("Multiple default clauses in switch statement");
-		     }
-                         stmts
-                         {
-			    $$ = $1;
-			    safePushBack(*$$, 
-					 new Stmt::Switch::Default(poolToAuto($4)));
-			 }
-    ;
+%nterm <Expr::Scatter::Target> opt_target;
+opt_target:     '?' tID
+                 {
+                     Symbol var = parserState.addVar($2);
+                     $$ = ScatterTarget(ScatterTarget::OPTIONAL, var);
+                 }
+           |     '?' tID '=' expr
+                {
+                    Symbol var = parserState.addVar($2);
+                    $$ = ScatterTarget(ScatterTarget::OPTIONAL, var, std::move($4));
+                }
+     ;
 
-arglist:             /* nothing */
-                     {
-			$$ = addToPool(new Expr::ArgList);
-                     }
-                |    ne_arglist
-                     {
-                        $$ = $1;
-                     }
-    ;
+dollars_up:     %empty
+                {
+                    parserState.incDollarDepth();
+                }
+     ;
 
-ne_arglist:          argument
-                     {
-			$$ = addToPool(new Expr::ArgList);
-			safePushBack(*$$, poolToAuto($1));
-                     }
-                |    ne_arglist ',' argument
-                     {
-			$$ = $1;
-			safePushBack(*$$, poolToAuto($3));
-                     }
-    ;
-
-argument:            expr
-                     {
-			$$ = $1;
-                     }
-                |    '@' expr
-                     {
-			$$ = addToPool(new Expr::Splice(poolToAuto($2)));
-                     }
-    ;
-
-
-expr:                tINT
-                     {
-                        $$ = addToPool(new Expr::Integer($1));
-                     }
-                |    tOBJNUM
-                     {
-			$$ = addToPool(new Expr::Objnum($1));
-		     }
-                |    tSTR
-                     {
-			$$ = addToPool(new Expr::Str(poolPtrToAuto($1)));
-                     }
-                |    tREAL
-                     {
-			$$ = addToPool(new Expr::Real(poolPtrToAuto($1)));
-                     }
-                |    '{' arglist '}'
-                     {
-			$$ = addToPool(new Expr::List(poolToAuto($2)));
-                     }
-                |    tID
-                     {
-			BEGIN_BLOCK();
-			Symbol var = parser->addVar(*poolPtrToAuto($1));
-			$$ = addToPool(new Expr::Variable(var));
-			END_BLOCK();
-                     }
-                |    '!' expr
-                     {
-			$$ = addToPool(new Expr::Not(poolToAuto($2)));
-                     }
-                |    '-' expr   %prec tNEGATE
-                     {
-			$$ = addToPool(new Expr::Negate(poolToAuto($2)));
-                     }
-                |    tINCREMENT expr
-                     {
-			if(!$2->assignable())
-			   yyerror("Invalid operand to ++ operator");
-
-			$$ = addToPool(new Expr::PreInc(poolToAuto($2)));
-                     }
-                |    tDECREMENT expr
-                     {
-			if(!$2->assignable())
-			   yyerror("Invalid operand to -- operator");
-
-			$$ = addToPool(new Expr::PreDec(poolToAuto($2)));
-                     }
-                |    expr tINCREMENT
-                     {
-			if(!$1->assignable())
-			   yyerror("Invalid operand to ++ operator");
-
-			$$ = addToPool(new Expr::PostInc(poolToAuto($1)));
-                     }
-                |    expr tDECREMENT
-                     
-		     {
-			if(!$1->assignable())
-			   yyerror("Invalid operand to -- operator");
-
-			$$ = addToPool(new Expr::PostDec(poolToAuto($1)));
-
-                     }
-                |    expr '=' expr
-                     {
-			BEGIN_BLOCK();
-			std::auto_ptr<Expr::Expr> dest = poolToAuto($1);
-
-			if(!dest->assignable()) {
-			   bool converted = false;
-			   Expr::List* list;
-
-			   if((list = dynamic_cast<Expr::List*>(dest.get()))) {
-			      std::auto_ptr<ScatterTargetList> targets(new ScatterTargetList);
-			      converted = listToScatter(*targets, 
-							list->elements());
-			      dest.reset(new Expr::Scatter(targets));
-			   } 
-			   
-			   if(!converted)
-			      yyerror("Invalid expression on left side of assignment");
-			}
-
-                        $$ = addToPool(new Expr::Assign(dest, poolToAuto($3)));
-			END_BLOCK();
-                     }
-                |    '{' scatter '}' '=' expr
-                     {
-			BEGIN_BLOCK();
-			auto_ptr<Expr::Expr> scatter(new Expr::Scatter(poolToAuto($2)));
-			$$ = addToPool(new Expr::Assign(scatter,
-							poolToAuto($5)));
-			END_BLOCK();
-                     }
-                |    expr tOR expr
-                     {
-			$$ = MAKE_BINARY_EXPR(Or, $1, $3);
-                     }
-                |    expr tAND expr
-                     {
-			$$ = MAKE_BINARY_EXPR(And, $1, $3);
-                     }
-                |    expr tEQ expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(Equal, $1, $3);
-                     }
-                |    expr tNE expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(NotEqual, $1, $3);
-                     }
-                |    expr '<' expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(Less, $1, $3);
-                     }
-                |    expr tLE expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(LessEqual, $1, $3);
-                     }
-                |    expr '>' expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(Greater, $1, $3);
-                     }
-                |    expr tGE expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(GreaterEqual, $1, $3);
-                     }
-                |    expr tIN expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(In, $1, $3);
-                     }
-                |    expr '+' expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(Add, $1, $3);
-                     }
-                |    expr '-' expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(Sub, $1, $3);
-                     }
-                |    expr '*' expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(Mul, $1, $3);
-                     }
-                |    expr '/' expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(Div, $1, $3);
-                     }
-                |    expr '%' expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(Mod, $1, $3);
-                     }
-                |    expr '^' expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(Exp, $1, $3);
-                     }
-                |    expr tADD_EQ expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(AddEqual, $1, $3);
-                     }
-                |    expr tSUB_EQ expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(SubEqual, $1, $3);
-                     }
-                |    expr tMUL_EQ expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(MulEqual, $1, $3);
-                     }
-                |    expr tDIV_EQ expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(DivEqual, $1, $3);
-                     }
-                |    expr tMOD_EQ expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(ModEqual, $1, $3);
-                     }
-                |    expr tEXP_EQ expr
-                     {
-                        $$ = MAKE_BINARY_EXPR(ExpEqual, $1, $3);
-                     }
-                |    expr '?' expr '|' expr
-                     {
-			$$ = addToPool(new Expr::Conditional(poolToAuto($1), 
-							     poolToAuto($3), 
-							     poolToAuto($5)));
-                     }
-                |    expr '.' tID
-                     {
-			BEGIN_BLOCK();
-			auto_ptr<Expr::Expr> name(new Expr::Str(poolPtrToAuto($3)));
-			$$ = addToPool(new Expr::Prop(poolToAuto($1),
-						      name));
-			END_BLOCK();
-                     }
-                |    expr '.' '(' expr ')'
-                     {
-			$$ = addToPool(new Expr::Prop(poolToAuto($1), 
-						      poolToAuto($4)));
-                     }
-                |    expr ':' tID '(' arglist ')'
-                     {
-			BEGIN_BLOCK();
-			auto_ptr<Expr::Expr> name(new Expr::Str(poolPtrToAuto($3)));
-			$$ = addToPool(new Expr::VerbCall(poolToAuto($1), 
-							  name, 
-							  poolToAuto($5)));
-			END_BLOCK();
-		     }
-                |    expr ':' '(' expr ')' '(' arglist ')'
-                     {
-			$$ = addToPool(new Expr::VerbCall(poolToAuto($1),
-							  poolToAuto($4),
-							  poolToAuto($7)));
-		     }
-                |    expr '[' dollars_up expr ']'
-                     {
-			parser->decDollarDepth();
-			$$ = addToPool(new Expr::Index(poolToAuto($1),
-						       poolToAuto($4)));
-		     }
-                |    expr '[' dollars_up expr tTO expr ']'
-                     {
-			parser->decDollarDepth();
-			$$ = addToPool(new Expr::Range(poolToAuto($1), 
-						       poolToAuto($4), 
-						       poolToAuto($6)));
-		     }
-                |    '$'
-                     {
-			if(!parser->dollarDepth())
-			   yyerror("Illegal context for `$' expression");
-
-			$$ = addToPool(new Expr::Length);
-		     }
-                |    '$' tID
-                     {
-			$$ = addToPool(new Expr::SystemProp(poolPtrToAuto($2)));
-		     }
-                |    '$' tID '(' arglist ')'
-                     {
-			$$ = addToPool(new Expr::SystemCall(poolPtrToAuto($2),
-							    poolToAuto($4)));
-		     }
-                |    tID '(' arglist ')'
-                     {
-			$$ = addToPool(new Expr::Builtin(poolPtrToAuto($1), 
-							 poolToAuto($3)));
-		     }
-                |    '`' expr '!' except_codes catch_result '\''
-                     {
-			$$ = addToPool(new Expr::Catch(poolToAuto($2), 
-						       poolToAuto($4),
-						       poolToAuto($5)));
-		     }
-                |    '(' expr ')'
-                     {
-			 $$ = $2;
-		     }
-    ;
-
-
-scatter:             opt_target
-                     {
-			$$ = addToPool(new ScatterTargetList);
-			safePushBack(*$$, poolToAuto($1));
-		     }
-                |    scatter ',' opt_target
-                     {
-			$$ = $1;
-			safePushBack(*$$, poolToAuto($3));
-		     }
-                |    scatter ',' tID
-                     {
-			BEGIN_BLOCK();
-			$$ = $1;
-			Symbol var = parser->addVar(*poolPtrToAuto($3));
-			safePushBack(*$$, 
-				     new ScatterTarget(ScatterTarget::REQUIRED, var));
-			END_BLOCK();
-		     }
-                |    scatter ',' '@' tID
-                     {
-			BEGIN_BLOCK();
-			$$ = $1;
-			Symbol var = parser->addVar(*poolPtrToAuto($4));
-			safePushBack(*$$, 
-				     new ScatterTarget(ScatterTarget::REST, var));
-			END_BLOCK();
-		     }
-                |    ne_arglist ',' opt_target
-                     {
-			$$ = addToPool(new ScatterTargetList);
-			listToScatter(*$$, *poolToAuto($1));
-			safePushBack(*$$, poolToAuto($3));
-		     }
-    ;
-
-opt_target:          '?' tID
-                     {
-			BEGIN_BLOCK();
-			Symbol var = parser->addVar(*poolPtrToAuto($2));
-			$$ = addToPool(new ScatterTarget(ScatterTarget::OPTIONAL,
-							 var));
-			END_BLOCK();
-		     }
-                |    '?' tID '=' expr
-                     {
-			BEGIN_BLOCK();
-			Symbol var = parser->addVar(*poolPtrToAuto($2));
-			$$ = addToPool(new ScatterTarget(ScatterTarget::OPTIONAL,
-							 var,
-							 poolToAuto($4)));
-			END_BLOCK();
-		     }
-    ;
-
-dollars_up:          /* nothing */
-                     {
-			parser->incDollarDepth();
-		     }
-    ;
-
-catch_result:        /* nothing */
-                     {
-			$$ = 0;
-		     }
-                |    tARROW expr
-                     {
-			$$ = $2;
-		     }
-    ;
+%nterm <std::unique_ptr<Expr::Expr>> catch_result;
+catch_result:   %empty
+                {
+                    /* null */
+                }
+            |   tARROW expr
+                {
+                    $$ = std::move($2);
+                }
 
 %%
- 
-}   //namespace
 
-#include "lexer_symbols.hpp"
+namespace Moove { 
 
-namespace {
+    namespace BisonParser {
+		void parser::error(const std::string& msg) 
+		{
+			parserState.error(msg);
+		}
 
-Symbol isRestTarget(const Expr::Expr* expr)
-{
-   const Expr::Splice* splice;
-   const Expr::Variable* var;
+		parser::symbol_type yylex(ParserState& parserState)
+		{
+			return parserState.nextToken();
+		}
 
-   if((splice = dynamic_cast<const Expr::Splice*>(expr)) &&
-      (var = dynamic_cast<const Expr::Variable*>(&splice->operand())))
-      return var->id();
-   else
-      return Symbol();
-}
-   
-bool listToScatter(ScatterTargetList& targets, const Expr::ArgList& list)
-{
-   typedef Expr::ArgList ArgList;
-   typedef Expr::Variable Variable;
-   typedef Expr::Splice Splice;
-   typedef ScatterTarget Target;
+	}    //namespace BisonParser
 
-   bool success = true;
-
-   ArgList::const_iterator end = list.end();
-   for(ArgList::const_iterator item = list.begin(); item != end; ++item) {
-      Symbol id;
-
-      if(const Variable* var = dynamic_cast<const Variable*>(*item)) {
-	 std::auto_ptr<Target> target(new ScatterTarget(Target::REQUIRED,
-							var->id()));
-	 targets.push_back(target.get());
-	 target.release();
-      } else if((id = isRestTarget(*item))) {
-	 std::auto_ptr<Target> target(new ScatterTarget(Target::REST,
-							id));
-	 targets.push_back(target.get());
-	 target.release();
-      } else {
-	 yyerror("Scattering assignment targets must be simple variables.");
-	 success = false;
-      }
-   }
-
-   return success;
-}
-
-void checkAssignable(const Expr::Expr& expr, const char* assignType)
-{
-   if(!expr.assignable())
-      yyerror(string("Illegal expression on left side of ") +
-	      assignType + '.');
-}
-
-int yylex()
-{
-   return parser->lexer().nextToken();
-}
-
-}    //namespace
-
-namespace Moove {
-
-void Lexer::error(const string& msg)
-{
-   m_messages.error(msg, m_line);
-}
-
-void Lexer::warning(const string& msg)
-{
-   m_messages.warning(msg, m_line);
-}
-
-bool Lexer::isWS(char ch)
-{
-   return ch == ' ' || ch == '\t' || ch == '\r';
-}
-
-bool Lexer::myIsDigit(char ch)
-{
-   return isdigit(ch);
-}
-
-bool Lexer::isIDSuffixChar(char ch)
-{ 
-   return isalnum(ch) || ch == '_';
-}
-
-void Lexer::skipWS()
-{
-   m_pos = find_if(m_pos, m_end, not1(ptr_fun(&isWS)));
-}
-
-void Lexer::skipDigits()
-{
-   m_pos = find_if(m_pos, m_end, not1(ptr_fun(&myIsDigit)));
-}
-
-void Lexer::skipID()
-{
-   m_pos = find_if(m_pos, m_end, not1(ptr_fun(&isIDSuffixChar)));
-}
-
-int Lexer::parseNumber(bool realOK)
-{
-   string::const_iterator start = m_pos;
-   
-   //integer portion
-   skipDigits();
-
-   char ch = peekCur();
-   if(realOK && 
-      ((ch == '.' && peekNext() != '.') || ch == 'e' || ch == 'E')) {
-      //fractional portion
-      if(ch == '.') {
-	 ++m_pos;
-	 skipDigits();
-	 ch = peekCur();
-      }
-
-      //exponent portion
-      if(ch == 'e' || ch == 'E') {
-	 ++m_pos;
-	 ch = peekCur();
-	 if(ch == '-' || ch == '+')
-	    ++m_pos;
-	 
-	 if(isdigit(peekCur()))
-	    skipDigits();
-	 else {
-	    error("Malformed floating-point literal");
-	    return tINT;
-	 }
-      }
-
-      double value = strtod(string(start, m_pos).c_str(), 0);
-      if(errno != ERANGE) {
-	 yylval.real = addToPool(new ASTPoolPtr<double>(new double(value)));
-	 return tREAL;
-      } else {
-	 error("Real value out of range");
-	 return tINT;
-      }
-   } else {
-      long value = strtol(string(start, m_pos).c_str(), 0, 10);
-      if(errno != ERANGE && static_cast<int>(value) == value) {
-	 yylval.integer = value;
-	 return tINT;
-      } else {
-	 error("Integer literal out of range");
-	 return tINT;
-      }
-   }
-}   
-
-int Lexer::parseObjnum()
-{
-   bool negative = false;
-
-   ++m_pos;
-   if(peekCur() == '-') {
-      negative = true;
-      ++m_pos;
-   }
-   
-   int ret = parseNumber(false) != -1 ? tOBJNUM : -1;
-   
-   if(negative && ret == tOBJNUM)
-      yylval.integer = -yylval.integer;
-
-   return ret;
-}
-
-int Lexer::parseString()
-{
-   yylval.str = addToPool(new ASTPoolPtr<string>(new string));
-   
-   for(string::const_iterator start = ++m_pos; m_pos != m_end; ++m_pos) {
-      if(*m_pos == '"') {
-	 (*yylval.str)->append(start, m_pos);
-	 ++m_pos;
-	 return tSTR;
-      } else if(*m_pos == '\\') {
-	 if(++m_pos != m_end && *m_pos != '\n') {
-	    (*yylval.str)->append(start, m_pos - 1);
-	    **yylval.str += *m_pos;
-	    start = m_pos + 1;
-	 } else
-	    break;
-      } else if(*m_pos == '\n')
-	 break;
-   }
-
-   error("Missing quote");
-   if(m_pos != m_end)
-      ++m_pos;
-   
-   return tSTR;
-}
-
-void Lexer::parseComment()
-{
-   const char* commentEnd = "*/";
-	    
-   string::const_iterator pos = search(m_pos + 2, m_end,
-				       commentEnd, commentEnd + 2);
-   if(pos == m_end)
-      error("End of program while in a comment");
-   else
-      m_pos = pos + 2;
-}
-
-int Lexer::parseID()
-{
-   string::const_iterator start = m_pos++;
-   skipID();
-
-   auto_ptr<string> id(new string(start, m_pos));
-	 
-   //Check ID in reserved word set
-   const LexerSymbol* sym = LexerSymbolTable::in_word_set(id->c_str(),
-							  id->size());
-   if(sym) {
-      //ID is a reserved word. Return appropriate token
-      return sym->token;
-   } else {
-      //ID is not a reserved word
-      yylval.str = addToPool(new ASTPoolPtr<string>(id));
-      return tID;
-   }
-}
-
-int Lexer::parseOp()
-{
-   if(m_end - m_pos >= 2) {
-      //First check the next 2 characters for a 2-char operator stored
-      //in the LexerSymbolTable
-      string op(m_pos, m_pos + 2);
-      const LexerSymbol* sym = LexerSymbolTable::in_word_set(op.c_str(),
-							  op.size());
-      if(sym) {
-	 //It is a 2-char operator. Return appropriate token
-	 m_pos += 2;
-	 return sym->token;
-      }
-   }
-    
-   //Assume character is a 1-char operator
-   return *m_pos++;
-}
-
-Lexer::Lexer(const std::string& str, ParserMessages& msgs, bool enableObjnums) : 
-   m_source(str), m_pos(m_source.begin()), m_end(m_source.end()),
-   m_line(1), m_messages(msgs), m_enableObjnums(enableObjnums)
-{}
-
-Lexer::Lexer(const char* str, ParserMessages& msgs, bool enableObjnums) :
-   m_source(str), m_pos(m_source.begin()), m_end(m_source.end()),
-   m_line(1), m_messages(msgs), m_enableObjnums(enableObjnums)
-{}
-
-int Lexer::nextToken()
-{
-   skipWS();
-
-   while(m_pos != m_end) {
-      char ch = *m_pos;
-
-      if(ch == '\n') {
-	 ++m_line;
-	 ++m_pos;
-	 skipWS();
-      } else if(ch == '/' && peekNext() == '*') {
-	 parseComment();
-      } else if(ch == '"') {
-	 return parseString();
-      } else if(isdigit(ch) || (ch == '.' && isdigit(peekNext()))) {
-	 return parseNumber(true);
-      } else if(m_enableObjnums && ch == '#') {
-	 return parseObjnum();
-      } else if(isalpha(ch) || ch == '_') {
-	 return parseID();
-      } else
-	 return parseOp();
-   }
-      
-   return -1;
-}
-
-/**
- * \brief Type used for communication with parser sub-system
- *
- * An instance of this type will both provide a method of communication
- * with the calling Compiler object as well as hold parsing state
- * information such as loop depth, variables, and constants.
- */
-int parseSource(ParserState& newParser)
-{
-   parser = &newParser;
-   int ret = yyparse();
-   newParser.parseFinished();
-   return ret;
-}
+	/**
+	 * \brief Type used for communication with parser sub-system
+	 *
+	 * An instance of this type will both provide a method of communication
+	 * with the calling Compiler object as well as hold parsing state
+	 * information such as loop depth, variables, and constants.
+	 */
+	int parseSource(ParserState& parserState)
+	{
+        BisonParser::parser parser(parserState);
+        // parser.set_debug_level(1);
+        int ret = parser();
+		parserState.parseFinished();
+		return ret;
+	}
 
 }   //namespace Moove

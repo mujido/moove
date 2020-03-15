@@ -14,13 +14,13 @@
 namespace Moove {
 
 template<class T>
-struct UnaryCloner : public std::unary_function<const T*, T*> {
+struct UnaryCloner {
    T* operator () (const T* ptr)const
    { return ptr->clone(); }
 };
 
 template<class T>
-struct UnaryDeleter : public std::unary_function<T*, void> {
+struct UnaryDeleter {
    void operator () (T* ptr)const
    { delete ptr; }
 };
@@ -106,13 +106,13 @@ struct AutoContainer : public Container {
    ~AutoContainer()
    { freeRange(this->begin(), this->end()); }
 
-   void autoPushFront(std::auto_ptr<value_type> ptr)
+   void autoPushFront(std::unique_ptr<value_type> ptr)
    {
       this->push_front(ptr.get());
       ptr.release();
    }
 
-   void autoPushBack(std::auto_ptr<value_type> ptr)
+   void autoPushBack(std::unique_ptr<value_type> ptr)
    {
       this->push_back(ptr.get());
       ptr.release();

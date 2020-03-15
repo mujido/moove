@@ -23,7 +23,7 @@ private:
     SetValue    m_setValue;
 
 public:
-    Reply doBinaryOp(Opcode op, std::auto_ptr<Variant> left, std::auto_ptr<Variant> right)const
+    Reply doBinaryOp(Opcode op, std::unique_ptr<Variant> left, std::unique_ptr<Variant> right)const
     {
         using namespace boost;
 

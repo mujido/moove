@@ -3,12 +3,12 @@
 
 namespace Moove {
 
-BytecodeProgram::BytecodeProgram(std::auto_ptr<ForkVector> forkVect,
+BytecodeProgram::BytecodeProgram(std::unique_ptr<ForkVector> forkVect,
                                  LiteralVector& literals,
                                  CodeVector::Word tempBytes,
                                  CodeVector::Word literalBytes,
                                  CodeVector::Word forkBytes) : 
-    m_forkVect(forkVect), m_tempBytes(tempBytes), m_literalBytes(literalBytes), m_forkBytes(forkBytes)
+    m_forkVect(std::move(forkVect)), m_tempBytes(tempBytes), m_literalBytes(literalBytes), m_forkBytes(forkBytes)
 {
     m_literals.transfer(m_literals.end(), literals);
 }
@@ -68,14 +68,14 @@ BytecodeProgram& BytecodeProgram::operator = (const BytecodeProgram& bc)
     return *this;
 }
 
-DebugBytecodeProgram::DebugBytecodeProgram(std::auto_ptr<ForkVector> forkVect,
+DebugBytecodeProgram::DebugBytecodeProgram(std::unique_ptr<ForkVector> forkVect,
                                            LiteralVector& literals,
                                            const SymbolTable& varSymTable,
                                            const SymbolIDMap& varIDMap,
                                            CodeVector::Word tempBytes,
                                            CodeVector::Word literalBytes,
                                            CodeVector::Word forkBytes) :
-    BytecodeProgram(forkVect, literals, tempBytes, literalBytes, forkBytes), m_varSymTable(varSymTable), m_varIDMap(varIDMap)
+    BytecodeProgram(std::move(forkVect), literals, tempBytes, literalBytes, forkBytes), m_varSymTable(varSymTable), m_varIDMap(varIDMap)
 {
 }
 

@@ -52,8 +52,8 @@ bool Interpreter::execFinished()const
 
 void Interpreter::execBuiltin()
 {
-    std::auto_ptr<ListVar> args(popStack<ListVar>());
-    std::auto_ptr<StrVar> name(popStack<StrVar>());
+    std::unique_ptr<ListVar> args(popStack<ListVar>());
+    std::unique_ptr<StrVar> name(popStack<StrVar>());
 
     Reply reply;
     BuiltinRegistry::Function builtinFunc = m_execState->builtinRegistry().findFunction(name->value());
@@ -67,7 +67,7 @@ void Interpreter::execBuiltin()
         } else
             MOOVE_THROW("invalid builtin function: " + name->value());
     } else
-        reply = builtinFunc(*m_execState, args);
+        reply = builtinFunc(*m_execState, std::move(args));
 
     // if at this point, a builtin was executed that does not return a value. return a bogus value
     m_stack.push_back(reply.value() ? reply.value()->clone() : m_execState->intFactory().createValue(0));
@@ -75,51 +75,51 @@ void Interpreter::execBuiltin()
 
 void Interpreter::lengthList()
 {
-    std::auto_ptr<ListVar> listVar = popStack<ListVar>();
+    std::unique_ptr<ListVar> listVar = popStack<ListVar>();
     IntVar::value_type size = listVar->contents()->size();
 
-    pushStack(listVar);
-    pushStack(std::auto_ptr<Variant>(m_execState->intFactory().createValue(size)));
+    pushStack(std::move(listVar));
+    pushStack(std::unique_ptr<Variant>(m_execState->intFactory().createValue(size)));
 }
 
 
 void Interpreter::appendList()
 {
     boost::shared_ptr<Variant> valueVar(popStack<Variant>().release());
-    std::auto_ptr<ListVar> listVar(popStack<ListVar>());
+    std::unique_ptr<ListVar> listVar(popStack<ListVar>());
 
     listVar->appendValue(valueVar);
-    pushStack(listVar);
+    pushStack(std::move(listVar));
 }
 
 void Interpreter::indexList()
 {
-    std::auto_ptr<IntVar> indexVar(popStack<IntVar>());
-    std::auto_ptr<ListVar> listVar(popStack<ListVar>());
+    std::unique_ptr<IntVar> indexVar(popStack<IntVar>());
+    std::unique_ptr<ListVar> listVar(popStack<ListVar>());
 
 
     MOOVE_ASSERT(indexVar->value() >= 1 && indexVar->value() <= listVar->contents()->size(), "index out of range");
 
-    pushStack(std::auto_ptr<Variant>((*listVar->contents())[indexVar->value() - 1]->clone()));
+    pushStack(std::unique_ptr<Variant>((*listVar->contents())[indexVar->value() - 1]->clone()));
 }
 
 void Interpreter::setIndexList()
 {
-    std::auto_ptr<Variant> valueVar = popStack<Variant>();
-    std::auto_ptr<IntVar> indexVar = popStack<IntVar>();
-    std::auto_ptr<ListVar> listVar = popStack<ListVar>();
+    std::unique_ptr<Variant> valueVar = popStack<Variant>();
+    std::unique_ptr<IntVar> indexVar = popStack<IntVar>();
+    std::unique_ptr<ListVar> listVar = popStack<ListVar>();
 
     MOOVE_ASSERT(indexVar->value() >= 1 && indexVar->value() <= listVar->contents()->size(), "index out of range");
 
-    listVar->setIndex(indexVar->value() - 1, boost::shared_ptr<Variant>(valueVar));
-    pushStack(listVar);
+    listVar->setIndex(indexVar->value() - 1, boost::shared_ptr<Variant>(std::move(valueVar)));
+    pushStack(std::move(listVar));
 }
 
 void Interpreter::rangeList()
 {
-    std::auto_ptr<IntVar> endVar(popStack<IntVar>());
-    std::auto_ptr<IntVar> startVar(popStack<IntVar>());
-    std::auto_ptr<ListVar> listVar(popStack<ListVar>());
+    std::unique_ptr<IntVar> endVar(popStack<IntVar>());
+    std::unique_ptr<IntVar> startVar(popStack<IntVar>());
+    std::unique_ptr<ListVar> listVar(popStack<ListVar>());
 
     MOOVE_ASSERT(startVar->value() >= 1 && startVar->value() <= listVar->contents()->size(), "index out of range");
     MOOVE_ASSERT(endVar->value() >= startVar->value() && endVar->value() <= listVar->contents()->size(), "index out of range");
@@ -129,19 +129,19 @@ void Interpreter::rangeList()
     for(ListVar::Container::size_type i = startVar->value() - 1; i < endVar->value(); ++i)
         range.push_back(boost::shared_ptr<Variant>((*listVar->contents())[i]->clone()));
 
-    pushStack(std::auto_ptr<Variant>(m_execState->listFactory().createList(range)));
+    pushStack(std::unique_ptr<Variant>(m_execState->listFactory().createList(range)));
 }
 
 void Interpreter::spliceList()
 {
-    std::auto_ptr<ListVar> srcListVar(popStack<ListVar>());
-    std::auto_ptr<ListVar> destListVar(popStack<ListVar>());
+    std::unique_ptr<ListVar> srcListVar(popStack<ListVar>());
+    std::unique_ptr<ListVar> destListVar(popStack<ListVar>());
 
     ListVar::Container contents(*destListVar->contents());
     contents.insert(contents.end(), srcListVar->contents()->begin(), srcListVar->contents()->end());
 
     destListVar->setContents(contents);
-    pushStack(destListVar);
+    pushStack(std::move(destListVar));
 }
 
 void Interpreter::stepInstruction()
@@ -159,27 +159,27 @@ void Interpreter::stepInstruction()
 
             const OpcodeInfo::Op& opInfo = OpcodeInfo::getOp(op);
             if(opInfo.isUnaryOp()) {
-                std::auto_ptr<Variant> operand(popStack<Variant>());
+                std::unique_ptr<Variant> operand(popStack<Variant>());
 
                 OperatorMap::UnaryDispatch dispatch = m_execState->operatorMap().findUnary(operand->factory().regEntry());
                 MOOVE_ASSERT(dispatch != 0, "unhandled unary operation");
 
-                reply = dispatch(op, operand);
+                reply = dispatch(op, std::move(operand));
                 MOOVE_ASSERT(reply.normal(), "error occured in unary operation");
 
-                pushStack(std::auto_ptr<Variant>(reply.value()->clone()));
+                pushStack(std::unique_ptr<Variant>(reply.value()->clone()));
             } else if(opInfo.isBinaryOp()) {
-                std::auto_ptr<Variant> rightOperand(popStack<Variant>());
-                std::auto_ptr<Variant> leftOperand(popStack<Variant>());
+                std::unique_ptr<Variant> rightOperand(popStack<Variant>());
+                std::unique_ptr<Variant> leftOperand(popStack<Variant>());
 
                 OperatorMap::BinaryDispatch dispatch = m_execState->operatorMap().findBinary(leftOperand->factory().regEntry(),
                                                                                              rightOperand->factory().regEntry());
                 MOOVE_ASSERT(dispatch != 0, "unhandled binary operation");
 
-                reply = dispatch(op, leftOperand, rightOperand);
+                reply = dispatch(op, std::move(leftOperand), std::move(rightOperand));
                 MOOVE_ASSERT(reply.normal(), "error occured in binary operation");
 
-                pushStack(std::auto_ptr<Variant>(reply.value()->clone()));
+                pushStack(std::unique_ptr<Variant>(reply.value()->clone()));
             } else {
                 CodeVector::Word imm;
 
@@ -200,13 +200,13 @@ void Interpreter::stepInstruction()
 
                     case OP_JUMP_FALSE:
                     {
-                        std::auto_ptr<Variant> testVar = popStack<Variant>();
+                        std::unique_ptr<Variant> testVar = popStack<Variant>();
                         if(testVar->truthValue()) {
                             // value is true, continue executing next instruction
                             break;
                         }
 
-                        // value is false, fall throuth to jump case
+                        [[fallthrough]];
                     }
 
                     case OP_JUMP:
@@ -220,7 +220,7 @@ void Interpreter::stepInstruction()
                     case OP_PUSH_LITERAL:
                         // don't push a value if it will be immediately popped
                         if (execFinished() || *m_execPos != OP_POP) {
-                            pushStack(std::auto_ptr<Variant>(m_bc->literal(imm).clone()));
+                            pushStack(std::unique_ptr<Variant>(m_bc->literal(imm).clone()));
                         } else {
                             // skip OP_POP
                             ++m_execPos;
@@ -234,7 +234,7 @@ void Interpreter::stepInstruction()
 
                         // don't push a value if it will be immediately popped
                         if (execFinished() || *m_execPos != OP_POP) {
-                            pushStack(std::auto_ptr<Variant>(m_temps[imm].clone()));
+                            pushStack(std::unique_ptr<Variant>(m_temps[imm].clone()));
                         } else {
                             // skip OP_POP
                             ++m_execPos;
@@ -307,7 +307,7 @@ Interpreter::Interpreter(const DebugBytecodeProgram& bc) : m_execState(0), m_cur
         m_temps.push_back(0);
 }
 
-std::auto_ptr<Variant> Interpreter::run(ExecutionState& execState,
+std::unique_ptr<Variant> Interpreter::run(ExecutionState& execState,
                                         VariableDefMap& varDefs,
                                         bool traceFlag)
 {
@@ -322,10 +322,10 @@ std::auto_ptr<Variant> Interpreter::run(ExecutionState& execState,
     defineVariables(varDefs);
 
     while(!execFinished())
-	stepInstruction();
+		stepInstruction();
 
     MOOVE_ASSERT(m_retVal.get() != 0, "no return value");
-    return m_retVal;
+    return std::move(m_retVal);
 }
 
 }	// namespace Moove

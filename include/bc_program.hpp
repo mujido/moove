@@ -24,7 +24,7 @@ public:
     typedef boost::ptr_vector<Variant>   LiteralVector;
 
 private:
-    std::auto_ptr<ForkVector>	m_forkVect;
+    std::unique_ptr<ForkVector>	m_forkVect;
     LiteralVector               m_literals;
 
     CodeVector::Word		m_tempBytes;
@@ -32,7 +32,7 @@ private:
     CodeVector::Word		m_forkBytes;
 
 public:
-    BytecodeProgram(std::auto_ptr<ForkVector> forkVect, 
+    BytecodeProgram(std::unique_ptr<ForkVector> forkVect, 
                     LiteralVector& literals,
                     CodeVector::Word tempBytes,
                     CodeVector::Word literalBytes,
@@ -61,7 +61,7 @@ private:
     SymbolIDMap		m_varIDMap;
 
 public:
-    DebugBytecodeProgram(std::auto_ptr<ForkVector> forkVect,
+    DebugBytecodeProgram(std::unique_ptr<ForkVector> forkVect,
 			 LiteralVector& literals,
 			 const SymbolTable& varSymTable,
 			 const SymbolIDMap& varIDMap,

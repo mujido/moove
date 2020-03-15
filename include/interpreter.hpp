@@ -28,7 +28,7 @@ private:
 
     ExecutionState*                     m_execState;
 
-    std::auto_ptr<BytecodeProgram>      m_bc;
+    std::unique_ptr<BytecodeProgram>      m_bc;
     DebugBytecodeProgram*               m_bcDebug;
 
     VMStack                             m_stack;
@@ -37,7 +37,7 @@ private:
     const CodeVector*                   m_curVect;
     CodeVector::const_iterator          m_execPos;
 
-    std::auto_ptr<Variant>              m_retVal;
+    std::unique_ptr<Variant>              m_retVal;
 
     bool                                m_traceFlag;
 
@@ -73,20 +73,20 @@ private:
 
 protected:
     template<class VariantType>
-    std::auto_ptr<VariantType> popStack()
+    std::unique_ptr<VariantType> popStack()
     {
         MOOVE_ASSERT(!m_stack.empty(), "stack underflow");
 
-        std::auto_ptr<Variant> var(m_stack.release(m_stack.end() - 1).release());
+        std::unique_ptr<Variant> var(m_stack.release(m_stack.end() - 1).release());
         VariantType* castedVar = dynamic_cast<VariantType*>(var.get());
         MOOVE_ASSERT(castedVar != 0, "invalid type: " + var->factory().regEntry().name());
             
         var.release();
-        return std::auto_ptr<VariantType>(castedVar);
+        return std::unique_ptr<VariantType>(castedVar);
     }
 
     template<class VariantType>
-    void pushStack(std::auto_ptr<VariantType> var)
+    void pushStack(std::unique_ptr<VariantType> var)
     {
         m_stack.push_back(var.release());
     }
@@ -94,17 +94,17 @@ protected:
 public:
     Interpreter(const DebugBytecodeProgram& bc);
 
-    std::auto_ptr<Variant> run(ExecutionState& execState,
+    std::unique_ptr<Variant> run(ExecutionState& execState,
                                VariableDefMap& varDefs, 
                                bool traceFlag = false);
 };
 
 template<>
-inline std::auto_ptr<Variant> Interpreter::popStack<Variant>()
+inline std::unique_ptr<Variant> Interpreter::popStack<Variant>()
 {
     MOOVE_ASSERT(!m_stack.empty(), "stack underflow");
     
-    return std::auto_ptr<Variant>(m_stack.release(m_stack.end() - 1).release());
+    return std::unique_ptr<Variant>(m_stack.release(m_stack.end() - 1).release());
 }
 
 }	// namespace Moove

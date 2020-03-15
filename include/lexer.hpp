@@ -8,64 +8,72 @@
 #define MOOVE_LEXER_HPP
 
 #include "mem_pool.hpp"
+#include "moove.tab.h"
 
 #include <string>
 #include <boost/utility.hpp>
+#include <boost/optional/optional.hpp>
+
 
 namespace Moove {
+    class ParserMessages;
+    class ParserState;
 
-class ParserMessages;
+    class Lexer {
+    private:
+        using parser = BisonParser::parser;
 
-class Lexer : boost::noncopyable {
-private:
-   std::string                 m_source;
-   std::string::const_iterator m_pos;
-   std::string::const_iterator m_end;
-   unsigned                    m_line;
-   ParserMessages&             m_messages;
-   bool                        m_enableObjnums;
-   
-   static bool isWS(char ch);
+        ParserState& m_parser;
+        std::string                 m_source;
+        std::string::const_iterator m_pos;
+        std::string::const_iterator m_end;
+        unsigned                    m_line;
+        bool                        m_enableObjnums;
 
-   static bool myIsDigit(char ch);
+        static bool isWS(int ch);
 
-   static bool isIDSuffixChar(char ch);
+        static bool isIDSuffixChar(int ch);
 
-   void skipWS();
+        void skipWS();
 
-   void skipDigits();
+        void skipDigits();
 
-   void skipID();
-   
-   int peekCur()const
-   { return (m_pos != m_end) ? *m_pos : -1; }
+        void skipID();
 
-   int peekNext()const
-   { return (m_pos + 1 != m_end) ? *(m_pos + 1) : -1; }
+        int peekCur()const
+        {
+            return (m_pos != m_end) ? *m_pos : -1;
+        }
 
-   int parseNumber(bool realOK);
+        int peekNext(unsigned idx = 1)const
+        {
+            return (std::distance(m_pos, m_end) >= idx) ? *(m_pos + idx) : -1;
+        }
 
-   int parseObjnum();
+        bool findEndOfReal();
 
-   int parseString();
+        boost::optional<parser::symbol_type> tryParseNumber(bool realOK);
 
-   void parseComment();
+        parser::symbol_type parseObjnum();
 
-   int parseID();
-   
-   int parseOp();
+        parser::symbol_type parseString();
 
-public:
-   Lexer(const std::string& str, ParserMessages& msgs, bool enableObjnums);
+        void parseComment();
 
-   Lexer(const char* str, ParserMessages& msgs, bool enableObjnums);
+        parser::symbol_type parseID();
 
-   int nextToken();
+        parser::symbol_type parseOp();
 
-   void error(const std::string& msg);
+        Lexer(const Lexer&) = delete;
+        Lexer(Lexer&&) = delete;
 
-   void warning(const std::string& msg);
-};
+    public:
+        Lexer(ParserState& parser, const std::string& str, ParserMessages& msgs, bool enableObjnums);
+
+        parser::symbol_type nextToken();
+
+        unsigned currentLineNumber() const { return m_line; }
+    };
 
 }   //namespace Moove
 

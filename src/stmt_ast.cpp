@@ -77,7 +77,7 @@ void Break::accept(ASTVisitor& visitor)const
    visitor.visit(*this);
 }
 
-void Expr::accept(ASTVisitor& visitor)const
+void ExprStmt::accept(ASTVisitor& visitor)const
 {
    visitor.visit(*this);
 }

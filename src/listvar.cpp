@@ -35,14 +35,14 @@ DefaultListVar* DefaultListVar::Factory::create()
 
 DefaultListVar* DefaultListVar::Factory::createList(Container& cont)
 {
-    std::auto_ptr<DefaultListVar> var(new DefaultListVar);
+    std::unique_ptr<DefaultListVar> var(new DefaultListVar);
     var->setContents(cont);
     return var.release();
 }
 
 DefaultListVar* DefaultListVar::Factory::createListCopy(const ListVar& var)
 {
-    std::auto_ptr<DefaultListVar> newVar(new DefaultListVar);
+    std::unique_ptr<DefaultListVar> newVar(new DefaultListVar);
     newVar->copyContents(var.contents());
     return newVar.release();
 }

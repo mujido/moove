@@ -121,7 +121,7 @@ class ListVar : public Variant {
 protected:
     virtual void clear() = 0;
 
-    virtual void append(std::auto_ptr<Variant> var);
+    virtual void append(std::unique_ptr<Variant> var);
 
 public:
     typedef size_t size_type;

@@ -35,19 +35,19 @@ TypeRegistry typeReg;
       
 Reply IntIntOpPkg::doBinaryOp(Opcode op, const Variant& left, const Variant& right)const
 {
-   std::auto_ptr<IntVar> resultVar(dynamic_cast<IntVar*>(left.clone()));
+   std::unique_ptr<IntVar> resultVar(dynamic_cast<IntVar*>(left.clone()));
 
    if(op == OP_ADD) {
       resultVar->setValue(resultVar->value() + dynamic_cast<const IntVar&>(right).value());
    } else
       return OperatorPackage::doBinaryOp(op, left, right);
 
-   Reply reply(Reply::NORMAL, std::auto_ptr<Variant>(resultVar));
+   Reply reply(Reply::NORMAL, std::unique_ptr<Variant>(resultVar));
 }
 
 Reply RealRealOpPkg::doBinaryOp(Opcode op, const Variant& left, const Variant& right)const
 {
-   std::auto_ptr<RealVar> resultVar(dynamic_cast<RealVar*>(left.clone()));
+   std::unique_ptr<RealVar> resultVar(dynamic_cast<RealVar*>(left.clone()));
 
    if(op == OP_ADD)
       resultVar->setValue(resultVar->value() + dynamic_cast<const RealVar&>(right).value());
@@ -55,7 +55,7 @@ Reply RealRealOpPkg::doBinaryOp(Opcode op, const Variant& left, const Variant& r
       return OperatorPackage::doBinaryOp(op, left, right);
    }
 
-   return Reply(Reply::NORMAL, std::auto_ptr<Variant>(resultVar));
+   return Reply(Reply::NORMAL, std::unique_ptr<Variant>(resultVar));
 }
 
 double IntRealOpPkg::upcastToReal(const Variant& var)
@@ -72,14 +72,14 @@ Reply IntRealOpPkg::doBinaryOp(Opcode op, const Variant& left, const Variant& ri
    const TypeRegistry::TypeEntry* realType = typeReg.findType("real");
    assert(realType != 0);
 
-   std::auto_ptr<RealVar> resultVar(dynamic_cast<RealVar*>(realType->factory().create()));
+   std::unique_ptr<RealVar> resultVar(dynamic_cast<RealVar*>(realType->factory().create()));
 
    if(op == OP_ADD)
       resultVar->setValue(upcastToReal(left) + upcastToReal(right));
    else
       return OperatorPackage::doBinaryOp(op, left, right);
 
-   return Reply(Reply::NORMAL, std::auto_ptr<Variant>(resultVar));
+   return Reply(Reply::NORMAL, std::unique_ptr<Variant>(resultVar));
 }
 
 namespace {
@@ -118,8 +118,8 @@ int main()
 
       // profiling loop
       Reply reply;
-      std::auto_ptr<IntVar>	vInt;
-      std::auto_ptr<RealVar>	vReal;
+      std::unique_ptr<IntVar>	vInt;
+      std::unique_ptr<RealVar>	vReal;
 
       for(int i = 0; i < 300000; ++i) {
 	 vInt.reset(dynamic_cast<IntVar*>(intType->factory().create()));
@@ -144,8 +144,8 @@ int main()
       const RealVar& vSum = dynamic_cast<const RealVar&>(*reply.value());
       cout << "Sum of " << vInt->value() << " + " << vReal->value() << " = " << vSum.value() << "\n";
 
-      std::auto_ptr<StrVar>	vStr1(dynamic_cast<StrVar*>(strType->factory().create()));
-      std::auto_ptr<StrVar>	vStr2(dynamic_cast<StrVar*>(vStr1->clone()));
+      std::unique_ptr<StrVar>	vStr1(dynamic_cast<StrVar*>(strType->factory().create()));
+      std::unique_ptr<StrVar>	vStr2(dynamic_cast<StrVar*>(vStr1->clone()));
 
       vStr1->setValue("All I want to do ");
       vStr2->setValue("is have some fun");

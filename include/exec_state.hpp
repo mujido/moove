@@ -80,9 +80,9 @@ public:
     ListVar::Factory& listFactory()const
     { return *m_listFactory; }
 
-    std::auto_ptr<Variant> call(const DebugBytecodeProgram& bc, bool traceFlag = false);
+    std::unique_ptr<Variant> call(const DebugBytecodeProgram& bc, bool traceFlag = false);
 
-    std::auto_ptr<Variant> call(const DebugBytecodeProgram& bc, Interpreter::VariableDefMap& varDefMap, bool traceFlag = false);
+    std::unique_ptr<Variant> call(const DebugBytecodeProgram& bc, Interpreter::VariableDefMap& varDefMap, bool traceFlag = false);
 };
 
 }

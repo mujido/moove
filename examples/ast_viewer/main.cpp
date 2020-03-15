@@ -32,7 +32,7 @@ int main()
       MyMessages msgs;
       Parser parser;
       if(parser.parse(source, msgs, true)) {
-	 std::auto_ptr<Program> program = parser.releaseProgram();
+	 std::unique_ptr<Program> program = parser.releaseProgram();
 	 GraphvizVisitor graphVisitor(std::cout);
 
 	 graphVisitor.visit(*program);

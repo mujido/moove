@@ -28,8 +28,8 @@ namespace Moove {
  */
 class OperatorMap : boost::noncopyable {
 public:
-    typedef Reply (*UnaryDispatch)(Opcode, std::auto_ptr<Variant>);
-    typedef Reply (*BinaryDispatch)(Opcode, std::auto_ptr<Variant>, std::auto_ptr<Variant>);
+    typedef Reply (*UnaryDispatch)(Opcode, std::unique_ptr<Variant>);
+    typedef Reply (*BinaryDispatch)(Opcode, std::unique_ptr<Variant>, std::unique_ptr<Variant>);
 
 private:
     typedef std::vector<UnaryDispatch> UnaryTable;
