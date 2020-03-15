@@ -890,7 +890,7 @@ public:
 class Catch : public Expr {
 private:
    std::unique_ptr<Expr>    m_expr;
-   std::unique_ptr<ArgList> m_codes;
+   ArgList m_codes;
    std::unique_ptr<Expr>    m_exceptValue;
 
 public:
@@ -902,9 +902,7 @@ public:
     *        that appears inside codes is raised by \a expr. Can be 0 if
     *        the value of the exception should be returned instead.
     */
-   Catch(std::unique_ptr<Expr> expr, 
-	 std::unique_ptr<ArgList> codes, 
-	 std::unique_ptr<Expr> exceptValue) : 
+   Catch(std::unique_ptr<Expr> expr, ArgList&& codes, std::unique_ptr<Expr> exceptValue) : 
       m_expr(std::move(expr)), m_codes(std::move(codes)), m_exceptValue(std::move(exceptValue))
    {}
 
@@ -929,7 +927,7 @@ public:
     *         raised
     */
    const ArgList& codes()const
-   { return *m_codes; }
+   { return m_codes; }
 
    /**
     * \brief Retrieve expression to evaluate if an exception is handled

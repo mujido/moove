@@ -29,13 +29,15 @@ using namespace Moove::BisonParser;
 
 dseq        [[:digit:]]+
 dseq_opt    [[:digit:]]*    
-frac        ({dseq_opt}"."{dseq})|{dseq}"."
+frac        {dseq_opt}"."{dseq}|{dseq}"."
 exp         [eE][+-]?{dseq}
 exp_opt     {exp}?
 dfc         {frac}{exp_opt}
 
 id          [[:alpha:]_][[:alnum:]_]*
 str         \"([^\"\\\n]|(\\[^\n]))*\"
+
+%x COMMENT
 
 %{
 /* "if"            parser::make_tIF();
@@ -65,6 +67,17 @@ str         \"([^\"\\\n]|(\\[^\n]))*\"
 
 %%
 
+%{
+    std::string realBuf;
+%}
+
+"/*"            BEGIN(COMMENT);
+<COMMENT>{
+    "*/"        BEGIN(INITIAL);
+    [^*\n]+     ;
+    "*"[^/]     ;
+    \n          ;
+}
 
 "+="            return parser::make_tADD_EQ();
 "-="            return parser::make_tSUB_EQ();
@@ -85,6 +98,8 @@ str         \"([^\"\\\n]|(\\[^\n]))*\"
 
 {dseq}          return parseInteger(yytext);
 
+{dseq}/".."     return parseInteger(yytext);
+
 {dfc}           return parseReal(yytext); 
 
 "#"{dseq}       return parseObjnum(yytext); 
@@ -93,7 +108,7 @@ str         \"([^\"\\\n]|(\\[^\n]))*\"
 
 {str}           return parseStr(yytext);
 
-[-=?|`'<>+*/%^!,.:[\]$;{}]     return parser::symbol_type(*yytext);    // single character operators
+[-=?|`'<>+*/%^!,.:[\]$;{}()@]     return parser::symbol_type(*yytext);    // single character operators
 
 [[:space:]]     /* ignore spaces */
 

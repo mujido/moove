@@ -540,6 +540,14 @@ expr:               tINT
                     {
                        $$ = std::make_unique<Expr::Builtin>(std::move($1), std::move($3));
                     }
+                |   '`' expr '!' except_codes catch_result '\''
+                    {
+                        $$ = std::make_unique<Expr::Catch>(std::move($2), std::move($4), std::move($5));
+                    }
+                |   '(' expr ')'
+                    {
+                        $$ = std::move($2);
+                    }
     ;
 
 %nterm <Expr::Scatter::TargetList> scatter;
@@ -597,7 +605,7 @@ catch_result:   %empty
                 }
             |   tARROW expr
                 {
-                    $$ = $2;
+                    $$ = std::move($2);
                 }
 
 %%
