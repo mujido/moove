@@ -242,8 +242,16 @@ void Interpreter::stepInstruction()
                         break;
 
                     case OP_PUT:
+                        {
                             MOOVE_ASSERT(imm < m_temps.size(), "temporary ID out of range");
-                        m_temps.replace(m_temps.begin() + imm, m_stack.back().clone());
+                            if (!execFinished() && *m_execPos == OP_POP)
+                            {
+                                m_temps[imm] = popStack<Variant>();
+                                ++m_execPos;
+                            }
+                            else
+                                m_temps[imm].reset(m_stack.back()->clone());
+                        }
                         break;
 
                     case OP_POP:
