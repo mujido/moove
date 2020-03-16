@@ -17,9 +17,7 @@ namespace Moove {
 
 void Interpreter::clearTemps()
 {
-    TemporaryValues::iterator end = m_temps.end();
-    for(TemporaryValues::iterator temp = m_temps.begin(); temp != end; ++temp)
-        m_temps.replace(temp, 0);
+    m_temps.clear();
 }
 
 void Interpreter::defineVariables(VariableDefMap& varDefs)
@@ -30,16 +28,15 @@ void Interpreter::defineVariables(VariableDefMap& varDefs)
     std::string argsStr("args");
     if (varDefs.find(argsStr) == varDefs.end()) {
         ListVar::Container contents;
-        varDefs.insert(argsStr, m_execState->listFactory().createList(contents));
+        varDefs.emplace(argsStr, m_execState->listFactory().createList(contents));
     }
 
-    VariableDefMap::iterator endDef = varDefs.end();
-    for(VariableDefMap::iterator def = varDefs.begin(); def != endDef; ++def) {
+    for (auto& def : varDefs) {
         // if this variable exists (has a defined symbol), set the value
-        Symbol varSym = m_bcDebug->varSymTable().findSymbol(def->first);
+        Symbol varSym = m_bcDebug->varSymTable().findSymbol(def.first);
         if(varSym) {
             CodeVector::Word tempID = m_bcDebug->varIDBySymbol(varSym);
-            m_temps.replace(m_temps.begin() + tempID, varDefs.release(def).release());
+            m_temps[tempID] = std::move(def.second);
         }
     }
 
@@ -62,7 +59,7 @@ void Interpreter::execBuiltin()
             VariableDefMap recurseVarDefs;
             std::string argsName("args");
 
-            recurseVarDefs.insert(argsName, args.release());
+            recurseVarDefs.emplace(argsName, std::move(args));
             reply.reset(Reply::NORMAL, m_execState->call(*m_bcDebug, recurseVarDefs, m_traceFlag));
         } else
             MOOVE_THROW("invalid builtin function: " + name->value());
@@ -70,7 +67,10 @@ void Interpreter::execBuiltin()
         reply = builtinFunc(*m_execState, std::move(args));
 
     // if at this point, a builtin was executed that does not return a value. return a bogus value
-    m_stack.push_back(reply.value() ? reply.value()->clone() : m_execState->intFactory().createValue(0));
+    if (reply.normal() && reply.value())
+        m_stack.push_back(std::move(reply.value()));
+    else
+        m_stack.emplace_back(m_execState->intFactory().createValue(0));
 }
 
 void Interpreter::lengthList()
@@ -96,7 +96,6 @@ void Interpreter::indexList()
 {
     std::unique_ptr<IntVar> indexVar(popStack<IntVar>());
     std::unique_ptr<ListVar> listVar(popStack<ListVar>());
-
 
     MOOVE_ASSERT(indexVar->value() >= 1 && indexVar->value() <= listVar->contents()->size(), "index out of range");
 
@@ -230,11 +229,11 @@ void Interpreter::stepInstruction()
 
                     case OP_PUSH:
                         MOOVE_ASSERT(imm < m_temps.size(), "temporary ID out of range");
-                        MOOVE_ASSERT(!m_temps.is_null(imm), "undefined variable");
+                        MOOVE_ASSERT(m_temps[imm] != nullptr, "undefined variable");
 
                         // don't push a value if it will be immediately popped
                         if (execFinished() || *m_execPos != OP_POP) {
-                            pushStack(std::unique_ptr<Variant>(m_temps[imm].clone()));
+                            pushStack(std::unique_ptr<Variant>(m_temps[imm]->clone()));
                         } else {
                             // skip OP_POP
                             ++m_execPos;
@@ -243,7 +242,7 @@ void Interpreter::stepInstruction()
                         break;
 
                     case OP_PUT:
-                        MOOVE_ASSERT(imm < m_temps.size(), "temporary ID out of range");
+                            MOOVE_ASSERT(imm < m_temps.size(), "temporary ID out of range");
                         m_temps.replace(m_temps.begin() + imm, m_stack.back().clone());
                         break;
 

@@ -5,13 +5,12 @@
 #define MOOVE_INTERPRETER_HPP
 
 #include "bc_program.hpp"
+#include "variant.hpp"
 
 #include <iosfwd>
+#include <map>
 #include <string>
 #include <vector>
-#include <boost/shared_ptr.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/ptr_container/ptr_map.hpp>
 
 namespace Moove {
 
@@ -19,12 +18,11 @@ class ExecutionState;
 
 class Interpreter {
 public:
-    typedef boost::ptr_map<std::string, Variant, iless> VariableDefMap;
+    typedef std::map<std::string, std::unique_ptr<Variant>, iless> VariableDefMap;
     
 private:
-    typedef boost::ptr_vector<boost::nullable<Variant> > TemporaryValues;
-
-    typedef boost::ptr_vector<Variant> VMStack;
+    typedef std::vector<std::unique_ptr<Variant>> TemporaryValues;
+    typedef std::vector<std::unique_ptr<Variant>> VMStack;
 
     ExecutionState*                     m_execState;
 
@@ -66,37 +64,24 @@ private:
     template<class CharT, class Traits>
     void dumpStack(std::basic_ostream<CharT, Traits>& stream)const
     {
-        VMStack::const_iterator stackEnd = m_stack.end();
-        for(VMStack::const_iterator stackIter = m_stack.begin(); stackIter != stackEnd; ++stackIter)
-            stream << "\t" << stackIter->debugStr() << "\n";
+        for (const auto& stackObj : m_stack)
+            stream << "\t" << stackObj->debugStr() << "\n";
     }
 
 protected:
     template<class VariantType>
-    std::unique_ptr<VariantType> popStack()
-    {
-        MOOVE_ASSERT(!m_stack.empty(), "stack underflow");
-
-        std::unique_ptr<Variant> var(m_stack.release(m_stack.end() - 1).release());
-        VariantType* castedVar = dynamic_cast<VariantType*>(var.get());
-        MOOVE_ASSERT(castedVar != 0, "invalid type: " + var->factory().regEntry().name());
-            
-        var.release();
-        return std::unique_ptr<VariantType>(castedVar);
-    }
+    std::unique_ptr<VariantType> popStack();
 
     template<class VariantType>
     void pushStack(std::unique_ptr<VariantType> var)
     {
-        m_stack.push_back(var.release());
+        m_stack.push_back(std::move(var));
     }
 
 public:
     Interpreter(const DebugBytecodeProgram& bc);
 
-    std::unique_ptr<Variant> run(ExecutionState& execState,
-                               VariableDefMap& varDefs, 
-                               bool traceFlag = false);
+    std::unique_ptr<Variant> run(ExecutionState& execState, VariableDefMap& varDefs, bool traceFlag = false);
 };
 
 template<>
@@ -104,7 +89,23 @@ inline std::unique_ptr<Variant> Interpreter::popStack<Variant>()
 {
     MOOVE_ASSERT(!m_stack.empty(), "stack underflow");
     
-    return std::unique_ptr<Variant>(m_stack.release(m_stack.end() - 1).release());
+    auto tmp = std::move(m_stack.back());
+    m_stack.pop_back();
+    return tmp;
+}
+
+template<class VariantType>
+std::unique_ptr<VariantType> Interpreter::popStack()
+{
+    MOOVE_ASSERT(!m_stack.empty(), "stack underflow");
+
+    auto var = std::move(m_stack.back());
+    m_stack.pop_back();
+    VariantType* castedVar = dynamic_cast<VariantType*>(var.get());
+    MOOVE_ASSERT(castedVar != 0, "invalid type: " + var->factory().regEntry().name());
+        
+    var.release();
+    return std::unique_ptr<VariantType>(castedVar);
 }
 
 }	// namespace Moove

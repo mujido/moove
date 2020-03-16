@@ -9,7 +9,7 @@
 #include "except.hpp"
 #include "variant.hpp"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace Moove {
 
@@ -30,8 +30,8 @@ public:
    };
 
 private:
-   Type				m_type;
-   boost::shared_ptr<Variant>	m_value;
+   Type m_type;
+   std::unique_ptr<Variant> m_value;
 
 public:
    /**
@@ -41,13 +41,6 @@ public:
     */
    Reply() : m_type(NORMAL)
    {}
-
-   /**
-    * \brief Create a Reply object with type and value
-    * \param type Type of reply
-    * \param value Variant object
-    */
-   Reply(Type type, boost::shared_ptr<Variant> value);
 
    /**
     * \brief Create a Reply object with type and value
@@ -67,15 +60,13 @@ public:
     * \brief Retrieve value pointer
     * \return Value object pointer currently assigned to this object
     */
-   const boost::shared_ptr<Variant> value()const
+   const std::unique_ptr<Variant>& value()const
    { return m_value; }
 
-   /**
-    * \brief Reset to a new reply value
-    * \param type Type of reply
-    * \param value Pointer to value object assigned to this object
-    */
-   void reset(Type type, boost::shared_ptr<Variant> value);
+   std::unique_ptr<Variant>& value()
+   {
+      return m_value;
+   }
 
    /**
     * \brief Reset to a new reply value

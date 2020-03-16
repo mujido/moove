@@ -48,7 +48,7 @@ struct operator_traits<RealVar, RealVar> {
 template<typename ResultVar>
 inline Reply makeReply(const typename ResultVar::value_type& value)
 {
-    return Reply(Reply::NORMAL, boost::shared_ptr<ResultVar>(ResultVar::classFactory().createValue(value)));
+    return Reply(Reply::NORMAL, std::unique_ptr<ResultVar>(ResultVar::classFactory().createValue(value)));
 }
 
 template<class X, class Y>
@@ -176,9 +176,9 @@ Reply mooshStringOpDispatch(Opcode op, std::unique_ptr<Variant> leftVar, std::un
     if (op != OP_ADD)
         MOOVE_THROW("Unrecognized opcode");
 
-    boost::shared_ptr<DefaultStrVar> resultVar(static_cast<DefaultStrVar*>(DefaultStrVar::classFactory().create()));
+    std::unique_ptr<DefaultStrVar> resultVar(static_cast<DefaultStrVar*>(DefaultStrVar::classFactory().create()));
     resultVar->setValue(leftVal + rightVal);
-    return Reply(Reply::NORMAL, resultVar);
+    return Reply(Reply::NORMAL, std::move(resultVar));
 }
 
 
@@ -226,7 +226,7 @@ std::unique_ptr<Variant> evalScript(ExecutionState& execState,
         Interpreter::VariableDefMap varDefs;
         std::string key("args");
 
-        varDefs.insert(key, DefaultListVar::classFactory().createList(args));
+        varDefs.emplace(key, DefaultListVar::classFactory().createList(args));
         returnValue = execState.call(*bc, varDefs, traceFlag);
     }
 
